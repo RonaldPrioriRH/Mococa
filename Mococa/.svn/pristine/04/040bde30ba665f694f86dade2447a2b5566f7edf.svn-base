@@ -1,0 +1,183 @@
+#INCLUDE "protheus.ch"
+#INCLUDE "topconn.ch"
+#INCLUDE "TOTVS.ch"
+/*/
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+ฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑ
+ฑฑษออออออออออัออออออออออหอออออออัอออออออออออออออออออออออหออออออออออออออออออัออออออออออออออออออออออออออออออออออออออออออออออออปฑฑ
+ฑฑบPrograma  ณ GCFG001  บ Autor ณ TOTVS                 บ Data da Criacao  ณ 14/07/2008                						บฑฑ
+ฑฑฬออออออออออุออออออออออสอออออออฯอออออออออออออออออออออออสออออออออออออออออออฯออออออออออออออออออออออออออออออออออออออออออออออออนฑฑ
+ฑฑบDescricao ณ Codificacao de cadastro de fornecedores					   							                        บฑฑ
+ฑฑฬออออออออออุออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออนฑฑ
+ฑฑบUso       ณ Gerar o campo A2_COD de forma automatica, como base no campo A2_L_TPFOR.                                     บฑฑ
+ฑฑบ			 ณ Gatilho = A2_L_TPFOR SEQ: 001						                                   						บฑฑ
+ฑฑฬออออออออออุออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออนฑฑ
+ฑฑบParametrosณ Nenhum.                                                                                                      บฑฑ
+ฑฑฬออออออออออุออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออนฑฑ
+ฑฑบRetorno   ณ _cRetorno = Retorna codigo para cadastro de fornecedores.           						                    บฑฑ
+ฑฑบ          ณ                                                                                                              บฑฑ
+ฑฑฬออออออออออุออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออนฑฑ
+ฑฑบUsuario   ณ                                                                                          					บฑฑ
+ฑฑฬออออออออออุออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออนฑฑ
+ฑฑบSetor     ณ Gestao do Leite                                                                    				   			บฑฑ
+ฑฑฬออออออออออฯออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออนฑฑ
+ฑฑบ            			          	ATUALIZACOES SOFRIDAS DESDE A CONSTRUCAO INICIAL                   						บฑฑ
+ฑฑฬออออออออออัออออออออออัออออออออออออออออออออออออออออออออออออออออออออออออออัออออออออออออออออออออออออออออออออออัอออออออออออออนฑฑ
+ฑฑบAutor     ณ Data     ณ Motivo da Alteracao  				               ณUsuario(Filial+Matricula+Nome)    ณSetor        บฑฑ
+ฑฑบฤฤฤฤฤฤฤฤฤฤลฤฤฤฤฤฤฤฤฤฤลฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤลฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤลฤฤฤฤฤฤฤฤฤฤฤฤฤบฑฑ
+ฑฑบ			 ณ			|                              					   ณ                                  ณ   	        บฑฑ
+ฑฑศออออออออออฯออออออออออฯออออออออออออออออออออออออออออออออออออออออออออออออออฯออออออออออออออออออออออออออออออออออฯอออออออออออออผฑฑ
+ฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑ
+฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿
+*/
+User Function GCFG001()
+
+Local _aArea    := GetArea()
+Local _cCodFor  := ""
+
+
+If Select("QRY") <> 0
+	QRY->(DbCloseArea())
+EndIf
+
+BeginSql alias "QRY"
+	SELECT MAX(A2_COD) AS CODIGO
+	FROM %Table:SA2% A2
+	WHERE A2.A2_FILIAL = %xFilial:SA2% 
+	AND A2.A2_L_TPFOR = %Exp:M->A2_L_TPFOR% 
+	AND A2.%NotDel% 
+EndSql
+                          
+
+dbSelectArea("QRY")
+dbGotop()
+
+If QRY->(!Eof()) .and. !Empty(QRY->CODIGO)
+	_cCodFor := M->A2_L_TPFOR + StrZero(Val(SubStr(QRY->CODIGO,2,5))+1,5)
+//	_cCodFor := Soma1(QRY->CODIGO)  // Utilizando esta fun็ใo, o c๓digo fica alfanumerico
+Else
+	_cCodFor :=	M->A2_L_TPFOR+"00001"
+EndIf
+
+
+//ฺฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤ
+//ณ Tratamento para evitar que dois usuarios cadastrem o mesmo codigo ao mesmo tempo. ณ
+//ภฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤ
+While !MayIUseCode("A2_COD"+xFilial("SA2")+_cCodFor)  //verifica se esta na memoria, sendo usado
+	_cCodFor := M->A2_L_TPFOR + StrZero(Val(SubStr(_cCodFor,2,5))+1,5)				   // busca o proximo numero disponivel
+//	_cCodFor := Soma1(_cCodFor)
+EndDo
+
+M->A2_LOJA   := "01"
+//If SubStr(_cCodFor,1,1) $ "PT"
+//	M->A2_L_TANQ := _cCodFor
+//EndIf
+
+dbSelectArea("QRY")
+QRY->(dbCloseArea())
+
+RestArea(_aArea)
+Return(_cCodFor)
+
+
+/*
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+ฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑ
+ฑฑษออออออออออัออออออออออหอออออออัออออออออออออออออออออหออออออัอออออออออออออปฑฑ
+ฑฑบPrograma  ณGCFGCPF   บAutor  ณMicrosiga           บ Data ณ  07/28/15   บฑฑ
+ฑฑฬออออออออออุออออออออออสอออออออฯออออออออออออออออออออสออออออฯอออออออออออออนฑฑ
+ฑฑบDesc.     ณ                                                            บฑฑ
+ฑฑบ          ณ                                                            บฑฑ
+ฑฑฬออออออออออุออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออนฑฑ
+ฑฑบUso       ณ AP                                                        บฑฑ
+ฑฑศออออออออออฯออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผฑฑ
+ฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑ
+฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿
+*/
+User Function GCFGCPF(xcTab)
+
+Local _aArea    := GetArea()
+Local _nReg :=  0
+
+Local _cCodFor  := ""
+Local _cCodLj   := ""
+Local _cFiltro	:= ""
+
+
+
+DEFAULT xcTab := "SA2"
+
+If Select("QRY2") <> 0
+	QRY2->(DbCloseArea())
+EndIf
+
+If xcTab == 'SA1'
+	If Len(Alltrim(M->A1_CGC)) > 11
+		_cFiltro := "% SUBSTRING(A1.A1_CGC,1,8) = '"+SubStr(Alltrim(M->A1_CGC),1,8)+"'  %"
+	Else
+		_cFiltro := "% A1.A1_CGC = '"+Alltrim(M->A1_CGC)+"'  %"	
+	EndIf
+	
+	BeginSql alias "QRY2"
+		SELECT MAX(A1_COD) AS CODIGO, MAX(A1_LOJA) AS LOJA
+		FROM %Table:SA1% A1
+		WHERE A1.A1_FILIAL = %xFilial:SA1% 
+		AND A1.A1_L_TPCLI = %Exp:M->A1_L_TPCLI%
+		AND %Exp:_cFiltro% 
+		AND A1.%NotDel% 
+	EndSql
+	
+	//memowrite("c:\query1.sql",GetLastQuery()[2]) 
+Else
+	If Len(Alltrim(M->A2_CGC)) > 11
+		_cFiltro := "% SUBSTRING(A2.A2_CGC,1,8) = '"+SubStr(Alltrim(M->A2_CGC),1,8)+"'  %"
+	Else
+		_cFiltro := "% A2.A2_CGC = '"+Alltrim(M->A2_CGC)+"'  %"	
+	EndIf
+
+	BeginSql alias "QRY2"
+		SELECT MAX(A2_COD) AS CODIGO, MAX(A2_LOJA) AS LOJA
+		FROM %Table:SA2% A2
+		WHERE A2.A2_FILIAL = %xFilial:SA2% 
+		AND A2.A2_L_TPFOR = %Exp:M->A2_L_TPFOR%
+		AND %Exp:_cFiltro%
+		AND A2.%NotDel% 
+	EndSql
+	
+	//memowrite("c:\query2.sql",GetLastQuery()[2]) 
+EndIf	
+	
+
+dbSelectArea("QRY2")
+QRY2->(dbGotop())
+
+If !QRY2->(Eof()) .and. !Empty(QRY2->CODIGO)
+	_cCodFor:= QRY2->CODIGO
+	_cCodLj := Soma1(QRY2->LOJA)
+	
+	
+
+	MsgInfo("O c๓digo serแ alterado para o jแ existente para este CPF/CNPJ, e a loja serแ incrementada.","Valida็ใo C๓digo Sequencial")
+	
+	//Ajuste C๓digo da Loja - A1_LOJA Caracter e A2_LOJA N๚merico	
+	If xcTab == 'SA1'
+		//A1_LOJA ้ do tipo Caracter
+		M->A1_COD	:= _cCodFor
+		M->A1_LOJA  := _cCodLj
+
+	Else
+		//A2_loja ้ do tipo N๚merico
+		M->A2_COD	:= _cCodFor
+		M->A2_LOJA  := strzero(val(_cCodLj),2)  
+	EndIf
+	
+EndIf
+
+dbSelectArea("QRY2")
+QRY2->(dbCloseArea())
+
+
+RestArea(_aArea)
+Return .T.
+
+

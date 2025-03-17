@@ -1,0 +1,30 @@
+#Include 'Protheus.ch'
+
+/*/{Protheus.doc} OM200FIM
+
+Ponto de entrada no final da montagem da carga.
+
+@author DANILO
+@since 18/04/2017
+@version P12
+@param nenhum            
+@return nulo
+/*/
+User Function OM200FIM()
+
+
+	If c_x_Carga <> ' '
+		DbSelectArea("DAK")
+		RecLock("DAK",.F.)
+		
+		DAK->DAK_XTIPO := 'E'
+		
+		DAK->DAK_XCARGA := c_x_Carga
+		 
+		MsUnLock()
+	EndIf
+	//tratamentos Faturamento Triangular. Pergunta
+	U_ROMSE010()
+
+Return
+

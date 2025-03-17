@@ -1,0 +1,89 @@
+#include "tlpp-core.th"
+#include "protheus.ch"
+
+user function libRestClientes(cCmp)
+    Local oJson := JsonObject():new()
+
+    oJson['A1_L_TPCLI'] := "['tpcliente']"
+    oJson['A1_COD'] := "['codigo']"
+    oJson['A1_LOJA'] := "['loja']"
+    oJson['A1_PESSOA'] := "['pessoa']"
+    oJson['A1_TIPO'] := "['tipo']"
+    oJson['A1_CGC'] := "['cnpj']"
+    oJson['A1_NOME'] := "['nome']"
+    oJson['A1_NREDUZ'] := "['fantasia']"
+    //oJson['A1_MSBLQL'] := "['']"
+    oJson['A1_END'] := "['endereco']"
+    oJson['A1_BAIRRO'] := "['bairro']"
+    oJson['A1_EST'] := "['est']"
+    oJson['A1_CEP'] := "['cep']"
+    oJson['A1_COD_MUN'] := "['municipio']"
+    //oJson['A1_MUN'] := "['']"
+    oJson['A1_NATUREZ'] := "['natureza']"
+    oJson['A1_DDD'] := "['ddd']"
+    oJson['A1_TEL'] := "['fone']"
+    oJson['A1_CONTATO'] := "['contato']"
+    oJson['A1_INSCR'] := "['ie']"
+    oJson['A1_PAIS'] := "['pais']"
+    oJson['A1_CONTRIB'] := "['contribuinte']"
+    oJson['A1_VEND'] := "['vendedor']"
+    oJson['A1_TPFRET'] := "['tipo_frete']"
+    oJson['A1_COND'] := "['pag_condicao']"
+    oJson['A1_XFPAGTO'] := "['pag_forma']"
+    oJson['A1_VENCLC'] := "['credito_data_limite']"
+    oJson['A1_CODPAIS'] := "['bacen']"
+    oJson['A1_EMAIL'] := "['email']"
+    oJson['A1_XEMAIL'] := "['email_contato']"
+    oJson['A1_CODSEG'] := "['segmento']"
+    oJson['A1_SIMPNAC'] := "['simples']"
+    oJson['A1_XFACTOR'] := "['fidic']"
+    oJson['A1_XCODCOB'] := "['cobranca']"
+    oJson['A1_XBORDER'] := "['bordero']"
+    oJson['A1_GRPTRIB'] := "['grupotributacao']"
+    oJson['A1_SUFRAMA'] := "['suframa']"
+
+return(oJson[cCmp])
+
+
+/*
+
+[
+	{
+		"empresa": "52502507000147",
+		"tpcliente": "C",
+        "pessoa": "J",
+        "tipo": "R",
+        "cnpj": "15976632000162",
+        "nome": "TESTE",
+        "fantasia": "TESTE",
+        "endereco": "TESTE",
+        "bairro": "TESTE",
+        "est": "BA",
+        "cep": "74000000",
+        "municipio": "17508",
+        "natureza": "0101001",
+        "ddd": "64",
+        "fone": "9999999",
+        "contato": "TESTE",
+        "ie": "26501484",
+        "pais": "105",
+        "contribuinte": "2",
+        "vendedor": "000001",
+        "tipo_frete": "C",
+        "pag_condicao": "001",
+        "pag_forma": "BOL",
+        "credito_data_limite": "03/12/2024",
+        "bacen": "01058",
+        "email": "A@A.COM",
+        "email_contato": "A@A.COM",
+        "segmento": "000001",
+        "simples": "2",
+        "fidic": "N",
+        "cobranca": "BK",
+        "bordero": "N",
+        "grupotributacao": "001",
+        "sufruma": "123456789012"
+	}
+]
+
+*/

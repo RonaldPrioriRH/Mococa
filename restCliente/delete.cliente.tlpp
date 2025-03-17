@@ -1,0 +1,204 @@
+#include "tlpp-core.th"
+#include "tlpp-rest.th"
+
+#include "protheus.ch"
+
+#include "topconn.ch"
+#include "tbiconn.ch" // prepare env
+
+#INCLUDE "FWMBROWSE.CH"
+#INCLUDE "FWMVCDEF.CH"
+
+#DEFINE ERRORCODE_DEF	400     //Codigo de retorno quando der erro na solicitacao.
+#DEFINE ERRORSRV_DEF	500     //Codigo de erro no processamento.
+
+// http://10.0.5.39:8053/rest02/mococa/clientes
+
+
+@delete("mococa/clientes")
+user function delClientes()
+  local cCnpjEmp := ""
+  local cCnpjCli := ""
+
+  local jBody := JsonObject():new()
+
+  jBody:fromJson( oRest:GetBodyRequest() )
+
+  if ( jBody <> Nil )
+    cCnpjEmp := jBody:GetJsonText("empresa")
+    cCnpjCli := jBody:GetJsonText("cnpj")
+  endif
+
+  fDelCli( cCnpjEmp, cCnpjCli )
+return
+
+Static Function fDelCli(cEmp, cCli)
+
+    Private cMsg        := ""
+    Private lIniEnv     := .F.
+
+    Private bError      := { |e| oError := e, Break(e) }
+	Private bErrorBlock := ErrorBlock( bError )
+	Private oError
+
+    Default cEmp        := ""
+    Default cFil        := ""
+
+    cMsg := ""
+
+    begin sequence
+        if Empty(cEmp)
+            cMsg := "CNPJ - da empresa nao foi enviado necessario para devolucao dos clientes."
+            ConOut(cMsg)
+            break
+        endif
+
+        if !fVldChave(cEmp)
+            ConOut(cMsg)
+            break
+		endif
+        
+    	if !fDelDados(cEmp, cCli)
+            ConOut(cMsg)
+            break
+        endif
+        
+        oRest:setCloseAfterSend(.T.)
+
+        //Comprime em string para envio
+        //Envia a Resposta em Json
+        oRest:setResponse( cMsg )
+
+        RESET ENVIRONMENT
+    recover
+		ErrorBlock(bErrorBlock)
+        oRest:setStatusCode( ERRORSRV_DEF )
+
+        if oError == nil
+            oRest:setFault( EncodeUTF8('{"status": "'+cValToChar(ERRORSRV_DEF)+'", "error": "'+cMsg+'"}' ))
+        else            
+            oRest:setFault( EncodeUTF8('{"status": "'+cValToChar(ERRORSRV_DEF)+'", "error": "'+oError:Description+'"}' ))
+        endif
+
+        if lIniEnv
+            RESET ENVIRONMENT
+        endif
+    end sequence
+return
+
+/*
+Responsavel por validar os conteudos do cnpj da empresa de consulta
+*/
+static function fVldChave(cCnpj)
+    local lRet := .F.
+    
+    Local aSM0 := FWLoadSM0()
+    Local nSM0 := 0
+
+    default cCnpj = ""
+
+    fSetError(EncodeUTF8("Erro na validacao dos dados recebidos"))
+
+    if ( cCnpj == Nil .or. empty(cCnpj) )
+        cMsg  := 'Os valores do cnpj nao podem ser vazios ou nulos'
+        Return lRet
+    endif
+
+    if len(cCnpj) <> 14
+        cMsg  := 'O tamanho do CNPJ informado nao e valido'
+        Return lRet
+    endif
+
+    nSM0 := ascan(aSM0,{|X| Alltrim(X[18]) == cCnpj})
+
+    if nSM0 > 0
+        cEmp := aSM0[nSM0][1]
+        cFil := aSM0[nSM0][2]
+    else
+        cMsg  := 'A chave do CNPJ informado nao encontrado no cadastro de empresa'
+        Return lRet
+    endif
+
+    fResetError()
+        
+    fSetError(EncodeUTF8("Erro ao preparar o ambiente"))
+
+    RPCSetType(3)
+    PREPARE ENVIRONMENT EMPRESA cEmp FILIAL cFil TABLES "SA1" MODULO "FAT"
+    lIniEnv := .T.
+    fResetError()
+        
+    lRet := .T.
+return lRet
+
+/*
+Prepara a msg de erro dada no estouro
+*/
+static function fSetError(cTitle)
+	bError  := { |e| oError := e , oError:Description := cTitle+" ==>> "+oError:Description+" <<==", Break(e)}
+	bErrorBlock    := ErrorBlock( bError )
+return(.T.)
+
+/*
+Limpa as msg anteriores
+*/
+static Function fResetError(cTitle)
+	bError  := { |e| oError := e , Break(e) }
+	bErrorBlock    := ErrorBlock( bError )
+return(.T.)
+
+/*
+Responsavel por comprimir o objeto json
+*/
+static function fCompress(oObj)
+return EncodeUTF8(oObj:toJSON())
+
+/*
+Responsavel montar o json dos Centros de Custos
+ - Monta consulta
+ - Monta JSon
+ - retorna resultado.
+*/
+static function fDelDados(cEmp, cCli)
+    local lRet  := .F.
+    local nX    := 1
+    local aLog  := {}
+
+    default cCli := ""
+    
+    if empty(cCli)
+        cMsg := "Cliente nao passado no parametro de exclusao."
+        return lRet
+    endif
+
+    dbSelectArea("SA1")
+    SA1->(dbSetOrder(3))
+
+    if !SA1->(dbSeek(xfilial("SA1")+cCli))
+        cMsg := "Cliente nao encontrado no cadastro."
+        return lRet
+    endif
+     
+    oModel := FWLoadModel("CRMA980")
+	oModel:SetOperation(MODEL_OPERATION_DELETE)  
+	oModel:Activate()
+	 If !oModel:CommitData()
+        aLog := oModel:GetErrorMessage()
+        lRet := .F.
+    else
+        ConOut("Cliente excluido com sucesso.")
+        cMsg := '{"status": "200", "empresa": "'+cEmp+'", "cliente": "'+cCli+'"}'
+    EndIf
+    
+	oModel:DeActivate()
+    
+    If Len(aLog) > 0
+        For nX := 1 to 6
+            If !Empty(aLog[nX])
+                cMsg += aLog[nX]
+            EndIf
+        Next
+    EndIf
+
+    lRet := .T.
+return lRet

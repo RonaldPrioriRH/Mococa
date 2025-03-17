@@ -1,0 +1,28 @@
+#Include 'Protheus.ch'
+
+/*/{Protheus.doc} FA565FIL
+
+Ponto de Entrada Filtrar Titulos na liquidação do contas a pagar
+
+
+@author Marcos Godinho
+@since 16/10/2019
+@version P12
+@param Nao recebe parametros
+@return xRet
+/*/
+
+User Function FA565FIL()
+
+Local cQuery 	:= ''
+Local cFilExta  :=''
+  //ultimo parametro faz ja retornar no formato SQL
+
+If Aviso("ATENÇÃO!","Filtra Titulo?",{"Não","Sim"}) == 1
+	Return cQuery
+Else
+cQuery += " AND " + BuildExpr("SE2",,cFilExta,.T.)
+EndIf
+
+Return cQuery
+

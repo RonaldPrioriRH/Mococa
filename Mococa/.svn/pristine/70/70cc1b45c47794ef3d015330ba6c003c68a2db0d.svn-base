@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<list key="installedFeatures">
+		<item value="com.collabnet.subversion.merge.feature:4.1.0"/>
+		<item value="net.java.dev.jna:4.1.0.v06022015_1911"/>
+		<item value="org.eclipse.emf.common:2.10.1.v20150123-0348"/>
+		<item value="org.eclipse.emf.ecore:2.10.2.v20150123-0348"/>
+		<item value="org.eclipse.help:2.0.103.v20150204-1700"/>
+		<item value="org.eclipse.platform:4.4.2.v20150204-1700"/>
+		<item value="org.eclipse.rcp:4.4.2.v20150204-1700"/>
+		<item value="org.tigris.subversion.clientadapter.feature:1.10.3"/>
+		<item value="org.tigris.subversion.clientadapter.javahl.feature:1.8.15"/>
+		<item value="org.tigris.subversion.clientadapter.svnkit.feature:1.8.9"/>
+		<item value="org.tigris.subversion.subclipse.graph.feature:1.1.1"/>
+		<item value="org.tigris.subversion.subclipse.mylyn:3.0.0"/>
+		<item value="org.tigris.subversion.subclipse:1.10.13"/>
+		<item value="org.tmatesoft.svnkit:1.8.12.r10533_v20160129_0158"/>
+	</list>
+	<section name="NewWizardAction">
+	</section>
+</section>

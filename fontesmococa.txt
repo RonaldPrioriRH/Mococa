@@ -1,0 +1,1171 @@
+ O volume na unidade C n∆o tem nome.
+ O N£mero de SÇrie do Volume Ç 98F9-5E09
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\.vscode\.advpl
+
+05/02/2025  10:51           423.523 _binary_class.prw
+05/02/2025  10:51           440.523 _binary_functions.prw
+               2 arquivo(s)        864.046 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\ACD
+
+30/03/2023  11:23             9.944 acdimg01.prx
+               1 arquivo(s)          9.944 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\ACD\Execblocks
+
+30/03/2023  11:23               877 DECETQ.prw
+30/03/2023  11:23               409 PSFCA316.prw
+30/03/2023  11:23            84.152 RACDA001.prw
+30/03/2023  11:23             6.800 RACDA002.prw
+30/03/2023  11:23             9.229 RACDA004.prw
+30/03/2023  11:23            26.212 RACDA005.prw
+30/03/2023  11:23             1.093 RACDA006.prw
+30/03/2023  11:23           100.893 RACDA008.prw
+30/03/2023  11:23             4.342 RACDA009.prw
+30/03/2023  11:23             2.135 RACDA010.prw
+30/03/2023  11:23             3.751 RACDA011.prw
+30/03/2023  11:23             2.944 RACDA012.prw
+30/03/2023  11:23               942 RACDA013.prw
+30/03/2023  11:23            45.910 RACDA014.prw
+30/03/2023  11:23               783 RACDA015.prw
+30/03/2023  11:23             4.456 RACDR001.prw
+              16 arquivo(s)        294.928 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\ACD\Pontos de Entrada
+
+30/03/2023  11:23             1.805 A250ARD4.prw
+30/03/2023  11:23             2.023 acdimg02.prw
+30/03/2023  11:23               312 MT680VAL.prw
+               3 arquivo(s)          4.140 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Aplic & Emprest\Execblocks
+
+30/03/2023  11:23             2.236 PROXIMO.PRW
+               1 arquivo(s)          2.236 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Aplic & Emprest\Pontos de Entrada
+
+30/03/2023  11:23             1.622 APL05INC.prw
+               1 arquivo(s)          1.622 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Boleto Gontijo
+
+12/02/2025  14:19           204.392 AFINA002.prw
+07/02/2025  09:01            12.574 AFINA003.prw
+18/11/2024  07:16               134 FISTRFNFE.prw
+               3 arquivo(s)        217.100 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\CallCenter\Atualizacoes
+
+30/03/2023  11:23             2.006 RTMKA001.prw
+               1 arquivo(s)          2.006 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\CallCenter\Classes
+
+30/03/2023  11:23            90.515 CartaCob.prw
+               1 arquivo(s)         90.515 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\CallCenter\Execblocks
+
+30/03/2023  11:23             5.541 RTMKE001.prw
+30/03/2023  11:23            16.879 RTMKE002.prw
+30/03/2023  11:23             3.950 RTMKE003.prw
+30/03/2023  11:23             3.275 RTMKE004.prw
+30/03/2023  11:23             6.328 RTMKE005.prw
+30/03/2023  11:23             2.468 RTMKE006.prw
+30/03/2023  11:23             5.069 RTMKE007.prw
+30/03/2023  11:23             1.477 RTMKE008.prw
+               8 arquivo(s)         44.987 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\CallCenter\Pontos de Entrada
+
+30/03/2023  11:23             1.520 TK070INC.prw
+30/03/2023  11:23             1.259 TK271ROTM.prw
+30/03/2023  11:23             4.927 TK272HTM.prw
+30/03/2023  11:23             1.324 TMK260.prw
+30/03/2023  11:23             3.832 TMKBARLA.prw
+30/03/2023  11:23             1.508 TMKGRAVA.prw
+               6 arquivo(s)         14.370 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\CallCenter\WebServices
+
+30/03/2023  11:23            36.321 SACSERVICE.prw
+               1 arquivo(s)         36.321 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Chao Fabrica\ExecBlocks
+
+30/03/2023  11:23            13.814 AJUSTE CREME.prw
+30/03/2023  11:23               491 FieldVld02.prw
+30/03/2023  11:23               281 GatXFICHA.prw
+30/03/2023  11:23               284 GatXLOTE.prw
+30/03/2023  11:23               276 GatXPALET.prw
+30/03/2023  11:23               287 GatXPRDO.prw
+30/03/2023  11:23               888 GatXRESP.prw
+30/03/2023  11:23               284 GatXTANQ.prw
+30/03/2023  11:23             8.872 PRODUCAO TERCEIRO.prw
+30/03/2023  11:23               701 rsfce001.prw
+30/03/2023  11:23             1.067 StrXCYV.prw
+30/03/2023  11:23             2.217 ValFicha.prw
+30/03/2023  11:23             2.215 Valid3.prw
+30/03/2023  11:23               491 ValidSFC.prw
+30/03/2023  11:23             2.130 ValLote.prw
+30/03/2023  11:23             2.256 ValPalet.prw
+              16 arquivo(s)         36.554 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Chao Fabrica\Pontos de Entrada
+
+30/03/2023  11:23               618 SaldoOri.prw
+30/03/2023  11:23               965 SF314Ex681.prw
+30/03/2023  11:23               779 SFCA100_MVC.prw
+               3 arquivo(s)          2.362 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Chao Fabrica\Relatorios
+
+30/03/2023  11:23            10.916 RELAPONT.prw
+30/03/2023  11:23            13.193 RELCREME.prw
+30/03/2023  11:23            16.630 RELPALET.PRW
+               3 arquivo(s)         40.739 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Compras\Atualizacoes
+
+30/03/2023  11:23             1.957 ACOMP002.prw
+30/03/2023  11:23            39.996 ACOMP003.PRW
+30/03/2023  11:23            51.124 RCOMA001.prw
+30/03/2023  11:23             7.229 RCOMA002.prw
+30/03/2023  11:23             2.106 RCOMA003.prw
+30/03/2023  11:23             1.817 RCOMA004.prw
+30/03/2023  11:23             1.821 RCOMA005.prw
+               7 arquivo(s)        106.050 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Compras\Execblocks
+
+30/03/2023  11:23            42.876 ACOMP001.prw
+30/03/2023  11:23             2.249 ALIBE001.prw
+30/03/2023  11:23               253 GATNOTA.prw
+30/03/2023  11:23            46.327 IMPCTE.prw
+02/06/2023  16:38               489 PadLSA2.prw
+30/03/2023  11:23             3.814 RCOME001.prw
+30/03/2023  11:23             1.279 RCOME002.prw
+30/03/2023  11:23             3.510 RCOME003.prw
+30/03/2023  11:23            10.884 RCOME004.prw
+30/03/2023  11:23             2.540 RCOME005.prw
+30/03/2023  11:23             1.388 RCOME006.prw
+30/03/2023  11:23               988 RCOME007.prw
+30/03/2023  11:23             3.636 RCOME008.prw
+30/03/2023  11:23             4.175 RCOME010.prw
+30/03/2023  11:23             2.295 RCOME011.prw
+30/03/2023  11:23                 0 RCOME012.prw
+02/06/2023  16:37             1.926 RCOME013.prw
+30/03/2023  11:23               274 VLDZ19.prw
+30/03/2023  11:23             3.827 xFATESA2.PRW
+              19 arquivo(s)        132.730 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Compras\Pontos de Entrada
+
+30/03/2023  11:23             1.192 A097PCO.prw
+30/03/2023  11:23               588 A100DEL.prw
+30/03/2023  11:23             3.872 A140IPRD.prw
+30/03/2023  11:23               340 M110STTS.prw
+30/03/2023  11:23             1.671 MA030TOK.prw
+30/03/2023  11:23             6.481 MATA010_PE.prw
+30/03/2023  11:23             2.619 MT097APR.prw
+30/03/2023  11:23             1.156 MT097END.PRW
+30/03/2023  11:23             1.148 MT097OBS.prw
+24/01/2025  06:53             1.865 MT100AGR.prw
+30/03/2023  11:23             1.873 MT103CPO.PRW
+30/03/2023  11:23             1.376 MT103DCF.prw
+20/01/2025  08:06             1.511 MT103FIM.prw
+30/03/2023  11:23               327 MT110GET.prw
+30/03/2023  11:23               492 MT110TEL.prw
+30/03/2023  11:23             1.243 MT120EXC.PRW
+30/03/2023  11:23             2.142 MT120ISC.prw
+30/03/2023  11:23               143 MT121BRW.prw
+30/03/2023  11:23             1.704 MT130WF.prw
+30/03/2023  11:23             2.659 MT131WF.prw
+30/03/2023  11:23               126 MT140CPO.prw
+30/03/2023  11:23             1.700 mt150end.prw
+30/03/2023  11:23             1.210 MT160GRPC.prw
+30/03/2023  11:23             2.925 MT160WF.prw
+30/03/2023  11:23             1.156 MT97EXPOS.PRW
+30/03/2023  11:23             1.076 MTA140MNU.prw
+30/03/2023  11:23             1.522 MTALCALT.prw
+30/03/2023  11:23             2.311 RCOMP001.prw
+30/03/2023  11:23             3.218 WFW120P.prw
+              29 arquivo(s)         49.646 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Compras\Pontos de Entrada Conex∆oNF-e
+
+30/03/2023  11:23               525 A103CND2.prw
+30/03/2023  11:23               524 A140EXC.PRW
+30/03/2023  11:23               468 GT1CMPLT.prw
+30/03/2023  11:23               539 GT1CTCAB.prw
+02/06/2023  16:37             1.434 GT1ITEM.prw
+30/03/2023  11:23             3.956 GT1RATCT.prw
+02/06/2023  16:37             3.517 GT1VLNFE.prw
+30/03/2023  11:23               563 M145ARDEL.prw
+30/03/2023  11:23               525 MT100LOK.PRW
+30/03/2023  11:23               557 MT103CWH.PRW
+30/03/2023  11:23               442 MT103IP2.prw
+30/03/2023  11:23               517 MT103TPC.prw
+30/03/2023  11:23               442 MT116GRV.PRW
+30/03/2023  11:23               526 MT140CAB.PRW
+30/03/2023  11:23               193 MT140LOK.prw
+30/03/2023  11:23               502 MT140PC.prw
+30/03/2023  11:23               660 MT140SAI.prw
+30/03/2023  11:23                85 MT140TOK.prw
+30/03/2023  11:23               522 MTA103MNU.PRW
+30/03/2023  11:23               726 MTCOLSE2.prw
+              20 arquivo(s)         17.223 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Compras\Relatorios
+
+30/03/2023  11:23             6.107 RCOMR001.prw
+30/03/2023  11:23            21.667 RCOMR002.prw
+30/03/2023  11:23            17.189 RELCTE.prw
+30/03/2023  11:23            28.460 RELMOVCOM.prw
+               4 arquivo(s)         73.423 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Contabilidade\Atualizacoes
+
+02/06/2023  16:37            40.041 CONTGMD.prw
+30/03/2023  11:23             8.415 MACTBM01.prw
+30/03/2023  11:23             8.247 MACTBM02.prw
+30/03/2023  11:23             8.233 MACTBM03.prw
+30/03/2023  11:23             8.268 MACTBM04.prw
+30/03/2023  11:23             8.266 MACTBM05.prw
+30/03/2023  11:23             7.776 MACTBM06.prw
+30/03/2023  11:23            52.750 RAPRA001_p12.prw
+30/03/2023  11:23            16.416 RAPRA002_p12.prw
+30/03/2023  11:23             1.573 RCTBA001.PRW
+30/03/2023  11:23            14.546 UPDEST19.PRX
+              11 arquivo(s)        174.531 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Contabilidade\Execblocks
+
+30/03/2023  11:23             9.200 RCONE001.prw
+30/03/2023  11:23             1.847 RCONE002.PRW
+30/03/2023  11:23             1.186 SIGACTB.prw
+               3 arquivo(s)         12.233 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Contabilidade\Pontos de Entrada
+
+30/03/2023  11:23               363 A261TOK.prw
+02/06/2023  16:34               109 CTBXCACHE.prw
+30/03/2023  11:23             1.437 F100TOK.PRW
+30/03/2023  11:23             1.235 F380MTR.prw
+30/03/2023  11:23             2.444 FA050DES.PRW
+30/03/2023  11:23             1.169 FA080OWN.PRW
+30/03/2023  11:23             1.514 FI040GRCP.PRW
+30/03/2023  11:23             1.263 M020INC.prw
+30/03/2023  11:23             2.157 M030INC.prw
+30/03/2023  11:23             2.068 MSD2460.prw
+14/06/2023  09:54             2.157 MT100GE2.PRW
+30/03/2023  11:23             2.283 MT100TOK.prw
+30/03/2023  11:23             1.940 mt240tok.prw
+30/03/2023  11:23             2.138 mt241lok.prw
+30/03/2023  11:23               855 MT260TOK.prw
+30/03/2023  11:23             1.433 MTA105LIN.prw
+30/03/2023  11:23             3.168 MVDATAFIN.prw
+30/03/2023  11:23             3.137 MVDATAFIS.prw
+30/03/2023  11:23             3.103 MVDBLMOV.prw
+30/03/2023  11:23             3.140 MVULTDEPR.prw
+30/03/2023  11:23             1.257 RCLCTA.PRW
+30/03/2023  11:23             1.710 RGRPCTB.PRW
+30/03/2023  11:23             1.599 RTPPROCTB.PRW
+30/03/2023  11:23             1.989 SPDPIS07.PRW
+              24 arquivo(s)         43.668 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Contabilidade\Relatorios
+
+30/03/2023  11:23            15.458 RELFGMD.prw
+30/03/2023  11:23            26.494 RELFGMR.prw
+30/03/2023  11:23            13.231 RelPdCtb.prw
+               3 arquivo(s)         55.183 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Controle Documentos\Atualizacoes
+
+30/03/2023  11:23             1.992 qdom700.prw
+30/03/2023  11:23            10.203 qdom710.prw
+30/03/2023  11:23             9.359 qdom720.prw
+               3 arquivo(s)         21.554 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Estoque-Custos\Atualizacoes
+
+30/03/2023  11:23             8.865 RESTA001.prw
+02/06/2023  16:37            26.642 RESTA002.prw
+30/03/2023  11:23            10.304 XMATA175.prw
+               3 arquivo(s)         45.811 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Estoque-Custos\CustoEmPartes
+
+30/03/2023  11:23             1.360 MA330CP.prw
+               1 arquivo(s)          1.360 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Estoque-Custos\Execblocks
+
+30/03/2023  11:23           210.620 analise.prw
+30/03/2023  11:23           210.773 analise2.prw
+30/03/2023  11:23             8.622 MEESTM01.prw
+30/03/2023  11:23             1.016 RESTE001.prw
+30/03/2023  11:23             2.161 RESTE002.PRW
+30/03/2023  11:23               932 RESTE003.PRW
+30/03/2023  11:23             6.541 RESTE004.prw
+30/03/2023  11:23            15.839 RESTE005.prw
+               8 arquivo(s)        456.504 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Estoque-Custos\Miscelanea
+
+30/03/2023  11:23             2.226 MA330TRB.prw
+               1 arquivo(s)          2.226 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Estoque-Custos\Pontos de Entrada
+
+30/03/2023  11:23             2.307 A010TOK.prw
+30/03/2023  11:23             1.176 A103CUST.PRW
+30/03/2023  11:23             1.226 a250sprc.prw
+08/01/2025  10:11             1.363 F440ABAS.prw
+30/03/2023  11:23             1.161 M185BAIX.prw
+30/03/2023  11:23             1.152 M185GRV.PRW
+30/03/2023  11:23             9.357 M185MOD2.prw
+30/03/2023  11:23               545 MA103BUT.prw
+30/03/2023  11:23             1.153 MA185ENC.PRW
+30/03/2023  11:23               137 MA650BUT.prw
+30/03/2023  11:23             1.148 MT110LOK.prw
+30/03/2023  11:23             1.148 MT120LOK.prw
+30/03/2023  11:23             1.640 MT185OK.PRW
+30/03/2023  11:23             5.795 mt241se.prw
+30/03/2023  11:23             1.479 MT680GD3.prw
+              15 arquivo(s)         30.787 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Estoque-Custos\Relatorios
+
+30/03/2023  11:23            15.724 RESTR001.prw
+30/03/2023  11:23            24.127 RESTR002.prw
+30/03/2023  11:23            18.779 RESTR003.prw
+30/03/2023  11:23            14.004 RESTR004.prw
+               4 arquivo(s)         72.634 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Fat
+
+15/10/2024  11:11             4.018 mvc_za0.prw
+               1 arquivo(s)          4.018 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Faturamento\Atualizacoes
+
+30/03/2023  11:23             2.910 RFATA001.prw
+30/03/2023  11:23            27.878 RFATA002.prw
+30/03/2023  11:23             2.543 RFATA003.prw
+30/03/2023  11:23            13.754 RFATA004.prw
+30/03/2023  11:23             7.498 RFATA005.prw
+30/03/2023  11:23             7.347 RFATA006.prw
+30/03/2023  11:23             5.511 RFATA007.prw
+30/03/2023  11:23             9.053 RFATA008.prw
+30/03/2023  11:23             2.328 RFATA009.prw
+30/03/2023  11:23             3.029 RFATA010.prw
+30/03/2023  11:23             8.264 RFATA011.prw
+30/03/2023  11:23             1.637 RFATA012.prw
+30/03/2023  11:23             2.628 RFATA013.prw
+30/03/2023  11:23            22.680 RFATA014.prw
+27/01/2025  17:33            35.416 RFATA015.prw
+              15 arquivo(s)        152.476 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Faturamento\Classes e WS
+
+30/03/2023  11:23             3.094 RWSFAT01.prw
+30/03/2023  11:23             3.988 RWSFAT02.prw
+30/03/2023  11:23            17.325 RWSFAT03.prw
+30/03/2023  11:23             6.011 RWSFAT04.prw
+30/03/2023  11:23             1.449 RWSFAT05.prw
+30/03/2023  11:23            11.159 WS_INTSGAC.prw
+               6 arquivo(s)         43.026 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Faturamento\Execblocks
+
+30/03/2023  11:23             1.880 RFATE001.prw
+30/03/2023  11:23               741 RFATE002.prw
+30/03/2023  11:23             8.893 RFATE003.prw
+30/03/2023  11:23            10.577 RFATE004.prw
+30/03/2023  11:23             7.466 RFATE005.prw
+30/03/2023  11:23               950 RFATE006.prw
+30/03/2023  11:23             6.988 RFATE007.prw
+30/03/2023  11:23               861 RFATE008.prw
+30/03/2023  11:23             4.282 RFATE009.prw
+06/11/2024  14:26             6.029 RFATE010.prw
+30/03/2023  11:23               755 RFATE012.prw
+30/03/2023  11:23             1.884 RFATE013.prw
+13/11/2024  06:19            11.877 RFATE014.prw
+30/03/2023  11:23             2.020 RFATE015.prw
+30/03/2023  11:23               489 RFATE016.prw
+30/03/2023  11:23             1.707 RFATE017.prw
+30/03/2023  11:23             3.216 RFATE018.prw
+30/03/2023  11:23             1.571 RFATE019.prw
+30/03/2023  11:23             1.616 RFATE020.prw
+30/03/2023  11:23             1.062 RFATE021.prw
+30/03/2023  11:23             4.064 RFATE022.prw
+30/03/2023  11:23             1.839 RFATE023.prw
+30/03/2023  11:23             1.446 RFATE024.prw
+30/03/2023  11:23             6.388 RFATE025.prw
+30/03/2023  11:23            39.370 RFATE026.prw
+30/03/2023  11:23             3.303 RFATE027.prw
+30/03/2023  11:23             1.387 RFATE028.prw
+30/03/2023  11:23             2.164 RFATE029.prw
+30/03/2023  11:23             4.278 RFATE030.prw
+30/03/2023  11:23             7.276 RFATE031.prw
+30/03/2023  11:23               941 RFATE032.prw
+30/03/2023  11:23             4.259 RFATE033.prw
+30/03/2023  11:23             3.900 RFATE034.prw
+30/03/2023  11:23             1.094 RFATE035.prw
+30/03/2023  11:23               928 RFATE036.prw
+30/03/2023  11:23             1.197 RFATE037.prw
+30/03/2023  11:23             1.751 RFATE038.prw
+30/03/2023  11:23             1.317 RFATE039.prw
+30/03/2023  11:23             3.736 RFATE040.prw
+30/03/2023  11:23            85.295 RFATE041.prw
+30/03/2023  11:23             2.775 RFATE042.prw
+25/08/2023  06:02             5.277 RFATE043.prw
+30/03/2023  11:23               865 ValidaFat.prw
+              43 arquivo(s)        259.714 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Faturamento\NF-e
+
+09/10/2024  10:45            12.509 AutoNfeEnv.prw
+26/05/2023  09:06            45.650 DAMDFE.prw
+26/05/2023  09:06            29.279 DanfeEtiqueta.prw
+27/06/2023  19:37           223.623 danfeii.prw
+26/05/2023  09:06           198.737 danfeiii.prw
+26/05/2023  09:06            48.410 MDFESEFAZ.prw
+30/03/2023  11:23             9.759 NfeMunicipios.prw
+29/05/2023  14:49           516.003 nfesefaz.prw
+               8 arquivo(s)      1.083.970 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Faturamento\PALLET
+
+28/12/2023  17:58            23.119 mvc_zaa.prw
+               1 arquivo(s)         23.119 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Faturamento\Pontos de Entrada
+
+30/03/2023  11:23             1.373 A410EXC.prw
+30/03/2023  11:23             1.238 A410TAB.prw
+30/03/2023  11:23               316 CHGX5FIL.prw
+30/03/2023  11:23             1.463 M410PVNF.prw
+30/03/2023  11:23               383 M410STTS.prw
+30/03/2023  11:23             1.161 M460MARK.prw
+30/03/2023  11:23               327 M521DNFS.prw
+30/03/2023  11:23             1.113 MA040TOK.prw
+30/03/2023  11:23               462 MA410COR.prw
+30/03/2023  11:23               434 MA410DEL.prw
+30/03/2023  11:23               478 MA410LEG.prw
+30/03/2023  11:23               746 MA410MNU.prw
+30/03/2023  11:23               597 MS520VLD.prw
+30/03/2023  11:23             4.655 MSD2520.prw
+30/03/2023  11:23               457 MT103IPC.prw
+30/03/2023  11:23               375 MT410ALT.prw
+30/03/2023  11:23               294 MT410CPY.prw
+30/03/2023  11:23               356 MT410INC.prw
+30/03/2023  11:23               637 MT440C5.prw
+30/01/2025  17:14               518 MT450QRY.prw
+30/03/2023  11:23             1.089 MT500APO.prw
+30/03/2023  11:23               598 MTA410.prw
+30/03/2023  11:23               597 PE01NFESEFAZ.prw
+30/03/2023  11:23             1.068 RFATP001.prw
+30/03/2023  11:23            13.271 RFATP002.prw
+30/03/2023  11:23             1.077 RFATP003.prw
+              26 arquivo(s)         35.083 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Faturamento\Relatorios
+
+30/03/2023  11:23            13.069 RELCOMIS.prw
+30/03/2023  11:23            42.928 RELDIST.prw
+30/03/2023  11:23            22.771 RELPABER.prw
+30/03/2023  11:23            20.400 RELTRASF.prw
+30/03/2023  11:23            27.519 RFATR001.prw
+30/03/2023  11:23            10.982 RFATR002.prw
+30/03/2023  11:23            16.242 RFATR003.prw
+30/03/2023  11:23            16.996 RFATR004.prw
+               8 arquivo(s)        170.907 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Financeiro
+
+03/12/2024  15:56            16.412 BelCISP.prw
+17/02/2025  14:39             8.920 liquidapg.prw
+13/02/2025  14:24             2.605 prcliqcte.prw
+               3 arquivo(s)         27.937 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Financeiro\Atualizacoes
+
+30/03/2023  11:23             4.271 RFINA001.prw
+30/03/2023  11:23             3.023 RFINA002.prw
+30/03/2023  11:23            34.359 RFINA003.prw
+30/03/2023  11:23            15.371 RFINA005.prw
+30/03/2023  11:23             2.395 RFINA006.prw
+30/03/2023  11:23            47.305 RFINA007.prw
+26/09/2023  08:10            21.963 RFINA008.prw
+30/03/2023  11:23             1.561 RFINA009.prw
+30/03/2023  11:23               517 RFINA010.prw
+30/03/2023  11:23             3.681 RFINA011.prw
+30/03/2023  11:23            24.081 RFINA012.prw
+30/03/2023  11:23            19.292 RFINA013.prw
+30/03/2023  11:23            14.391 RFINA014.prw
+30/03/2023  11:23            12.441 RFINA015.prw
+30/03/2023  11:23             6.060 RFINA016.prw
+30/03/2023  11:23             1.268 RFINA017.prw
+30/03/2023  11:23             1.255 RFINA018.prw
+30/03/2023  11:23             1.881 RFINA019.prw
+              18 arquivo(s)        215.115 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Financeiro\Classes
+
+30/03/2023  11:23            28.306 CALCCOMISSAO.prw
+               1 arquivo(s)         28.306 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Financeiro\Cnab
+
+30/03/2023  11:23             2.081 choracaique.prw
+30/03/2023  11:23             1.041 Cnab1.prw
+30/03/2023  11:23             1.039 Cnab2.prw
+30/03/2023  11:23             3.078 Cnab3.prw
+30/03/2023  11:23             1.183 Cnab4.prw
+30/03/2023  11:23             3.554 Cnab5.prw
+30/03/2023  11:23             1.187 Cnab6.prw
+               7 arquivo(s)         13.163 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Financeiro\Execblocks
+
+30/03/2023  11:23             1.308 DtVenc.prw
+30/03/2023  11:23             1.598 RetSaldo.prw
+30/03/2023  11:23               745 RFINE001.prw
+30/03/2023  11:23             3.525 RFINE002.prw
+30/03/2023  11:23            15.936 RFINE003.prw
+30/03/2023  11:23            11.156 RFINE004.prw
+30/03/2023  11:23               954 RFINE005.PRW
+30/03/2023  11:23            14.816 RFINE006.prw
+30/03/2023  11:23               260 RFINE007.PRW
+               9 arquivo(s)         50.298 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Financeiro\Pontos de Entrada
+
+30/03/2023  11:23               409 F200VAR.prw
+30/03/2023  11:23               978 F240FIL.prw
+23/06/2023  23:24             2.605 F440ABA2.prw
+30/03/2023  11:23               959 F470ALLF.prw
+30/03/2023  11:23             1.133 F470GRVEF.prw
+30/03/2023  11:23               413 FA050DEL .prw
+30/03/2023  11:23             1.171 FA050INC.prw
+30/03/2023  11:23               448 FA060Qry.prw
+11/02/2025  16:44               762 FA565FIL.prw
+30/03/2023  11:23               564 M530FIL.prw
+30/03/2023  11:23             1.867 M530OK.prw
+30/03/2023  11:23               815 MA490DEL.prw
+30/03/2023  11:23             3.550 RFINP001.prw
+30/03/2023  11:23             2.767 RFINP003.prw
+              14 arquivo(s)         18.441 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Financeiro\Relatorios
+
+30/03/2023  11:23           105.239 boleto.prw
+30/03/2023  11:23            91.026 MOVBCO.prw
+30/03/2023  11:23            10.011 RELABC.prw
+30/03/2023  11:23            39.357 RELANALI.prw
+30/03/2023  11:23            14.037 RELCOB.prw
+30/03/2023  11:23            27.015 RELCR.prw
+30/03/2023  11:23            24.657 RELDISPO.prw
+30/03/2023  11:23            13.531 RELMOC.prw
+30/03/2023  11:23             5.734 RELPBLOC.prw
+30/03/2023  11:23            12.342 RELPLBC.prw
+30/03/2023  11:23             5.710 RELPREJ.prw
+30/03/2023  11:23            16.560 RELSTATU.prw
+30/03/2023  11:23            12.816 RFINR001.prw
+30/03/2023  11:23            10.226 RFINR002.prw
+30/03/2023  11:23            10.668 RFINR003.prw
+30/03/2023  11:23            36.485 TReport.prw
+              16 arquivo(s)        435.414 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Fiscal
+
+30/03/2023  11:23             4.249 MA080MNU.prw
+30/03/2023  11:23           149.227 MAT972A.PRW
+30/03/2023  11:23               707 MT103DRF.prw
+30/03/2023  11:23               373 TITICMST.prw
+               4 arquivo(s)        154.556 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Fiscal\Execblocks
+
+30/03/2023  11:23             1.553 CANCEXT.prw
+               1 arquivo(s)          1.553 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Fiscal\Relatorios
+
+30/03/2023  11:23            15.356 RELCOMPI.prw
+30/03/2023  11:23            46.569 RELCONFE.prw
+30/03/2023  11:23            16.609 RELNFENT.prw
+30/03/2023  11:23            17.837 RELPISE.prw
+30/03/2023  11:23            17.562 RELPISS.prw
+30/03/2023  11:23            12.419 RFIS001.PRW
+               6 arquivo(s)        126.352 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Geral\Diversos
+
+24/01/2025  13:38             1.881 AFTERLOGIN.PRW
+30/03/2023  11:23            19.304 CFGXQAC.prw
+30/03/2023  11:23            46.281 EECPEM11X_RDM.PRW
+30/03/2023  11:23            22.654 eecpem54_rdm.prw
+30/03/2023  11:23            33.796 EECPPEZZ_RDM.PRW
+30/03/2023  11:23             2.408 zMiniForm.prw
+               6 arquivo(s)        126.324 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Geral\Execblocks
+
+30/03/2023  11:23             3.509 EnviaEmail.prw
+30/03/2023  11:23             1.595 fSelectDir.prw
+30/03/2023  11:23            19.966 LeCodBar.prw
+30/03/2023  11:23             7.993 MsgTimer.prw
+30/03/2023  11:23             1.300 PswValid.prw
+30/03/2023  11:23             9.432 SENDMAIL.prw
+30/03/2023  11:23            53.346 TBCLIB.PRW
+30/03/2023  11:23            25.788 UXFUNC.prw
+               8 arquivo(s)        122.929 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Geral\Pontos de Entrada
+
+30/03/2023  11:23               709 FTMSREL.prw
+               1 arquivo(s)            709 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Geral\Relat¢rios
+
+30/03/2023  11:23            10.782 QueryAnlz.prw
+               1 arquivo(s)         10.782 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Gestao Contratos\Ponto de Entrada
+
+30/03/2023  11:23               803 CNTPRSE1.prw
+30/03/2023  11:23               801 CNTPRSE2.prw
+               2 arquivo(s)          1.604 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Gestao Contratos\Relat¢rios
+
+30/03/2023  11:23            14.379 RELCONTR.prw
+               1 arquivo(s)         14.379 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Gestao do Leite\Atualizacoes
+
+30/03/2023  11:23             8.138 AGLT001.prw
+30/03/2023  11:23            10.115 AGLT002.prw
+23/06/2023  23:39           285.361 AGLT003.prw
+30/03/2023  11:23            12.981 AGLT004.prw
+30/03/2023  11:23            26.160 AGLT005.prw
+30/03/2023  11:23            20.658 AGLT006.prw
+30/03/2023  11:23            49.536 AGLT007.prw
+30/03/2023  11:23            10.122 AGLT008.prw
+30/03/2023  11:23            83.087 AGLT009.prw
+30/03/2023  11:23           150.673 AGLT010.prw
+30/03/2023  11:23            12.678 AGLT011.prw
+30/03/2023  11:23           123.848 AGLT012.prw
+30/03/2023  11:23             8.733 AGLT013.prw
+30/03/2023  11:23            27.829 AGLT014.prw
+30/03/2023  11:23             6.465 AGLT015.prw
+30/03/2023  11:23             8.443 AGLT016.prw
+30/03/2023  11:23            18.892 AGLT017.prw
+30/03/2023  11:23             8.441 AGLT018.prw
+30/03/2023  11:23            21.088 AGLT019.prw
+30/03/2023  11:23           384.851 AGLT020.prw
+30/03/2023  11:23            34.710 AGLT021.prw
+30/03/2023  11:23            19.938 AGLT022.prw
+30/03/2023  11:23             9.155 AGLT023.prw
+30/03/2023  11:23             3.462 AGLT024.prw
+30/03/2023  11:23            16.664 AGLT025.prw
+30/03/2023  11:23            15.988 AGLT026.prw
+30/03/2023  11:23             9.126 AGLT027.prw
+30/03/2023  11:23            18.769 AGLT028.prw
+30/03/2023  11:23           119.860 AGLT029.prw
+30/03/2023  11:23            65.206 AGLT030.prw
+30/03/2023  11:23             3.581 AGLT031.prw
+30/03/2023  11:23             8.465 AGLT032.prw
+30/03/2023  11:23            41.976 AGLT033.prw
+30/03/2023  11:23             6.523 AGLT034.prw
+30/03/2023  11:23             9.745 AGLT035.prw
+30/03/2023  11:23            33.991 AGLT036.prw
+30/03/2023  11:23            13.022 AGLT037.prw
+30/03/2023  11:23            35.725 AGLT038.prw
+30/03/2023  11:23             4.070 AGLT039.prw
+30/03/2023  11:23            10.190 AGLT040.prw
+30/03/2023  11:23             3.872 AGLT041.prw
+30/03/2023  11:23             9.581 AGLT042.prw
+30/03/2023  11:23            26.522 AGLT043.prw
+30/03/2023  11:23            12.174 AGLT044.prw
+30/03/2023  11:23             9.149 AGLT045.prw
+30/03/2023  11:23            33.692 AGLT046.prw
+30/03/2023  11:23            43.560 AGLT047.prw
+30/03/2023  11:23             5.876 AGLT049.prw
+30/03/2023  11:23            13.745 AGLT050.prw
+30/03/2023  11:23             3.521 AGLT051.prw
+30/03/2023  11:23            31.987 AGLT052.prw
+30/03/2023  11:23            73.519 AGLT055.prw
+30/03/2023  11:23             1.297 AGLT061.prw
+30/03/2023  11:23             9.856 AGLT090.prw
+30/03/2023  11:23            86.465 AGLT112.prw
+30/03/2023  11:23            16.130 AGLT114.prw
+30/03/2023  11:23             6.192 AGLT300.prw
+30/03/2023  11:23            10.740 AGLT301.prw
+30/03/2023  11:23            33.620 AGLT302.prw
+30/03/2023  11:23            10.662 AGLT303.prw
+30/03/2023  11:23            17.547 AGLT304.prw
+30/03/2023  11:23            15.471 AGLT305.prw
+              62 arquivo(s)      2.233.443 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Gestao do Leite\Configurador
+
+30/03/2023  11:23             7.591 GCFG001.prw
+13/02/2025  14:44             4.959 GCFG002.prw
+30/03/2023  11:23             4.358 GCFG003.prw
+30/03/2023  11:23             4.752 GCFG004.prw
+30/03/2023  11:23             3.840 UCFG001.prw
+               5 arquivo(s)         25.500 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Gestao do Leite\Miscelanea
+
+30/03/2023  11:23           563.185 MGLT001.prw
+30/03/2023  11:23           558.939 MGLT002.prw
+30/03/2023  11:23            34.599 MGLT003.prw
+30/03/2023  11:23            12.274 MGLT004.prw
+30/03/2023  11:23            17.425 MGLT005.prw
+30/03/2023  11:23            24.860 MGLT006.prw
+30/03/2023  11:23            23.143 MGLT007.prw
+30/03/2023  11:23             7.290 MGLT008.prw
+30/03/2023  11:23           310.789 MGLT009.prw
+30/03/2023  11:23            93.229 MGLT010.prw
+30/03/2023  11:23           130.742 MGLT011.prw
+30/03/2023  11:23            64.540 MGLT012.prw
+30/03/2023  11:23            51.490 MGLT013.prw
+30/03/2023  11:23            41.844 MGLT014.prw
+30/03/2023  11:23            35.064 MGLT015.prw
+30/03/2023  11:23            55.842 MGLT016.prw
+30/03/2023  11:23             7.024 MGLT017.prw
+30/03/2023  11:23             7.533 MGLT019.prw
+30/03/2023  11:23            42.878 MGLT020.prw
+30/03/2023  11:23            18.619 MGLT021.prw
+30/03/2023  11:23            51.616 MGLT022.prw
+30/03/2023  11:23            17.668 MGLT023.prw
+30/03/2023  11:23            10.482 MGLT024.prw
+30/03/2023  11:23            28.380 MGLT025.prw
+30/03/2023  11:23            42.265 MGLT028.prw
+30/03/2023  11:23            21.739 MGLT029.prw
+30/03/2023  11:23            11.708 MGLT030.prw
+30/03/2023  11:23            18.122 MGLT031.prw
+30/03/2023  11:23            70.537 MGLT032.prw
+30/03/2023  11:23            68.593 MGLT033.PRW
+30/03/2023  11:23            45.424 MGLT034.prw
+30/03/2023  11:23            32.574 MGLT043.prw
+30/03/2023  11:23            29.573 MGLT044.prw
+30/03/2023  11:23             7.138 MGLT045.prw
+30/03/2023  11:23            11.991 MGLT046.prw
+30/03/2023  11:23            33.697 MGLT047.prw
+30/03/2023  11:23            42.786 MGLT048.prw
+30/03/2023  11:23            20.826 MGLT049.prw
+30/03/2023  11:23            17.388 MGLT051.prw
+30/03/2023  11:23            15.485 MGLT052.prw
+30/03/2023  11:23            13.289 MGLT053.prw
+30/03/2023  11:23               364 MGLT099.prw
+30/03/2023  11:23             4.687 MGLT302.prw
+30/03/2023  11:23            14.527 MGLT303.prw
+30/03/2023  11:23             8.826 RGLTE001.PRW
+              45 arquivo(s)      2.740.994 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Gestao do Leite\Ponto de Entrada
+
+30/03/2023  11:23             7.518 A020DELE.prw
+30/03/2023  11:23             4.458 ESP2NOME.prw
+30/03/2023  11:23             3.783 FA050UPD.prw
+30/03/2023  11:23             9.086 M020ALT.prw
+30/03/2023  11:23             3.873 M030DEL.prw
+30/03/2023  11:23             5.318 MA020ALT.prw
+30/03/2023  11:23             8.902 PGLT001.prw
+               7 arquivo(s)         42.938 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Gestao do Leite\Relatorios
+
+30/03/2023  11:23            20.005 RELCOLETA.prw
+30/03/2023  11:23            32.346 RGLT001.prw
+30/03/2023  11:23            17.137 RGLT002.prw
+30/03/2023  11:23            32.438 RGLT003.prw
+30/03/2023  11:23            30.768 RGLT004.prw
+30/03/2023  11:23            16.681 RGLT005.prw
+30/03/2023  11:23           111.387 RGLT006.prw
+30/03/2023  11:23            15.858 RGLT007.prw
+30/03/2023  11:23            15.032 RGLT008.prw
+30/03/2023  11:23            16.831 RGLT010.prw
+30/03/2023  11:23            16.044 RGLT011.prw
+30/03/2023  11:23            20.094 RGLT013.prw
+30/03/2023  11:23            18.135 RGLT014.prw
+30/03/2023  11:23            33.394 RGLT015.prw
+30/03/2023  11:23            29.170 RGLT016.prw
+30/03/2023  11:23            23.142 RGLT017.prw
+30/03/2023  11:23            11.017 RGLT018.prw
+30/03/2023  11:23            44.821 RGLT019.prw
+30/03/2023  11:23            36.408 RGLT019A.prw
+30/03/2023  11:23            22.003 RGLT020.prw
+30/03/2023  11:23            15.558 RGLT021.prw
+30/03/2023  11:23            13.261 RGLT022.prw
+30/03/2023  11:23            16.915 RGLT023.prw
+30/03/2023  11:23            16.491 RGLT024.prw
+30/03/2023  11:23            10.948 RGLT025.prw
+30/03/2023  11:23            19.232 RGLT026.prw
+30/03/2023  11:23            11.726 RGLT027.prw
+30/03/2023  11:23            16.531 RGLT028.prw
+30/03/2023  11:23            15.184 RGLT029.prw
+30/03/2023  11:23             9.873 RGLT030.prw
+30/03/2023  11:23            15.383 RGLT031.prw
+30/03/2023  11:23            17.803 RGLT032.prw
+30/03/2023  11:23            11.855 RGLT033.prw
+30/03/2023  11:23            27.419 RGLT034.prw
+30/03/2023  11:23            17.275 RGLT035.prw
+30/03/2023  11:23            20.105 RGLT036.prw
+30/03/2023  11:23             8.094 RGLT037.prw
+30/03/2023  11:23             8.689 RGLT038.prw
+30/03/2023  11:23            11.817 RGLT039.prw
+30/03/2023  11:23            23.995 RGLT040.prw
+30/03/2023  11:23            15.982 RGLT041.prw
+30/03/2023  11:23            14.078 RGLT042.prw
+30/03/2023  11:23            17.857 RGLT043.prw
+30/03/2023  11:23            12.932 RGLT044.prw
+30/03/2023  11:23            14.595 RGLT045.prw
+30/03/2023  11:23            16.861 RGLT046.prw
+30/03/2023  11:23            14.902 RGLT047.prw
+30/03/2023  11:23            19.839 RGLT048.prw
+30/03/2023  11:23            14.926 RGLT049.prw
+30/03/2023  11:23            13.000 RGLT050.prw
+30/03/2023  11:23             9.689 RGLT051.prw
+30/03/2023  11:23            14.747 RGLT052.prw
+30/03/2023  11:23            19.175 RGLT053.prw
+30/03/2023  11:23            28.232 RGLT054.prw
+30/03/2023  11:23            21.474 RGLT055.prw
+30/03/2023  11:23            20.500 RGLT056.prw
+30/03/2023  11:23            16.340 RGLT057.prw
+30/03/2023  11:23            25.980 RGLT058.prw
+30/03/2023  11:23           133.388 RGLT059.prw
+30/03/2023  11:23            26.068 RGLT060.prw
+30/03/2023  11:23            26.099 RGLT061.prw
+30/03/2023  11:23            24.351 RGLT062.prw
+30/03/2023  11:23            19.908 RGLT063.prw
+30/03/2023  11:23            17.447 RGLT064.prw
+30/03/2023  11:23            19.452 RGLT065.prw
+30/03/2023  11:23            20.023 RGLT066.prw
+30/03/2023  11:23             4.576 RGLT067.prw
+30/03/2023  11:23            10.853 RGLT068.prw
+30/03/2023  11:23             3.683 RGLT069.prw
+30/03/2023  11:23            19.356 RGLT070.prw
+30/03/2023  11:23            24.157 RGLT072.prw
+30/03/2023  11:23            21.391 RGLT073.prw
+30/03/2023  11:23            11.205 RGLT074.prw
+30/03/2023  11:23            35.663 RGLT075.prw
+30/03/2023  11:23            26.911 RGLT076.prw
+30/03/2023  11:23             5.166 RGLT077.prw
+30/03/2023  11:23             7.508 RGLT078.PRW
+30/03/2023  11:23            11.985 RGLT079.prw
+30/03/2023  11:23            12.796 RGLT080.prw
+30/03/2023  11:23            12.931 RGLT081.prw
+30/03/2023  11:23            11.380 RGLT172.prw
+30/03/2023  11:23            12.021 RGLT300.prw
+30/03/2023  11:23             9.759 RGLT303.prw
+30/03/2023  11:23             8.134 RGLT304.prw
+              84 arquivo(s)      1.718.185 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Gest∆o de Pessoal\Ponto de Entrada
+
+03/01/2025  11:40               336 GP670ARR.PRW
+               1 arquivo(s)            336 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\GFE\Execblock
+
+30/03/2023  11:23           138.758 RGFEE001.prw
+30/03/2023  11:23            14.366 RGFEE002.prw
+               2 arquivo(s)        153.124 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Inspeá∆o de Processos
+
+30/03/2023  11:23               267 XQIPLIB.PRW
+               1 arquivo(s)            267 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Inspeá∆o de Processos\Atualizacoes
+
+30/03/2023  11:23            17.424 INSPR001.PRW
+               1 arquivo(s)         17.424 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Inspeá∆o de Processos\pe
+
+30/03/2023  11:23               571 ENVCQQUA.prw
+30/03/2023  11:23               262 QP020AENS.prw
+               2 arquivo(s)            833 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Inspeá∆o de Processos\Relatorios
+
+30/03/2023  11:23            20.412 funTraduz.prw
+30/03/2023  11:23             2.909 fxConsOp.prw
+30/03/2023  11:23            54.915 XEQIPR050.prw
+30/03/2023  11:23            55.068 XIQIPR050.prw
+30/03/2023  11:23            53.494 XPQIPR050.prw
+               5 arquivo(s)        186.798 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Limpeza Base
+
+30/03/2023  11:23             5.298 limpezabase.prw
+               1 arquivo(s)          5.298 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Manutencao de Ativos\Pontos de Entrada
+
+30/03/2023  11:23               772 MNTA280E.prw
+               1 arquivo(s)            772 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Mococa\.metadata\.plugins\br.com.totvs.tds.startup.ui
+
+30/03/2023  11:23                70 lastAutomaticUpdate.properties
+               1 arquivo(s)             70 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Mococa\.metadata\.plugins\org.eclipse.core.runtime\.settings
+
+30/03/2023  11:23                56 com.collabnet.subversion.merge.prefs
+30/03/2023  11:23                42 org.eclipse.core.resources.prefs
+30/03/2023  11:23               165 org.eclipse.debug.ui.prefs
+30/03/2023  11:23                97 org.eclipse.mylyn.monitor.ui.prefs
+30/03/2023  11:23               194 org.eclipse.mylyn.tasks.ui.prefs
+30/03/2023  11:23                69 org.eclipse.team.ui.prefs
+30/03/2023  11:23               129 org.eclipse.ui.ide.prefs
+30/03/2023  11:23                97 org.eclipse.ui.prefs
+30/03/2023  11:23               111 org.tigris.subversion.subclipse.tools.usage.prefs
+30/03/2023  11:23                70 org.tigris.subversion.subclipse.ui.prefs
+              10 arquivo(s)          1.030 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Oms\Atualizacoes
+
+30/03/2023  11:23             3.077 ROMSA001.prw
+27/12/2023  14:54             1.181 ROMSA002.prw
+27/12/2023  17:27               413 ROMSA003.prw
+30/03/2023  11:23            13.768 ROMSA005.prw
+               4 arquivo(s)         18.439 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Oms\Execblocks
+
+30/03/2023  11:23             1.124 ROMSE001.prw
+30/03/2023  11:23               853 ROMSE002.prw
+30/03/2023  11:23               925 ROMSE003.prw
+30/03/2023  11:23               598 ROMSE004.prw
+30/03/2023  11:23             1.060 ROMSE005.prw
+30/03/2023  11:23               869 ROMSE006.prw
+30/03/2023  11:23               620 ROMSE007.prw
+30/03/2023  11:23             1.363 ROMSE008.prw
+30/03/2023  11:23             1.116 ROMSE009.prw
+30/03/2023  11:23             1.498 ROMSE010.prw
+30/03/2023  11:23             1.720 ROMSE011.prw
+30/03/2023  11:23             1.187 ROMSE012.prw
+30/03/2023  11:23             4.018 ROMSE013.prw
+27/01/2025  17:32             1.983 ROMSE014.prw
+30/03/2023  11:23             5.293 ROMSE015.prw
+12/11/2024  16:40            10.606 ROMSE016.prw
+30/03/2023  11:23             5.621 ROMSE14Z.PRW
+              17 arquivo(s)         40.454 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Oms\Pontos de Entrada
+
+30/03/2023  11:23             3.937 DL200BRW.prw
+30/03/2023  11:23               982 DL200TR2.prw
+30/03/2023  11:23               594 DL200TRB.prw
+14/12/2023  16:17               551 OM200CAR.prw
+28/01/2025  09:23             8.860 OM200FIM.prw
+30/03/2023  11:23               943 OM200GRV.prw
+30/03/2023  11:23               662 OM200MNU.prw
+08/12/2023  06:45             1.438 OM200OK.prw
+30/03/2023  11:23               755 OM200ORD.prw
+14/12/2023  17:34             2.875 OM200QRY.prw
+30/03/2023  11:23               642 OM200VCG.prw
+30/03/2023  11:23               363 OMSA200P.prw
+30/03/2023  11:23             2.929 OS200MOT.prw
+30/03/2023  11:23               319 OS200TOK.prw
+25/09/2023  17:36               423 OS460NOT.prw
+              15 arquivo(s)         26.273 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Oms\Relatorios
+
+30/03/2023  11:23            42.934 RELFRETE.prw
+30/03/2023  11:23            16.445 ROMSR001.prw
+30/03/2023  11:23            12.417 ROMSR002.prw
+30/03/2023  11:23            14.939 ROMSR003.prw
+               4 arquivo(s)         86.735 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\PCO\Atualizacoes
+
+30/03/2023  11:23            10.551 PCOA3103.prw
+30/03/2023  11:23            62.150 PCOVAL.prw
+30/03/2023  11:23            18.731 RPCOAM01.PRW
+30/03/2023  11:23             1.999 RPCOME01.prw
+30/03/2023  11:23            11.557 RPCOME02.PRW
+30/03/2023  11:23             1.180 SIGAPCO.PRW
+               6 arquivo(s)        106.168 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\PCO\Execblocks
+
+30/03/2023  11:23             1.441 RPCOE001.PRW
+30/03/2023  11:23             1.323 RPCOE002.PRW
+30/03/2023  11:23             1.673 RPCOE003.PRW
+30/03/2023  11:23             1.838 RPCOE005.PRW
+30/03/2023  11:23             1.737 RPCOE006.PRW
+30/03/2023  11:23             1.163 RPCOE007.PRW
+30/03/2023  11:23             1.920 RPCOE009.PRW
+30/03/2023  11:23             2.051 RPCOE010.PRW
+30/03/2023  11:23             1.259 RPCOE011.PRW
+30/03/2023  11:23             1.558 RPCOE012.PRW
+30/03/2023  11:23             1.514 RPCOR004.PRW
+30/03/2023  11:23             1.699 RPCOR008.PRW
+30/03/2023  11:23            59.160 updzpa.prw
+              13 arquivo(s)         78.336 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\PCO\Pontos de Entrada
+
+30/03/2023  11:23             1.294 CTBPCO.prw
+30/03/2023  11:23             1.847 FA050CT.PRW
+30/03/2023  11:23             2.014 FT210LIB.prw
+30/03/2023  11:23             1.305 PCOA106GRV.prw
+30/03/2023  11:23             1.128 PCOA5303.prw
+30/03/2023  11:23             1.292 PCOOPER.prw
+               6 arquivo(s)          8.880 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\PCP
+
+30/03/2023  11:23               156 MTSELEOP.PRW
+               1 arquivo(s)            156 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\PCP\Atualizacoes
+
+30/03/2023  11:23             9.245 rpcpa001.prw
+               1 arquivo(s)          9.245 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\PCP\Pontos de Entrada
+
+30/03/2023  11:23               877 m750grim.prw
+30/03/2023  11:23               823 m750lcsv.prw
+30/03/2023  11:23               938 m750vimp.prw
+30/03/2023  11:23                95 mt750brw.prw
+30/03/2023  11:23             1.015 POSFILOP.prw
+               5 arquivo(s)          3.748 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\PCP\Relatorios
+
+30/03/2023  11:23            20.631 RELMOVE.prw
+30/03/2023  11:23             5.850 RELPRODU.prw
+30/03/2023  11:23            15.972 RELRESOP.prw
+30/03/2023  11:23            13.699 RPCPR001.prw
+30/03/2023  11:23            19.951 RPCPR002.prw
+30/03/2023  11:23            35.796 XMATR225.PRW
+               6 arquivo(s)        111.899 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Priorisa\Integraá‰es
+
+10/07/2023  14:12             2.863 PRILIB01.PRW
+10/07/2023  19:30            15.504 PRIMONM1.PRW
+10/07/2023  21:43             3.151 PRIMONM2.PRW
+               3 arquivo(s)         21.518 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Recursos Humanos\Execblocks
+
+30/03/2023  11:23             6.034 atudescep.prw
+30/03/2023  11:23             2.389 AtuRJ1.prw
+               2 arquivo(s)          8.423 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Recursos Humanos\Ponto de Entrada
+
+30/03/2023  11:23             1.536 CNABPAG.prw
+30/03/2023  11:23             5.555 PN80GRBH.prw
+30/03/2023  11:23             1.230 PNA280ROT.prw
+30/03/2023  11:23             1.027 PONAPO4.prw
+30/03/2023  11:23               881 PONAPO5.prw
+24/06/2023  11:19             9.235 UPDLINTUR.prw
+               6 arquivo(s)         19.464 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Recursos Humanos\Relatorios
+
+02/12/2024  16:35            93.990 GPEWORD.prw
+30/03/2023  11:23           116.711 impesp.prx
+30/03/2023  11:23            88.431 impirpf.prx
+30/03/2023  11:23            22.611 impirpj.prx
+07/06/2023  20:00            44.833 iponr002.prw
+30/03/2023  11:23            41.719 PONQDHR.PRX
+30/03/2023  11:23            30.213 RELHORAS.prw
+30/03/2023  11:23            11.465 RELVENCO.prw
+30/03/2023  11:23            53.148 RGPER004.prw
+30/03/2023  11:23            53.188 RGPER005.prw
+              10 arquivo(s)        556.309 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Recursos Humanos\Schedule
+
+17/09/2024  17:54           104.917 espskd.prx
+30/03/2023  11:23            19.981 PONWORK.PRX
+               2 arquivo(s)        124.898 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\restCliente
+
+03/12/2024  13:20               931 CmpObrig.prw
+               1 arquivo(s)            931 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Rotina de Apontamento e Estorno
+
+17/09/2024  17:47            51.885 PTOp shefa.PRW
+16/09/2024  14:42            33.295 PTOp.prw
+17/09/2024  16:50            14.216 PTOpe.prw
+               3 arquivo(s)         99.396 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\rotina de transferencia
+
+21/11/2024  07:10            60.151 carc5af2.prw
+10/09/2024  10:34            39.347 carc5af2_old.prw
+05/09/2024  11:29            39.079 carc5af2_sembotao.prw
+25/10/2024  11:21             7.890 carc5class.prw
+14/11/2024  17:43             1.150 M460FIM.prw
+               5 arquivo(s)        147.617 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\SIGAGPE
+
+19/06/2024  14:13             7.880 fRelDisc.prw
+02/09/2024  09:15             8.031 fWordDisc.prw
+19/06/2024  14:13           107.135 GPEWORD.prw
+               3 arquivo(s)        123.046 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\SigaPon\Bco Horas
+
+19/06/2024  14:13             5.556 PN80GRBH.prw
+               1 arquivo(s)          5.556 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\SigaPon\PE
+
+19/06/2024  14:13             1.027 PONAPO4.prw
+19/06/2024  14:13               884 PONAPO5.prw
+               2 arquivo(s)          1.911 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\SigaPon\Relatorio
+
+26/12/2024  15:11           104.917 espskd.prx
+19/06/2024  14:13           119.062 impesp.prx
+               2 arquivo(s)        223.979 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\triagulacao
+
+30/01/2025  14:57           146.192 FatTriang.prw
+13/09/2024  10:14               611 GridMock.prw
+13/09/2024  10:14             3.016 OM200QRY.prw
+13/09/2024  15:15             2.969 OS200MOT.prw
+12/02/2025  15:47            53.511 RoboCarga.prw
+13/09/2024  10:14             1.184 ROMSE001.prw
+               6 arquivo(s)        207.483 bytes
+
+ Pasta de C:\VSCode\PrioriSA\Mococa\Winthor\Relatorios
+
+30/03/2023  11:23             5.538 RELATX.prw
+30/03/2023  11:23            68.384 RELCOMER.prw
+17/04/2023  11:13            16.361 RELFATPR.prw
+30/03/2023  11:23            20.892 RELFATUR.prw
+30/03/2023  11:23            10.169 RELPEDID.prw
+30/03/2023  11:23            17.398 RELSAC.prw
+               6 arquivo(s)        138.742 bytes
+
+     Total de Arquivos na Lista:
+             785 arquivo(s)     15.374.226 bytes
+               0 pasta(s)   248.105.754.624 bytes dispon°veis

@@ -1,0 +1,46 @@
+#include "protheus.ch" 
+
+/*/{Protheus.doc} MT103FIM
+Ponto de entrada executado após o destravamento de todas as tabelas envolvidas na gravação do documento de entrada,
+depois de fechar a operação realizada neste, é utilizado para realizar alguma operação após a gravação da NFE.
+@author TOTVS
+@since 06/04/2017
+@version P12
+@param nulo            
+@return nulo
+/*/
+
+User Function MT103FIM()
+	Local aArea 	:= GetArea()
+	Local nOpcao 	:= PARAMIXB[1] //Opcao escolhida pelo usuario no aRotina
+	Local nConfirma := PARAMIXB[2] //Se o usuario confirmou a operacao de gravacao da NFE  
+
+	// Ponto de chamada ConexãoNF-e
+	U_GTPE002()
+
+	// Irá fazer as validações abaixo quando não for chamado através do Importador ConexãoNfe ou Quando for pelo ConexãoNfe e
+	// esteja na tela do Documento de Entrada
+	If !FwIsInCallStack('U_GATI001') .Or. (FwIsInCallStack('U_GATI001') .And. !l103Auto) .And. PARAMIXB[2] <> 0
+			//alert("passei por aqui!") 
+			//Contratos
+		U_RCOME003(nOpcao,nConfirma)
+			
+		//chama tratamentos para motivo devoluçao na comissão
+		//se gerou SE3 negativo (configurar MV_COMIDEV = T)
+		U_RFINE002(nOpcao,nConfirma)
+			
+		//chama tratamentos para vincular nota de serviço de comissão, emitida pelo vendedor
+		//nos itens SE3 e no titulo SE1			
+		U_RFINE006(nOpcao,nConfirma)
+					
+		//Gera ocorrencia de pesagem para produto Leite Spot
+		U_RCOME004(nOpcao,nConfirma)
+
+		//Realiza Baixa do Ticket após Importação da  NF de Entrada
+		U_RCOME013(nOpcao,nConfirma)
+					  
+	EndIf
+
+	RestArea(aArea)
+
+Return

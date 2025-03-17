@@ -1,0 +1,27 @@
+#Include 'Protheus.ch'
+
+/*/{Protheus.doc} ROMSE004
+
+Ponto de entrada validação da manutenção da carga. OS200TOK
+
+@author DANILO
+@since 18/04/2017
+@version P12
+@param nenhum            
+@return nulo
+/*/
+User Function ROMSE004()
+	
+	Local lRet := .T.
+	
+	if !empty(DAK->DAK_XIDTRI)
+		MsgInfo("Carga vinculada a uma Solicitação de Transferência (Fat. Triangular). Ação não permitida! Exclua primeiro o pedido gerado na Filial de Estoque!","Atenção")
+		lRet := .F.
+	endif
+	
+	if lRet .and. !empty(DAK->DAK_XTIPO)
+		MsgInfo("Carga A. Fat. Ação não permitida! ","Atenção")
+		lRet := .F.
+	endif
+	
+Return lRet

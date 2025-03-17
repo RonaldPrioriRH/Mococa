@@ -1,0 +1,664 @@
+#include "protheus.ch"
+#include "tlpp-core.th"
+#include "tlpp-rest.th"
+
+#include "topconn.ch"
+#include "tbiconn.ch"
+
+#INCLUDE 'FWMVCDEF.CH'
+
+#DEFINE ERRORCODE_DEF	400
+#define ERRORSRV_DEF    500
+
+// http://10.0.5.39:8053/rest02/mococa/clientes
+
+@Post("mococa/clientes")
+user function postClientes()
+    local oJBody
+
+    oJBody := JsonObject():new()
+    oJBody:fromJson( oRest:GetBodyRequest() )
+
+    fPostCli( oJBody )
+return
+
+static function fPostCli(oJBody)    
+    local lIniEnv   := .F.
+    local nX        := 0
+    local aCli      := {}
+    local aRet      := {}
+    private cMsg    := ""
+    
+    Private bError      := { |e| oError := e, Break(e) }
+	Private bErrorBlock := ErrorBlock( bError )
+	Private oError
+
+    dbSelectArea("SA1")
+    SA1->(dbSetOrder(3))
+
+    begin sequence
+        for nX := 1 to len(oJBody)
+            oCli :=oJBody[nX]
+
+            fSetError(EncodeUTF8("Verifica se o cadastro passou o cnpj"))
+            if !fVldClient(oCli)
+                break
+            endif
+            fResetError()
+
+            cCnpj := oCli['empresa']
+
+            fSetError(EncodeUTF8("Erro ao preparar o ambiente"))
+            if !fMntEnviroment(cCnpj)
+                break
+            else
+                lIniEnv := .T.
+            endIf
+            fResetError()
+
+            fSetError(EncodeUTF8("Erro ao montar o cliente."))
+            if !fMntCampos( oCli,;
+                            'SA1',;
+                            @aCli)
+                break
+            endIf
+            fResetError()
+
+            fSetError(EncodeUTF8("Erro ao gravar o cliente na base de dados."))
+            if !fGrvCli(aCli)
+                break
+            endIf
+            fResetError()
+            
+            oJson := JsonObject():new()
+            
+            if SA1->(dbSeek(xFilial("SA1")+oCli['cnpj']))
+                //cMsg := '{"cnpj": "'+cCnpj+'", "codigo": "'+SA1->A1_COD+'", "loja": "'+SA1->A1_LOJA+'", "status": "200"}'
+                oJson['empresa'] :=  oCli['empresa']
+                oJson['cliente'] :=  oCli['cnpj']
+                oJson['codigo']  :=  SA1->A1_COD
+                oJson['loja']    :=  SA1->A1_LOJA
+                oJson['status']  :=  "200"
+            endif
+
+            aadd(aRet, oJson)
+
+            SX3->(DBSetOrder(1))
+
+            if lIniEnv
+                RESET ENVIRONMENT
+            endif 
+        next
+                    
+        oRest:setCloseAfterSend(.T.)
+        oRest:appendKeyHeaderResponse("Content-Type","application/json")
+        oRest:setResponse( oJson:ToJson() )
+    Recover
+        //lAux := .F.
+        ErrorBlock(bErrorBlock)
+        oRest:setStatusCode( ERRORSRV_DEF )
+        if oError == nil
+            oRest:setFault( EncodeUTF8('{"status": "'+cValToChar(ERRORSRV_DEF)+'", "error": "'+cMsg+'"}' ))
+        else            
+            oRest:setFault( EncodeUTF8('{"status": "'+cValToChar(ERRORSRV_DEF)+'", "error": "'+iif(!empty(cMsg), cMsg, "")+CRLF+oError:Description+' ===>> ENTRAR EM CONTATO COM O TI"}' ))
+        endif
+
+        if lIniEnv
+            RESET ENVIRONMENT
+        endif        
+    end sequence
+return
+
+static function fSetError(cTitle)
+	bError  := { |e| oError := e , oError:Description := cTitle+" ==>> "+oError:Description+" <<==", Break(e)}
+	bErrorBlock    := ErrorBlock( bError )
+return
+
+static Function fResetError(cTitle)
+	bError  := { |e| oError := e , Break(e) }
+	bErrorBlock    := ErrorBlock( bError )
+return
+
+static function fMntEnviroment(cCnpj)
+    local lRet := .f.
+
+    local cQry := ""
+
+    Default cCnpj := ""
+    
+    cQry := "SELECT M0_CODIGO, M0_CODFIL FROM SYS_COMPANY WHERE M0_CGC= '"+cCnpj+"'"
+    TCQuery cQry New Alias "QRY"
+
+    If !QRY->(Eof())
+        cEmp := QRY->M0_CODIGO
+        cFil := QRY->M0_CODFIL
+    else
+        cMsg := "Empresa, "+cCnpj+", nao encontrada!"
+        lRet := .F.
+        return lRet
+    EndIf
+
+    QRY->(DBCLOSEAREA())
+
+    RPCSetType(3)
+    PREPARE ENVIRONMENT EMPRESA cEmp FILIAL cFil TABLES "SA1",  "CC2", "SX3" MODULO "FAT"
+   
+    SM0->(DBSEEK(cEmp+cFil))
+    cFilAnt := cFil
+
+    lRet := .T.
+return lRet
+
+Static Function fVldClient(oCliente)
+    local lRet := .T.
+    local aChaves := {}
+    local nX := 1
+
+    aadd(aChaves, "tpcliente")
+    aadd(aChaves, "pessoa")
+    aadd(aChaves, "tipo")
+    aadd(aChaves, "cnpj")
+    aadd(aChaves, "nome")
+    aadd(aChaves, "fantasia")
+    aadd(aChaves, "endereco")
+    aadd(aChaves, "bairro")
+    aadd(aChaves, "est")
+    aadd(aChaves, "cep")
+    aadd(aChaves, "municipio")
+    aadd(aChaves, "natureza")
+    aadd(aChaves, "ddd")
+    aadd(aChaves, "fone")
+    aadd(aChaves, "contato")
+    aadd(aChaves, "ie")
+    aadd(aChaves, "pais")
+    aadd(aChaves, "contribuinte")
+    aadd(aChaves, "vendedor")
+    aadd(aChaves, "tipo_frete")
+    aadd(aChaves, "pag_condicao")
+    aadd(aChaves, "pag_forma")
+    aadd(aChaves, "credito_data_limite")
+    aadd(aChaves, "bacen")
+    aadd(aChaves, "email")
+    aadd(aChaves, "email_contato")
+    aadd(aChaves, "segmento")
+    aadd(aChaves, "simples")
+    aadd(aChaves, "fidic")
+    aadd(aChaves, "cobranca")
+    aadd(aChaves, "bordero")
+    aadd(aChaves, "grupotributacao")
+    aadd(aChaves, "suframa")
+
+    for nX := 1 to len(aChaves)
+        if !oCliente:HasProperty(aChaves[nX])
+            cMsg := iif(empty(cMsg), "", CRLF) + "A Chave: "+aChaves[nX]+", e uma chave obrigatoria e nao se encontra no documento enviado."
+            lRet := .F.
+        endif
+    next
+return lRet
+
+static function fMntCampos(oJData, cAlias, aStruct, cEmp)
+    local lRet      := .F.
+    local nAux      := 0
+    Local cCmpAPI   := ""
+    Local lLoop     := .F.
+    local xValor    := Nil
+    local xAux      := Nil
+    local aCmpFixo  := {}
+    local aCmpIgn   := {}
+
+    /*/campos com valores fixos/*/
+    //AADD(aCmpFixo, {"A1_XXXX", "VALOR" })
+    AADD(aCmpFixo, {"A1_MSBLQL", "1" })
+
+    /*/campos a ignorar /*/
+    //AADD(aCmpIgn, "A1_XXXX")
+    AADD(aCmpIgn, "A1_MUN")
+    AADD(aCmpIgn, "A1_COD")
+    AADD(aCmpIgn, "A1_LOJA")
+    
+    //Monta array com os campos obrigatorios
+    if !(Select("SX3") > 0)
+        dbSelectArea("SX3")
+    endIf
+
+    SX3->(DBGotop())
+
+    if !SX3->(dbSeek(cAlias))
+        cMsg := cMsg + iif(!Empty(cMsg), CRLF, "") + "Nao foi possivel encontrar a tabela: "+cAlias+", Entrar em contato com o TI"
+        return lRet
+    endIf
+
+    while !sx3->(EOF()) .and. sx3->x3_arquivo == cAlias
+        //inicia variaveis para rodada
+        xValor  := Nil
+        xAux    := Nil
+        cCmpAPI := Nil
+        lLoop   := .F.
+
+        IF ALLTRIM(SX3->X3_CAMPO) == "A1_XBORDER"
+            TESTE := ""
+        ENDIF
+
+        fSetError(EncodeUTF8("Montando "+cAlias+", campo: "+SX3->X3_CAMPO))
+
+        //Se estiver na lista de ignorar passa para o proximo
+        if aScan( aCmpIgn, { |x| alltrim(x) == alltrim(SX3->X3_CAMPO) } ) > 0
+            SX3->(dbSkip())
+            loop
+        endIf
+
+        //se o campo estiver na lista de obrigatorio inclui na estrutura e passa para o proximo
+        nAux := aScan( aCmpFixo, { |x| alltrim(x[1]) == alltrim(SX3->X3_CAMPO) } )
+        if nAux > 0
+            if valType(aCmpFixo[nAux][2]) == "C"
+                if FindFunction(aCmpFixo[nAux][2])
+                    xAux := &(aCmpFixo[nAux][2])
+                else
+                    xAux := aCmpFixo[nAux][2]
+                endIF
+            else
+                xAux := aCmpFixo[nAux][2]
+            endIf
+
+            if !fConvType(SX3->X3_CAMPO, xAux, @xValor)
+                return lRet
+            endIf
+            
+            aadd( aStruct, { SX3->X3_CAMPO, xValor, Nil} )
+            
+            SX3->(dbSkip())
+            loop
+        endIf
+
+        //pega o campo correspondente da api no protheus, atraves do fonte de para
+        cCmpAPI := u_libRestClientes(AllTrim(SX3->X3_CAMPO))
+       
+        //se o campo da x3 nao eh obrigatorio e nao foi passado no de para entao pula
+        if cCmpAPI == NIL .and. !x3Obrigat(SX3->X3_CAMPO)
+            SX3->(dbSkip())
+            loop
+        endIf
+     
+        //valida obrigatoriedade do campo
+        if x3Obrigat(SX3->X3_CAMPO)
+            fSetError(EncodeUTF8("Montando "+cAlias+", campo: "+SX3->X3_CAMPO+" | "+cCmpAPI))
+
+            if cCmpAPI == NIL
+                cMsg := cMsg + iif(!Empty(cMsg), CRLF, "") + "O campo "+alltrim(SX3->X3_CAMPO)+" | '"+alltrim(SX3->X3_TITULO)+"' e um campo obrigatorio, e nao consta no de-para"
+                lErro := .T.
+                return lRet
+            endIf
+
+            if &("oJData"+cCmpApi) == NIL
+                cMsg := cMsg + iif(!Empty(cMsg), CRLF, "") + "O campo "+alltrim(cCmpAPI)+"/"+alltrim(SX3->X3_CAMPO)+" e um campo obrigatorio, e o mesmo nao foi enviado"
+                lErro := .T.
+                return lRet
+            endIf
+            
+            if Empty(&("oJData"+cCmpApi))
+                cMsg := cMsg + iif(!Empty(cMsg), CRLF, "") + "O campo "+alltrim(cCmpAPI)+"/"+alltrim(SX3->X3_CAMPO)+" e um campo obrigatorio, e precisa de um valor valido"
+                lErro := .T.
+                return lRet
+            endIf
+        endIf
+
+        //se o valor obtido do json for vazio ou nulo pula.
+        if &("oJData"+cCmpApi) == NIL .or. Empty(&("oJData"+cCmpApi))
+            SX3->(dbSkip())
+            loop
+        endIf
+        fResetError()
+
+        //Converte o campo para o devido formato.
+        fSetError(EncodeUTF8("Erro na convercao do campo: "+SX3->X3_CAMPO))
+        if !fConvType(SX3->X3_CAMPO, &("oJData"+cCmpApi), @xValor)   
+            fResetError()
+            cMsg := "Erro na conversao "+cAlias+", campo: "+alltrim(SX3->X3_CAMPO)+", valor: "+&("oJData"+cCmpApi)
+            fSetError(EncodeUTF8(cMsg))
+            lErro := .T.
+            return lRet
+        endIf
+
+        //adiciona a strutura para o execauto
+        aadd( aStruct, { AllTrim(SX3->X3_CAMPO), xValor, Nil} )
+        fResetError()
+        
+        SX3->(dbSkip())
+    end
+
+    if Empty(aStruct)
+        cMsg := cMsg + iif(!Empty(cMsg), CRLF, "") + "Erro na estrutura de dados da "+cAlias
+        lErro := .T.
+    else
+        lRet := .T.
+    endIf
+return lRet
+
+static function fConvType(cCampo, xValor, xRet)
+    local lRet  := .T.
+    local cTipoCmp := tamSX3(cCampo)[3]
+
+    do case
+        case valType(xValor)=="C"
+            xValor := fRmvCaracter(xValor)
+            do case 
+                case cTipoCmp == "M"
+                    xRet := xValor
+                case cTipoCmp == "C"
+                    xRet := left(xValor,TamSx3(cCampo)[1])
+                case cTipoCmp == "N"
+                    xRet := val(StrTran(xValor, ",", "."))
+                case cTipoCmp == "D"
+                    xRet := CtoD(xValor)
+                case cTipoCmp == "L"
+                    if xValor == "true" .or. upper(xValor) == "T" .or. upper(xValor) == ".T."
+                        xRet := .T.
+                    elseIf xValor == "false" .or. upper(xValor) == "F" .or. upper(xValor) == ".F."
+                        xRet := .F.
+                    else
+                        cMsg := cMsg + iif(!Empty(cMsg), CRLF, "") + "Erro na convercao do valor logico: "+xValor+" para recebiento no campo: "+cCampo
+                        lRet := .F.
+                        return lRet
+                    endif
+                otherwise
+                    cMsg := cMsg + iif(!Empty(cMsg), CRLF, "") + "Erro na convercao do valor: "+xValor+" para recebiento no campo: "+cCampo
+                    lRet := .F.
+                    return lRet
+            endCase
+        case valType(xValor)=="A"
+            cMsg := cMsg + iif(!Empty(cMsg), CRLF, "") + "Recebido um valor de array o qual eh indevido para esta aplicacao."+cCampo
+            lRet := .F.
+            return lRet
+        case valType(xValor)=="D"
+            do case 
+                case cTipoCmp == "C"
+                    xRet := cValtoChar(xValor)
+                case cTipoCmp == "N"
+                    xRet := xValor
+                case cTipoCmp == "D"
+                    xRet := xRet
+                case cTipoCmp == "L"
+                    cMsg := cMsg + iif(!Empty(cMsg), CRLF, "") + "Opcao invalida para o valor: "+DtoC(xValor)+" para o tipo: "+ValType(cCampo)
+                    lRet := .F.
+                    return lRet
+                otherwise
+                    cMsg := cMsg + iif(!Empty(cMsg), CRLF, "") + "Erro na convercao do valor: "+DtoC(xValor)+" para recebiento no campo: "+cCampo
+                    lRet := .F.
+                    return lRet
+            endCase
+        case valType(xValor)=="N"
+            do case 
+                case cTipoCmp == "C"
+                    xRet := cValtoChar(xValor)
+                case cTipoCmp == "N"
+                    xRet := ROUND(xValor, TamSX3(cCampo)[2])
+                case cTipoCmp == "D"
+                    xRet := xValor
+                case cTipoCmp == "L"
+                    cMsg := cMsg + iif(!Empty(cMsg), CRLF, "") + "Opcao invalida para o valor: "+cValtoChar(xValor)+" para o tipo: "+ValType(cCampo)
+                    lRet := .F.
+                    return lRet
+                otherwise
+                    cMsg := cMsg + iif(!Empty(cMsg), CRLF, "") + "Erro na convercao do valor: "+cValtoChar(xValor)+" para recebiento no campo: "+cCampo
+                    lRet := .F.
+                    return lRet
+            endCase
+        case valType(xValor)=="L"
+                if xValor == "true" .or. upper(xValor) == "T" .or. upper(xValor) == ".T."
+                    xRet := .T.
+                elseIf xValor == "false" .or. upper(xValor) == "F" .or. upper(xValor) == ".F."
+                    xRet := .F.
+                else
+                    cMsg := cMsg + iif(!Empty(cMsg), CRLF, "") + "Erro na convercao do valor logico: "+xValor+" para recebiento no campo: "+cCampo
+                    lRet := .F.
+                    return lRet
+                endif  
+        otherwise
+            cMsg := cMsg + iif(!Empty(cMsg), CRLF, "") + "O tipo do valor: "+xValor+" / type: "+ValType(xValor)+", nao contem uma conversao"+cCampo
+            lRet := .F.
+            return lRet
+    endCase
+return lRet
+
+Static Function fRmvCaracter(cTexto)
+    local cRet := cTexto
+
+    cRet := StrTran(cRet, "Á", 'A')
+    cRet := StrTran(cRet, "Ã", 'A')
+    cRet := StrTran(cRet, "À", 'A')
+    cRet := StrTran(cRet, "Â", 'A')
+    cRet := StrTran(cRet, "á", 'a')
+    cRet := StrTran(cRet, "à", 'a')
+    cRet := StrTran(cRet, "ã", 'a')
+    cRet := StrTran(cRet, "â", 'a')
+    
+    cRet := StrTran(cRet, "É", 'E')
+    cRet := StrTran(cRet, "È", 'E')
+    cRet := StrTran(cRet, "Ê", 'E')
+    cRet := StrTran(cRet, "é", 'e')
+    cRet := StrTran(cRet, "è", 'e')
+    cRet := StrTran(cRet, "ê", 'e')
+    
+    cRet := StrTran(cRet, "Ì", 'I')
+    cRet := StrTran(cRet, "Í", 'I')
+    cRet := StrTran(cRet, "Î", 'I')
+    cRet := StrTran(cRet, "ì", 'i')
+    cRet := StrTran(cRet, "í", 'i')
+    cRet := StrTran(cRet, "î", 'i')
+
+    cRet := StrTran(cRet, "Ò", 'O')
+    cRet := StrTran(cRet, "Ó", 'O')
+    cRet := StrTran(cRet, "Ô", 'O')
+    cRet := StrTran(cRet, "Õ", 'O')
+    cRet := StrTran(cRet, "ò", 'o')
+    cRet := StrTran(cRet, "ó", 'o')
+    cRet := StrTran(cRet, "ô", 'o')
+    cRet := StrTran(cRet, "õ", 'o')
+
+    cRet := StrTran(cRet, "Ù", 'U')
+    cRet := StrTran(cRet, "Ú", 'U')
+    cRet := StrTran(cRet, "Û", 'U')
+    cRet := StrTran(cRet, "ù", 'u')
+    cRet := StrTran(cRet, "ú", 'u')
+    cRet := StrTran(cRet, "û", 'u')
+
+    cRet := StrTran(cRet, "Ç", 'C')
+    cRet := StrTran(cRet, "ç", 'c')
+    cRet := StrTran(cRet, ";", '')
+    cRet := StrTran(cRet, "-", ' ')
+    cRet := StrTran(cRet, "/", ' ')
+Return cRet
+
+static function fGrvCli(aCli)
+    local nPos      := aScan(aCli, {|x| x[1] == "A1_CGC"})
+    local nPosTpC   := aScan(aCli, {|x| x[1] == "A1_L_TPCLI"})
+    local nOpc      := 3
+    local nX        := 1
+    local cNum      := ""
+    local cLoja     := ""
+    local lRet      := .T.
+    local aLog      := {}
+    Local cCGC      := aCli[nPos][2]
+    Private cCCliPost := ''
+    dbSelectArea("SA1")
+    SA1->(dbSetOrder(3))
+
+    //pegar codigo e loja
+    if SA1->(dbSeek(xFilial("SA1")+aCli[nPos][2]))
+        nOpc := 4
+        cNum := SA1->A1_COD
+        cLoja := SA1->A1_LOJA
+        cMsg := "Cliente já cadastrado: "+SA1->A1_COD+" - "+SA1->A1_LOJA
+        return lRet
+    else
+        if len(alltrim(aCli[nPos][2])) == 14
+            if SA1->(dbSeek(xFilial("SA1")+substr(aCli[nPos][2],1,8)))
+                fNum(substr(aCli[nPos][2],1,8), @cNum, @cLoja,aCli[nPosTpC][2])
+            else
+                fNumNv(@cNum,@cLoja,aCli[nPosTpC][2])    // GetSx8Num( 'SA1', 'A1_COD' )
+                sa1->(dbSetOrder(1))
+                While SA1->( dbSeek( xFilial( 'SA1' ) + cNum ) )
+                    ConfirmSx8()
+                    cNum := GetSx8Num('SA1', 'A1_COD')
+                EndDo
+
+                cLoja := strzero(1, tamsx3("a1_loja")[1])
+            endif
+        else
+            cNum := A030INICPD() // GetSx8Num( 'SA1', 'A1_COD' )
+
+            //While sa1->( dbSeek( xFilial( 'SA1' ) + cNum ) )
+                // ConfirmSx8()
+                cNum := A030INICPD()   // GetSx8Num('SA1', 'A1_COD')
+            //EndDo
+            
+            cLoja := strzero(1, tamsx3("a1_loja")[1])
+        endif
+    endif
+    
+    cCCliPost := cNum
+    oModel := FWLoadModel("CRMA980")
+    oModel:SetOperation(nOpc)
+    oModel:Activate()
+
+    oSA1Mod:= oModel:getModel("SA1MASTER")
+
+    if nOpc == 3
+        if !oSA1Mod:setValue( "A1_COD", cNum )
+            cMsg := "Erro na gravacao do campo: A1_COD com o valor: "+cNum
+            lRet := .F.
+            return lRet
+        endif
+
+        if !oSA1Mod:setValue( "A1_LOJA", cLoja )
+            cMsg := "Erro na gravacao do campo: A1_LOJA com o valor: "+cLoja
+            lRet := .F.
+            return lRet
+        endif
+    endif
+
+    for nX := 1 to len(aCli)
+        if alltrim(aCli[nX][1]) == "A1_COD"
+            loop
+        endif
+        if alltrim(aCli[nX][1]) == "A1_LOJA"
+            loop
+        endif
+
+        if !oSA1Mod:setValue( aCli[nX][1], aCli[nX][2] )
+            cMsg := "Erro na gravacao do campo: "+aCli[nX][1]+" com o valor: "+aCli[nX][2]
+            lRet := .F.
+            return lRet
+        endif
+    next
+
+    If oModel:VldData()
+        If !oModel:CommitData()
+            aLog := oModel:GetErrorMessage()
+            lRet := .F.
+        else
+            ConOut("Cliente gravado com sucesso.")
+            If cCgc == sa1->a1_cgc .and. sa1->a1_msblql <> '1'
+                If RecLock('SA1',.F.)
+                    sa1->a1_msblql := '1'
+                    msunlock()
+                Endif
+            Endif
+        EndIf
+    else
+        aLog := oModel:GetErrorMessage()
+        lRet := .F.
+    EndIf
+    
+    If Len(aLog) > 0
+        For nX := 1 to 6
+            If !Empty(aLog[nX])
+                cMsg += aLog[nX]
+            EndIf
+        Next
+    EndIf
+
+    oModel:DeActivate()
+return lRet
+
+static function fNum(cRaiz, cNum, cLoja,cTpCli)
+    local lRet := .T.
+    local cQry := ""
+
+    cQry += "SELECT"+CRLF
+    cQry += "   A1_COD CODIGO,"+CRLF
+    cQry += "   MAX(A1_LOJA) LOJA"+CRLF
+    cQry += "FROM"+CRLF
+    cQry += "   "+RetSqlName("SA1")+" SA1"+CRLF
+    cQry += "WHERE"+CRLF
+    cQry += "   SA1.D_E_L_E_T_ = ' '"+CRLF
+    cQry += "   AND SUBSTR(A1_CGC,1,8) = '"+cRaiz+"'"+CRLF
+    cQry += "GROUP BY"+CRLF
+    cQry += "   A1_COD"+CRLF
+
+    MemoWrite("c:\temp\rest_cliente_num.sql", cQry)
+
+    If Select("TRB") > 0
+        TRB->(DBCloseArea())
+    EndIf 
+
+    TcQuery cQry New Alias "TRB"
+    
+	TRB->(DBGOTOP())
+
+	If TRB->(EoF())
+		lRet := .F.
+		Return lRet
+	EndIf
+
+    cNum  := TRB->CODIGO
+    cLoja := SOMA1(TRB->LOJA)
+return lRet
+
+
+Static Function fNumNv(cNum, cLoja,cTpCli)
+    local lRet := .T.
+    local cQry := ""
+    Local cNumCod
+    Local cCodStr
+    cQry += "SELECT MAX(A1_COD) CODIGO  FROM "+RetSqlName("SA1")+" SA1"+CRLF
+    cQry += "WHERE SA1.D_E_L_E_T_ = ' ' "+CRLF
+    cQry += "AND SUBSTR(A1_COD,1,1) ='"+cTpCli+"' "+CRLF
+    cQry += "AND SUBSTR(A1_COD,6,1) < 'A' "+CRLF
+    MemoWrite("c:\temp\rest_cliente_num.sql", cQry)
+
+    If Select("TRB") > 0
+        TRB->(DBCloseArea())
+    EndIf 
+
+    TcQuery cQry New Alias "TRB"
+    cCodStr := substr(trb->codigo,2,5)
+
+    cNumCod := val(cCodStr) + 1
+    sa1->(dBsetOrder(1))
+    Do While .t.
+        cNum  := cTpCli+strzero(cNumCod,5)
+
+        If !sa1->(dBseek(xFilial('SA1')+cNum))
+            Exit
+        Endif
+        cNumCod++
+    Enddo
+
+    cLoja := '01' 
+
+return lRet
+
+User Function TestCodSA1(cTp,cCodCli)
+    Local cNum  := ''
+    Local cLoja := ''
+    // u_TestCodSA1('C','')
+    RpcSetType(3)
+
+    If RpcSetEnv('01','0104',,,"FAT","MATA010")   
+
+        fNumNv(@cNum,@cLoja,cTp)    // GetSx8Num( 'SA1', 'A1_COD' )
+
+    Endif
+
+Return

@@ -1,0 +1,1844 @@
+#INCLUDE "PROTHEUS.CH"
+#INCLUDE "FWMVCDEF.CH"
+#INCLUDE "TOTVS.CH"
+#INCLUDE "topconn.ch"
+#INCLUDE "Colors.ch" 
+#INCLUDE "RWMAKE.CH"
+#INCLUDE "tbiconn.ch"
+#INCLUDE "tbicode.ch"
+#Include 'FwMVCDef.ch'
+
+//Constantes
+#Define STR_PULA		Chr(13)+Chr(10)
+
+/*/
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+±±ÉÝÝÝÝÝÝÝÝÝÝÑÝÝÝÝÝÝÝÝÝÝËÝÝÝÝÝÝÝÑÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝËÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÑÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝ»±±
+±±ºPrograma  ³ CONTGMD  º Autor ³ TOTVS                 º Data da Criacao  ³ 12/11/2008                						º±±
+±±ÌÝÝÝÝÝÝÝÝÝÝØÝÝÝÝÝÝÝÝÝÝÊÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÊÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝ¹±±
+±±ºDescricao ³ Rotina desenvolvida para possibilitar o cadastramento de Veiculos utilizados na coleta de leite nos retiros. º±±
+±±º          ³   												                               				                º±±
+±±ÌÝÝÝÝÝÝÝÝÝÝØÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝ¹±±
+±±ºUso       ³ CADASTRO DE VEICULOS.           						                                                        º±±
+±±ÌÝÝÝÝÝÝÝÝÝÝØÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝ¹±±
+±±ºParametros³ Nenhum						   							                               						º±±
+±±ÌÝÝÝÝÝÝÝÝÝÝØÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝ¹±±
+±±ºRetorno   ³ Nenhum						  							                               						º±±
+±±ÌÝÝÝÝÝÝÝÝÝÝØÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝ¹±±
+±±ºUsuario   ³ Microsiga                                                                                					º±±
+±±ÌÝÝÝÝÝÝÝÝÝÝØÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝ¹±±
+±±ºSetor     ³ Gestao do Leite.                                                                        						º±±
+±±ÌÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝ¹±±
+±±º            			          	ATUALIZACOES SOFRIDAS DESDE A CONSTRUCAO INICIAL                   						º±±
+±±ÌÝÝÝÝÝÝÝÝÝÝÑÝÝÝÝÝÝÝÝÝÝÑÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÑÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÑÝÝÝÝÝÝÝÝÝÝÝÝÝ¹±±
+±±ºAutor     ³ Data     ³ Motivo da Alteracao  				               ³Usuario(Filial+Matricula+Nome)    ³Setor        º±±
+±±ºÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄº±±
+±±º          ³00/00/0000³                               				   ³00-000000 -                       ³ TI	        º±±
+±±º----------³----------³--------------------------------------------------³----------------------------------³-------------º±±
+±±º          ³          ³                    							   ³                                  ³ 			º±±
+±±º----------³----------³--------------------------------------------------³----------------------------------³-------------º±±
+±±ÈÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝ¼±±
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
+/*/
+User Function CONTGMD()
+Local lMarcar := .F.
+Private oBrowse 	:= FwMBrowse():New()
+Private oMark 		:= FWMarkBrowse():New()
+Private aRotina		:= MenuDef()
+Private bExclui     := {|| DelZ30() } 
+Private bAtualiza   := {|| Grvz30() }
+Private bLegenda	:= {|| Legenda()}
+Private bProcessa	:= {|| MarkProc()}
+
+/*
+	oBrowse:SetAmbiente(.T.)
+	oBrowse:SetWalkThru(.T.)
+
+	oBrowse := FWmBrowse():New()
+	oBrowse:SetAlias('Z30')
+	oBrowse:SetDescripton("Gerenciamento Matricial de Despesas") 
+
+	oBrowse:AddLegend("Z30_STATUS == 'A' ", 	"GREEN",		"Analisado") 
+	oBrowse:AddLegend("Z30_STATUS == 'E' ", 	"RED",	    	"Encerrado") 
+	oBrowse:AddLegend("Z30_STATUS == 'P' ", 	"YELLOW",		"Pendente") 
+	oBrowse:AddLegend("Z30_STATUS == 'S' ", 	"BLUE",	    	"Provis�o") 
+*/
+
+	oMark:SetAmbiente(.T.)
+	oMark:SetWalkThru(.T.)
+
+	oMark := FWMarkBrowse():New()
+	oMark:SetAlias('Z30')
+
+	//Setando sem�foro, descri��o e campo de mark
+    oMark:SetSemaphore(.F.)
+    oMark:SetDescripton("Gerenciamento Matricial de Despesas") 
+    oMark:SetFieldMark( 'Z30_MARK' )
+	oMark:bAllMark := { || CheckAll(oMark:Mark() ,lMarcar := !lMarcar), oMark:Refresh(.T.)}
+
+	oMark:AddLegend("Z30_STATUS == 'A' ", 	"GREEN",		"Analisado") 
+	oMark:AddLegend("Z30_STATUS == 'E' ", 	"RED",	    	"Encerrado") 
+	oMark:AddLegend("Z30_STATUS == 'P' ", 	"YELLOW",		"Pendente") 
+	oMark:AddLegend("Z30_STATUS == 'C' ", 	"GRAY",			"NF Entrada Excluida") 
+	oMark:AddLegend("Z30_STATUS == 'S' ", 	"BLUE",	    	"Provis�o") 
+
+//oBrowse:DisableDetails()
+//oBrowse:Activate()
+oMark:Activate()
+
+Return
+
+/*
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+±±ÉÝÝÝÝÝÝÝÝÝÝÑÝÝÝÝÝÝÝÝÝÝËÝÝÝÝÝÝÝÑÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝËÝÝÝÝÝÝÑÝÝÝÝÝÝÝÝÝÝÝÝÝ»±±
+±±ºPrograma  ³AFAT006   ºAutor  ³TOTVS TM    º Data ³  21/02/13   º±±
+±±ÌÝÝÝÝÝÝÝÝÝÝØÝÝÝÝÝÝÝÝÝÝÊÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÊÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝ¹±±
+±±ºDesc.     ³Funcao para Menu do Browse                                  º±±
+±±º          ³                                                            º±±
+±±ÌÝÝÝÝÝÝÝÝÝÝØÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝ¹±±
+±±ºUso       ³ Valoriza                                                   º±±
+±±ÈÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝ¼±±
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
+*/
+Static Function MenuDef()
+
+Local aRotina := {}
+Local aSubMnu := {}
+	
+	ADD OPTION aRotina TITLE 'Pesquisar'  			ACTION 'PesqBrw'       		OPERATION 1 ACCESS 0
+	ADD OPTION aRotina TITLE 'Visualizar'			ACTION 'VIEWDEF.CONTGMD'	OPERATION 2 ACCESS 0
+	ADD OPTION aRotina TITLE 'Importar Provis�o '   ACTION 'U_GMDPROV()'  	    OPERATION 3 ACCESS 0
+	ADD OPTION aRotina TITLE 'Alterar'    			ACTION 'VIEWDEF.CONTGMD'	OPERATION 4 ACCESS 0
+	ADD OPTION aRotina TITLE 'Excluir'    			ACTION 'VIEWDEF.CONTGMD'    OPERATION 5 ACCESS 0
+	ADD OPTION aRotina TITLE 'Legenda'     			ACTION 'Eval(bLegenda)'  	OPERATION 10 ACCESS 0 
+
+	//Adiciona o arrya do submenu a op��o do menu
+	ADD OPTION aRotina TITLE 'Processamentos GMD'    ACTION aSubMnu        	    OPERATION 9 ACCESS 0
+	
+
+	//Adiciona op��es no submenu
+	ADD OPTION aSubMnu TITLE 'Parametro DT. Inicial' 	ACTION 'U_MVXDTGMD()'     	OPERATION 3 ACCESS 0 
+	ADD OPTION aSubMnu TITLE 'Importa��o de Dados'   	ACTION 'U_GMDIMP()'	  		OPERATION 3 ACCESS 0 
+	ADD OPTION aSubMnu TITLE 'Encerramento'     	 	ACTION 'U_GMDATU()' 		OPERATION 4 ACCESS 0 
+	ADD OPTION aSubMnu TITLE 'Exclus�o por Lote'     	ACTION 'U_GMDDEL()' 		OPERATION 5 ACCESS 0 
+	ADD OPTION aSubMnu TITLE 'Altera��o Status'		 	ACTION 'Eval(bProcessa)' 	OPERATION 4 ACCESS 0
+	ADD OPTION aSubMnu TITLE 'NFs Entradas Excluidas'   ACTION 'U_GMDCANC()'     	OPERATION 4 ACCESS 0
+
+Return(aRotina)
+
+/*
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+±±ÉÝÝÝÝÝÝÝÝÝÝÑÝÝÝÝÝÝÝÝÝÝËÝÝÝÝÝÝÝÑÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝËÝÝÝÝÝÝÑÝÝÝÝÝÝÝÝÝÝÝÝÝ»±±
+±±ºPrograma  ³AFAT006   ºAutor  ³TOTVS TM    º Data ³  21/02/13   º±±
+±±ÌÝÝÝÝÝÝÝÝÝÝØÝÝÝÝÝÝÝÝÝÝÊÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÊÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝ¹±±
+±±ºDesc.     ³Funcao de Modelo de Dados.                                  º±±
+±±º          ³Onde é definido a estrutura de dados                        º±±
+±±º          ³Regra de Negocio.                                           º±±
+±±ÌÝÝÝÝÝÝÝÝÝÝØÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝ¹±±
+±±ºUso       ³ Valoriza                                                   º±±
+±±ÈÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝ¼±±
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
+*/
+
+Static Function ModelDef()
+
+Local oStruct1	:=	FWFormStruct(1,'Z30', /*bAvalCampo*/, /*lViewUsado*/ )
+Local oModel
+Local aTrigger := {}        
+Local _i       := 0
+Local cCodAux  := PswRet(1)[1][1]
+Local cUsrId   := AllTrim(GetMv("MV_XUSRGMD"))
+
+// Propriedades de campos do cabe�alho
+	//oStruct1:SetProperty("ZM0_PERCQB", MODEL_FIELD_INIT , {|| GetMv("LT_PERCQB")})
+	//oStruct1:SetProperty("Z30_ORIGEM"		, MODEL_FIELD_WHEN,{|| ALTERA})
+
+	//oModel	:=	MpFormModel():New('ID_MODEL',/*Pre-Validacao*/,/*Pos-Validacao*/,/*Commit*/,/*Commit*/,/*Cancel*/)
+    oModel	:=	MpFormModel():New('ID_MODEL',/*Pre-Validacao*/,{|oModel| TUDOOK(oModel)}/*Pos-Validacao*/,/*Commit*/,/*Commit*/,/*Cancel*/)
+
+	// criacao de trigger para preencher quantidade de litros do periodo
+	/*
+	[01] identificador (ID) do campo de origem
+	[02] identificador (ID) do campo de destino
+	[03] Bloco de c�digo de valida��o da execu��o do gatilho
+	[04] Bloco de c�digo de execu��o do gatilho
+	*/
+
+	//GLPI#10047 Ferramenta GMD - Permitir altera��o do campo Z30_REALIZ para alguns usu�rios
+	If !(AllTrim(cCodAux) $ (cUsrId)) //Usu�rios Deivide e Marcelo '000028/000133'
+		oStruct1:SetProperty("Z30_REALIZ"		, MODEL_FIELD_WHEN,{|| .F.})	
+	EndIf
+
+	aAdd(aTrigger, FwStruTrigger('Z30_CLASSE'   ,'Z30_PACOTE'   ,'AK6->AK6_XPACOT',.T.,'AK6',1,'xFilial("AK6")+M->Z30_CLASSE'))
+	aAdd(aTrigger, FwStruTrigger('Z30_CLASSE'   ,'Z30_DESCLA'   ,'AK6->AK6_DESCRI',.T.,'AK6',1,'xFilial("AK6")+M->Z30_CLASSE'))
+	aAdd(aTrigger, FwStruTrigger('Z30_CLASSE'   ,'Z30_DESPAC'   ,'ZCD->ZCD_DESCR',.T.,'ZCD',1,'xFilial("ZCD")+M->Z30_PACOTE'))
+	aAdd(aTrigger, FwStruTrigger('Z30_CDC'   	,'Z30_DESPES'   ,'CTT->CTT_XCD',.T.,'CTT',1,'xFilial("CTT")+M->Z30_CDC'))
+	aAdd(aTrigger, FwStruTrigger('Z30_CDC'   	,'Z30_DESCDC'   ,'CTT->CTT_DESC01',.T.,'CTT',1,'xFilial("CTT")+M->Z30_CDC'))
+	aAdd(aTrigger, FwStruTrigger('Z30_CDC'   	,'Z30_RESPON'   ,'CTT->CTT_XRESP',.T.,'CTT',1,'xFilial("CTT")+M->Z30_CDC'))
+	aAdd(aTrigger, FwStruTrigger('Z30_CONTA '   ,'Z30_DESCON'   ,'CT1->CT1_DESC01',.T.,'CT1',1,'xFilial("CT1")+M->Z30_CONTA'))
+
+	For _i := 1 to Len(aTrigger)
+		oStruct1:AddTrigger(aTrigger[_i][1] ,aTrigger[_i][2] ,aTrigger[_i][3] ,aTrigger[_i][4] )
+	Next _i
+
+	oModel:AddFields('ID_MODEL_FLD_Z30', /*cOwner*/, oStruct1, /*bPreValidacao*/, /*{|oModel| ATUASB2(oModel)}*/, /*bCarga*/ )
+		
+	oModel:SetPrimaryKey({'Z30_FILIAL','Z30_FILORI','Z30_DOC','Z30_SEQ','Z30_CDC','Z30_IDPRODUTO'}) //Z30_IDPRODUTO � Z30_IDPROD
+	
+	oModel:SetDescription('Gerenciamento Matricial de Despesas')
+
+	oModel:GetModel( 'ID_MODEL_FLD_Z30' ):SetDescription( 'Gerenciamento Matricial de Despesas' )
+	
+Return(oModel)
+
+
+// Valida��o altera��o Manual
+Static Function TUDOOK(oModel)
+
+Local nOperation	:=	oModel:GetOperation()
+Local oStruct	    :=	oModel:GetModel('ID_MODEL_FLD_Z30')
+Local _cStatus      :=  oStruct:GetValue("Z30_STATUS")	
+Local lRet  		:= .T.  
+   
+
+	//Altera��o Manual
+	If nOperation	==	4 
+
+		If AllTrim(_cStatus) $ 'E/S'
+			Help( ,,1,"Aten��o","N�o � permitido alterar registro Encerrados ou de Provis�o!", 1, 0 )
+			//xMagHelpFis("Aten��o Status GMD"," N�o � permitido alterar registro Encerrados ou de Provis�o!"," Excluir e importar novamente.")
+			lRet := .F.	
+		EndIF
+
+	EndIf
+
+Return lRet
+
+
+/*
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+±±ÉÝÝÝÝÝÝÝÝÝÝÑÝÝÝÝÝÝÝÝÝÝËÝÝÝÝÝÝÝÑÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝËÝÝÝÝÝÝÑÝÝÝÝÝÝÝÝÝÝÝÝÝ»±±
+±±ºPrograma  ³AFAT006   ºAutor  ³TOTVS TM    º Data ³  21/02/13   º±±
+±±ÌÝÝÝÝÝÝÝÝÝÝØÝÝÝÝÝÝÝÝÝÝÊÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÊÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝ¹±±
+±±ºDesc.     ³Funcao de Visualizacao.                                     º±±
+±±º          ³Onde é definido a visualizacao da Regra de Negocio.         º±±
+±±ÌÝÝÝÝÝÝÝÝÝÝØÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝ¹±±
+±±ºUso       ³ Valoriza                                                   º±±
+±±ÈÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝ¼±±
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
+*/
+
+Static Function ViewDef()
+
+Local oStruct1	:=	FWFormStruct(2,'Z30')
+Local oModel	:=	FwLoadModel('CONTGMD') 
+Local oView		:=	FwFormView():New()
+	
+	oView:SetModel(oModel)	
+	oView:AddField( 'ID_VIEW_FLD_Z30', oStruct1, 'ID_MODEL_FLD_Z30')
+		
+	oView:CreateHorizontalBox( 'ID_HBOX_100', 100 ) 
+	oView:SetOwnerView( 'ID_VIEW_FLD_Z30', 'ID_HBOX_100' )
+
+Return(oView)
+
+
+User Function GMDIMP()
+
+Local aMensagem := {}
+Local aBotoes   := {}
+Local bSair     := .T.
+Local bOk 		:= {|| Processa({|| GrvZ30() }) }  
+Local bCancel 	:= {|| oDlgFil:End() }    
+	
+Static oDlgFil 
+
+Private cTitulo := "Importa��o de GMD"
+Private oArq
+Private cArq	:= ""
+Private oTipo	
+Private nTipo	:= 1
+Private aTipos	:= {}
+		
+	aAdd( aMensagem, OemToAnsi("Este programa tem como objetivo importar dados do GMD"))
+	aAdd( aMensagem, OemToAnsi("    "))
+	
+	aAdd( aBotoes, { 19, .T., { || FechaBatch(), bSair     := .F. } } )
+	aAdd( aBotoes, { 02, .T., { || FechaBatch(), bSair     := .T. } } )
+	
+	FormBatch( cTitulo, aMensagem, aBotoes, , 260,700  )
+	
+	if !bSair
+		
+		Processa({|| GrvZ30() })
+		
+	endif
+
+Return
+
+
+User Function GMDATU()
+
+Local aMensagem := {}
+Local aBotoes   := {}
+Local bSair     := .T.
+Local bOk 		:= {|| Processa({|| AtuZ30() }) }  
+Local bCancel 	:= {|| oDlgFil:End() }    
+	
+Static oDlgFil 
+
+Private cTitulo2 := "Encerramento do GMD"
+Private oArq
+Private cArq	:= ""
+Private oTipo	
+Private nTipo	:= 1
+Private aTipos	:= {}
+		
+	aAdd( aMensagem, OemToAnsi("Este programa tem como objetivo realizar Encerramento do GMD"))
+	aAdd( aMensagem, OemToAnsi("    "))
+	
+	aAdd( aBotoes, { 19, .T., { || FechaBatch(), bSair     := .F. } } )
+	aAdd( aBotoes, { 02, .T., { || FechaBatch(), bSair     := .T. } } )
+	
+	FormBatch( cTitulo2, aMensagem, aBotoes, , 260,700  )
+	
+	if !bSair
+		
+		Processa({|| AtuZ30() })
+		
+	endif
+
+Return
+
+User Function GMDDEL()
+
+Local aMensagem := {}
+Local aBotoes   := {}
+Local bSair     := .T.
+Local bOk 		:= {|| Processa({|| DelZ30() }) }  
+Local bCancel 	:= {|| oDlgFil:End() }    
+	
+Static oDlgFil  
+
+Private cTitulo2 := "Exclus�o por LOTE GMD"
+Private oArq
+Private cArq	:= ""
+Private oTipo	
+Private nTipo	:= 1
+Private aTipos	:= {}
+		
+	aAdd( aMensagem, OemToAnsi("Este programa tem como objetivo realizar Exclus�o por Lote do GMD"))
+	aAdd( aMensagem, OemToAnsi("    "))
+	
+	aAdd( aBotoes, { 19, .T., { || FechaBatch(), bSair     := .F. } } )
+	aAdd( aBotoes, { 02, .T., { || FechaBatch(), bSair     := .T. } } )
+	
+	FormBatch( cTitulo2, aMensagem, aBotoes, , 260,700  )
+	
+	if !bSair
+		
+		Processa({|| DelZ30() })
+		
+	endif
+
+Return
+
+User Function GMDCANC() //Parei aqui olhar as fun��es Marcelo GMD
+
+Local aMensagem := {}
+Local aBotoes   := {}
+Local bSair     := .T.
+Local bOk 		:= {|| Processa({|| CancZ30() }) }  
+Local bCancel 	:= {|| oDlgFil:End() }    
+	
+Static oDlgFil 
+
+Private cTitulo2 := "Encerramento do GMD"
+Private oArq
+Private cArq	:= ""
+Private oTipo	
+Private nTipo	:= 1
+Private aTipos	:= {}
+		
+	aAdd( aMensagem, OemToAnsi("Este programa tem como objetivo realizar Verifica��o de NF de Entradas Excluidas GMD"))
+	aAdd( aMensagem, OemToAnsi("    "))
+	
+	aAdd( aBotoes, { 19, .T., { || FechaBatch(), bSair     := .F. } } )
+	aAdd( aBotoes, { 02, .T., { || FechaBatch(), bSair     := .T. } } )
+	
+	FormBatch( cTitulo2, aMensagem, aBotoes, , 260,700  )
+	
+	if !bSair
+		
+		Processa({|| CancZ30() })
+		
+	endif
+
+Return
+
+//Grava��o dos Dados Z30 - GMD
+Static Function GrvZ30()
+
+Local aArea := GetArea()
+Local cQry  := ""
+Local cEol  := chr(13)+chr(10)
+Local nTotReg,_nReg := 0
+Local nCont  := 1
+Local nAtual := 0
+Local nTotal := 0
+Local aPergs := {}
+Local aRet := {}
+Local aButtons := {}
+Local aOrigens := {"Entradas","Dev Compras","Brindes/Amostras","Vendas Sucatas","Requisi��es","Folpag","Dep/Amor","Verbas/Contratos","Comissoes","Apropriar","Receber","Pagar","MovBco","Contratos","Bx Perda"}
+Local aStatus := {"Analisado","Pendente"}
+Local d_DTini := SuperGetMV("MV_XDTGMD", ,"01/01/1999")
+Local d_DTfin := CtoD('//')
+Local cCombo := " "
+Local cStatus := " "
+Local nX := 0
+Local nY := 0
+Local cTexto := " " 
+
+
+	aAdd( aPergs ,{1,"Data Inicial"  ,d_DTini,"",".T.","",".F.",60,.T.}) // Tipo data
+	aAdd( aPergs ,{1,"Data Final"    ,d_DTfin,"","","","",60,.F.}) // Tipo data
+	aAdd( aPergs ,{2,"Status","Analisado",aStatus,60,"",.F.}) 
+
+	//Tipo 5 - Cria Op��es de CheckBox.	
+	// Define field values
+	aAdd( aPergs ,{9,"Defina os Tipos de Origens: ",200, 40,.T.})
+	For nX := 1 To Len(aOrigens)
+			aAdd( aPergs ,{5,aOrigens[nX]                ,.F.,90,"",.F.})	
+	Next nX
+
+	//Se a pergunta foi confirmada
+	If ParamBox(aPergs, "Informe os par�metros", @aRet, {|| fValidOk()}, /*aButtons*/, /*lCentered*/, /*nPosX*/, /*nPosY*/, /*oDlgWizard*/, /*cLoad*/, .F., .F.)
+		d_DTfin := mv_par02
+		cStatus := mv_par03
+		//cCombo  := aRet[3]
+
+		For nY := 5 To Len(aRet)
+			If aRet[nY] = .T.
+					cTexto += "'"+aPergs[nY][2]+"'"+","		
+			EndIF
+		Next nY
+
+		cTexto += "'X"+"'"
+
+	   		cQry:=  "SELECT  FILIAL,     " +cEOL
+					cQry+=  "DTMOV,      " +cEOL
+					cQry+=  "DTEMISSAO,  " +cEOL
+					cQry+=  "NFISCAL,    " +cEOL
+					cQry+=  "SEQ,        " +cEOL
+					cQry+=  "ESP,        " +cEOL
+					cQry+=  "TES,        " +cEOL					
+					cQry+=  "NFORIGEM,     " +cEOL    // Para n�o mudar estrutura do GMD Deivide		
+					cQry+=  "TPMOV,      " +cEOL
+					cQry+=  "PARCEIRO,   " +cEOL
+					cQry+=  "NOMEPARCEIRO,   " +cEOL
+					cQry+=  "LOJA,       " +cEOL
+					cQry+=  "TRIM(PRODUTO) PRODUTO,    " +cEOL
+					cQry+=  "TRIM(DESCPROD) DESCPROD,    " +cEOL
+					cQry+=  "TIPOGASTO TIPOGASTO,  " +cEOL
+					cQry+=  "CLASSORC,   " +cEOL
+					cQry+=  "TRIM(DESCRICLASS) DESCRICLASS,   " +cEOL
+					cQry+=  "(SELECT AK6_XPACOT FROM AK6010   " +cEOL
+					cQry+=  " 	WHERE AK6010.D_E_L_E_T_ = ' '   " +cEOL
+					cQry+=  "AND AK6_CODIGO = TRIM(CLASSORC)) AS CODPACOTE,   " +cEOL
+					cQry+=  "PACOTE,     " +cEOL
+					cQry+=  "CONTABILIZA,    " +cEOL 
+					cQry+=  "CTACONTABIL," +cEOL
+					cQry+=  "TRIM(DESCCTA) DESCCTA," +cEOL
+					cQry+=  "CCUSTO,     " +cEOL
+					cQry+=  "TRIM(DESCCCUSTO) DESCCCUSTO,     " +cEOL
+					cQry+=  "TRIM(TIPOCC) TIPOCC,     " +cEOL
+					cQry+=  "MES," +cEOL
+					cQry+=  "RESPONSAVEL," +cEOL
+					cQry+=  "QTDE,       " +cEOL
+					cQry+=  "VLRUNIT,    " +cEOL
+					cQry+=  "TOTALITENS, " +cEOL
+					cQry+=  "TOTNF,      " +cEOL
+					cQry+=  "VALORORIGINAL,    " +cEOL 
+					cQry+=  "DESCONT,    " +cEOL
+					cQry+=  "FILIALNOME,    " +cEOL  
+					cQry+=  "HISTORICO,   " +cEOL
+					cQry+=  "TPSALDO,   " +cEOL
+					//Removendo . da Key PK
+					//cQry+=  "TRIM(FILIAL||SEQ||CTACONTABIL||CCUSTO||REPLACE(TRIM(TO_CHAR(VLRUNIT)),'.')) AS IDREG   " +cEOL Antiga Caique tamanho 46
+					//cQry+=  "TRIM(FILIAL||TO_CHAR(DTEMISSAO,'DDMMYYYY')||NFISCAL||SEQ||ESP||PARCEIRO||LOJA||PRODUTO||ITEMRAT) AS IDREG    " +cEOL
+					//3 PK para bater os registros !
+					//Tem que ser DTMOV e n�o DTEMISSAO conforme Maria pediu para alterar 
+					cQry+=  "TRIM(FILIAL||TO_CHAR(DTMOV,'DDMMYYYY')||NFISCAL||SEQ||ESP||PARCEIRO||LOJA||PRODUTO||ITEMRAT||TRIM(RECFKS)||TRIM(LINHA)) AS IDREG    " +cEOL
+					cQry+=  "FROM   	FGMD " +cEOL
+			cQry+=  "WHERE " +cEOL 
+					//cQry+=  "  NFISCAL = '000000145' " +cEOL
+					//cQry+=  "AND DTEMISSAO  = '"+ dtos(d_DTfin)+"' " +cEOL
+					cQry+=  "DTMOV BETWEEN '"+ DtoS( d_DTini )+"' AND '" + DtoS(d_DTfin) + "' " +cEOL
+					cQry+=  "AND TPMOV IN ("+ UPPER(cTexto) +") " +cEOL  
+					cQry+=  "AND TOTNF <> 0 " +cEOL
+										
+					//cQry+=  "AND NFISCAL = '000000111' " +cEOL
+					//cQry+=  "AND SEQ = '000113' " +cEOL
+
+
+		MemoWrite("C:\temp\Z30Grav_v2.sql",cQry)
+
+		cQry := ChangeQuery(cQry)
+
+		If Select("TRB") > 0'
+			TRB->(DbCloseArea())
+		EndIf
+
+		TcQuery cQry New Alias "TRB"
+		
+		//Se houver dados
+		If ! TRB->(EoF())
+		Count To nTotal
+   		ProcRegua(nTotal)
+
+		dbSelectArea("TRB")
+		TRB->(dbGoTop()) 
+
+		Z30->(DbSelectArea("Z30"))
+		Z30->(DbSetOrder(4))
+		Z30->(DbGotop())
+
+		While !TRB->(Eof()) 
+			
+			//Se n�o existe na tabela inclui 	
+			If  !Z30->(DbSeek(AllTrim(TRB->FILIAL)+AllTrim(TRB->IDREG)))	 
+			//If  !Z30->(DbSeek(ALLTRIM(TRB->FILIAL)+ALLTRIM(TRB->NFISCAL)+ALLTRIM(TRB->SEQ)))
+			
+				//Incrementa a mensagem na r�gua   
+				nAtual++
+        		IncProc("Importando Dados " + cValToChar(nAtual) + " de " + cValToChar(nTotal) )
+				
+				RecLock("Z30",.T.)	
+
+				Z30_FILIAL  :=  TRB->FILIAL
+				Z30_STATUS 	:=  IIF(AllTrim(cStatus) == "Analisado","A","P")
+				Z30_FILORI  :=  TRB->FILIAL
+				Z30_DTLANC  :=  TRB->DTMOV	
+				Z30_EMISSA  :=  TRB->DTEMISSAO
+				Z30_DOC     :=  AllTrim(TRB->NFISCAL)
+				Z30_ORIGEM  :=  Upper(TRB->TPMOV)
+				Z30_SEQ     :=  TRB->SEQ
+				Z30_ESPECI  :=  TRB->ESP
+				Z30_TES     :=  TRB->TES
+				Z30_NFORIG  :=  AllTrim(TRB->NFORIGEM) 
+				Z30_PARCEI  :=  TRB->PARCEIRO
+				Z30_NOME	:=  AllTrim(TRB->NOMEPARCEIRO)
+				Z30_LOJA    :=  TRB->LOJA  
+				Z30_IDPROD  :=  TRB->PRODUTO
+				Z30_DESC	:= 	TRB->DESCPROD
+
+				//Usar $ ou == 
+
+				If 'Despesas Variaveis' $ TRB->TIPOGASTO 
+					Z30_GASTO   := '1'
+				ElseIf  'Fixo' $ TRB->TIPOGASTO 
+					Z30_GASTO 	:= '2'
+				ElseIf  'N�o Operacional' $ TRB->TIPOGASTO 
+					Z30_GASTO	:= '3'
+				ElseIf  'Variavel' $ TRB->TIPOGASTO 
+					Z30_GASTO 	:= '4'
+				ElseIf  'Despesas Financeiras' $ TRB->TIPOGASTO 
+					Z30_GASTO	:= '5'
+				ElseIf  'Receitas Financeiras' $ TRB->TIPOGASTO 
+					Z30_GASTO	:= '6'
+				EndIf
+
+				Z30_CONTAB	:=  TRB->CONTABILIZA
+				Z30_CLASSE  :=  TRB->CLASSORC
+				Z30_DESCLA  :=  TRB->DESCRICLASS
+				Z30_PACOTE  :=  TRB->CODPACOTE
+				Z30_DESPAC  :=  TRB->PACOTE
+				Z30_CONTA   :=  TRB->CTACONTABIL
+				Z30_DESCON	:= 	TRB->DESCCTA
+				Z30_CDC     :=  TRB->CCUSTO
+				Z30_DESCDC	:=	TRB->DESCCCUSTO
+				Z30_DESPES  :=  IIF(AllTrim(TRB->TIPOCC) == "Custo","C",'D')  
+				Z30_MES  	:=  TRB->MES
+				Z30_RESPON  :=  TRB->RESPONSAVEL
+				Z30_QTD     :=  TRB->QTDE
+				Z30_UNITAR  :=  TRB->VLRUNIT
+				Z30_TOTAL   :=  TRB->TOTALITENS
+				Z30_REALIZ  :=  TRB->TOTNF
+				Z30_HISTOR  :=  TRB->HISTORICO
+				Z30_VALORI  :=  TRB->VALORORIGINAL
+				Z30_DESCF 	:=  TRB->DESCONT	
+				Z30_FILNOM  :=  TRB->FILIALNOME
+				Z30_TPSALD  :=  TRB->TPSALDO
+				//Z30_TPSALD  :=  "1"
+				Z30_IDREG 	:=  AllTrim(TRB->IDREG)
+				Z30_USER	:=  UsrRetName(RetCodUsr())
+
+				Z30->(MsUnlock())
+
+			TRB->(DbSkip())
+			
+			Else
+				TRB->(DbSkip())				
+			Endif
+		EndDo
+
+		If nAtual > 0
+			Aviso("Aviso","Processado com sucesso!",{"Ok"})
+		Else
+			Aviso("Aviso","N�o existem registros novos dentro do periodo informado para importa��o!",{"Ok"})	
+		EndIF
+
+		//Se n�o houver, mostra mensagem
+		Else
+        	MsgStop("N�o foi encontrado informa��es com os filtros informados!", "Aten��o")
+    	EndIf
+
+		TRB->(DbCloseArea())
+		RestArea(aArea)
+  	Else
+	 	Return 
+  	EndIF
+
+Return
+
+//Rotina de Encerramento - GMD
+Static Function AtuZ30()
+
+Local aArea := GetArea()
+Local cQry := ""
+Local cEol := chr(13)+chr(10)
+Local nTotReg,_nReg := 0
+Local nCont := 1
+Local nAtual := 0
+Local nTotal := 0
+Local aPergs := {}
+Local aRet := {}
+Local aButtons := {}
+Local aOrigens   := {"Entradas","Dev Compras","Brindes/Amostras","Vendas Sucatas","Requisi��es","Folpag","Dep/Amor","Verbas/Contratos","Comissoes","Apropriar","Receber","Pagar","MovBco","Contratos","Bx Perda"}
+Local d_DTini := SuperGetMV("MV_XDTGMD", ,"01/01/1999")
+Local d_DTfin := CtoD('//')
+Local cOrigem := " "
+
+	aAdd( aPergs ,{1,"Data Inicial"  ,d_DTini,"",".T.","",".F.",60,.T.}) // Tipo data
+	aAdd( aPergs ,{1,"Data Final"  ,d_DTfin,"","","","",60,.F.}) // Tipo data
+	aAdd( aPergs ,{2,"Origens ","Entradas",aOrigens,60,"",.T.})
+
+	//Se a pergunta foi confirmada
+	If ParamBox(aPergs, "Informe os par�metros para Encerramento", @aRet, {|| fValidOk()}, /*aButtons*/, /*lCentered*/, /*nPosX*/, /*nPosY*/, /*oDlgWizard*/, /*cLoad*/, .F., .F.)
+		d_DTfin := mv_par02	//aRet[2]
+		cOrigem := mv_par03	//aRet[3]
+
+				cQry:=  "SELECT  * FROM  Z30010    " +cEOL
+				cQry+=  "WHERE " +cEOL 
+				cQry+=  "Z30010.D_E_L_E_T_ = ' ' " +cEOL
+				//cQry+=  "AND Z30_DOC = '000002407' " +cEOL
+				cQry+=  "AND Z30_DTLANC BETWEEN '"+ DtoS( d_DTini )+"' AND '" + DtoS(d_DTfin) + "' " +cEOL
+				cQry+=  "AND Z30_ORIGEM = '"+ UPPER(cOrigem) +"' " +cEOL 	
+				//cQry+=  "AND Z30_FILIAL = '0102' " +cEOL
+				cQry+=  "AND Z30_STATUS IN ('A','S')  " +cEOL  //Atualizar apenas os status de Analisado e Pendente
+
+		MemoWrite("C:\temp\Z30UPd.sql",cQry)
+
+		cQry := ChangeQuery(cQry)
+
+		If Select("TRB") > 0
+			TRB->(DbCloseArea())
+		EndIf
+
+		TcQuery cQry New Alias "TRB"
+		
+		//Se houver dados
+		If ! TRB->(EoF())
+		Count To nTotal
+   		ProcRegua(nTotal)
+
+		dbSelectArea("TRB")
+		TRB->(dbGoTop())
+
+		Z30->(DbSelectArea("Z30"))
+		Z30->(DbSetOrder(4))
+		Z30->(DbGotop())
+
+		While !TRB->(Eof())  
+
+			//Se existe na tabela Atualiza		 
+			//IF  Z30->(DbSeek(ALLTRIM(TRB->Z30_FILIAL)+ALLTRIM(TRB->Z30_DOC)+ALLTRIM(TRB->Z30_SEQ)))
+			If  Z30->(DbSeek(AllTrim(TRB->Z30_FILIAL)+AllTrim(TRB->Z30_IDREG)))
+				//Incrementa a mensagem na r�gua   
+				nAtual++
+        		IncProc("Encerramento do GMD  " + cValToChar(nAtual) + " de " + cValToChar(nTotal) + "...")
+				
+				RecLock("Z30",.F.)	
+
+				Z30_STATUS  := 'E'
+				Z30_USER	:= UsrRetName(RetCodUsr())
+				Z30_DTENC	:= dDatabase
+		
+				Z30->(MsUnlock())
+
+			TRB->(DbSkip())
+			
+			Else
+				
+				TRB->(DbSkip())				
+			EndIf
+		EndDo
+
+		Aviso("Aviso","Atualizado com sucesso!",{"Ok"})
+
+		//Se n�o houver, mostra mensagem
+		Else
+        	MsgStop("N�o foi encontrado informa��es com os filtros informados!", "Aten��o")
+    	EndIf
+
+		TRB->(DbCloseArea())
+		RestArea(aArea)
+    Else
+		Return 
+ 	EndIF
+
+Return
+
+//Rotina de Dele��o - GMD
+Static Function DelZ30()
+
+Local aArea := GetArea()
+Local cQry := ""
+Local cEol  := chr(13)+chr(10)
+Local nTotReg,_nReg := 0
+Local nCont := 1
+Local nAtual := 0
+Local nTotal := 0
+Local aPergs := {}
+Local aRet := {}
+Local aButtons := {}
+Local aStatus := {"Analisado","Encerrado","Pendente","Provis�o"}
+Local d_DTini := SuperGetMV("MV_XDTGMD", ,"01/01/1999")
+Local d_DTfin := CtoD('//')
+Local cCombo  := " "
+Local cNotaDe := Upper(Space(09))
+Local cNotaAte := "ZZZZZZZZZ"
+Local cFilDe := Upper(Space(04))
+Local cFilAte := "ZZZZ"
+Local cForDe := Upper(Space(06))
+Local cForAte := "ZZZZZZ"
+Local cLojDe := Upper(Space(02))
+Local cLojAte := "ZZ"
+Local nX := 0
+Local nY := 0
+Local cDel := " " 
+Local cQry := ""
+Local cOrigem := " "
+Local aOrigens   := {"Entradas","Dev Compras","Brindes/Amostras","Vendas Sucatas","Requisi��es","Folpag","Dep/Amor","Verbas/Contratos","Comissoes","Apropriar","Receber","Pagar","MovBco","Contratos","Bx Perda"}
+Local lSqlOk := .t.
+
+		aAdd( aPergs ,{1,"Data Inicial"  ,d_DTini,"",".T.","",".F.",60,.T.}) // Tipo data
+ 		aAdd( aPergs ,{1,"Data Final"    ,d_DTfin,"","","","",60,.F.}) // Tipo data
+ 		aAdd( aPergs, {1,"Nota De",  cNotaDe,  "" , ".T.", "", ".T.", 60,  .F.}) 
+ 		aAdd( aPergs, {1,"Nota At�", cNotaAte,  "" , ".T.", "", ".T.", 60,  .F.})
+		aAdd( aPergs ,{2,"Origens","Entradas",aOrigens,60,"",.T.})
+		//Novos Parametros GLPI #9791 
+        aAdd( aPergs, {1,"Filial De",  cFilDe,  "" , ".T.", "SM0", ".T.", 15,  .F.}) 
+ 		aAdd( aPergs, {1,"Filial At�", cFilAte,  "" , ".T.", "SM0", ".T.", 15,  .F.})
+		aAdd( aPergs, {1,"Fornecedor De",  cForDe,  "" , ".T.", "SA2", ".T.", 15,  .F.}) 
+ 		aAdd( aPergs, {1,"Fornecedor At�", cForAte,  "" , ".T.", "SA2", ".T.", 15,  .F.})
+		aAdd( aPergs, {1,"Loja De",  cLojDe,  "" , ".T.", "", ".T.", 04,  .F.}) 
+ 		aAdd( aPergs, {1,"Loja At�", cLojAte,  "" , ".T.", "", ".T.", 04,  .F.})	
+    		
+		// Define field values			
+		aAdd( aPergs ,{9,"Defina os Status para dele��o: ",200, 40,.T.})  
+
+			For nX := 1 To Len(aStatus)
+					aAdd( aPergs ,{5,aStatus[nX]                ,.F.,90,"",.F.}) 	
+			Next nX	
+
+		If ParamBox(aPergs, "Informe os par�metros para Dele��o", @aRet, {|| fValidOk()}, /*aButtons*/, /*lCentered*/, /*nPosX*/, /*nPosY*/, /*oDlgWizard*/, /*cLoad*/, .F., .F.)
+			//Segunda forma de pegar conte�do pelos mv_par	
+			d_DTfin := mv_par02 //aRet[2]
+			cNotaDe := mv_par03 //aRet[3]
+			cNotaAte := mv_par04 //aRet[4]
+			cOrigem := mv_par05	//aRet[5]
+			cFilDe := mv_par06 //aRet[6]
+			cFilAte := mv_par07 //aRet[7]
+			cForDe := mv_par08 //aRet[8]
+			cForAte := mv_par09 //aRet[9]
+			cLojDe := mv_par10 //aRet[10]
+			cLojAte := mv_par11 //aRet[11]
+
+			//cCombo  := aRet[3]
+
+			For nY := 13 To Len(aRet)
+				If aRet[nY] = .T.
+						cDel += "'"+aPergs[nY][2]+"'"+","		
+				EndIF
+			Next nY
+
+			cDel := Strtran(cDel,'Analisado',"A")
+			cDel := Strtran(cDel,'Encerrado',"E")			
+			cDel := Strtran(cDel,'Pendente',"P")
+			cDel := Strtran(cDel,'Provis�o',"S") 
+			
+			cDel += "'X"+"'"
+
+			cQry:=  "SELECT  Z30_FILIAL, Z30_DOC,Z30_SEQ, Z30_ORIGEM, Z30_STATUS, Z30_PARCEI,Z30_LOJA, R_E_C_N_O_ AS REC FROM  Z30010    " +cEOL
+			cQry+=  "WHERE " +cEOL 
+			cQry+=  "Z30010.D_E_L_E_T_ = ' ' " +cEOL
+            //cQry+=  "AND Z30_DOC = '000002407' " +cEOL
+			cQry+=  "AND Z30_DTLANC BETWEEN '"+ DtoS( d_DTini )+"' AND '" + DtoS(d_DTfin) + "' " +cEOL
+			cQry+=  "AND Z30_DOC BETWEEN '"+  AllTrim(cNotaDe)+"' AND '" +  AllTrim(cNotaAte) + "' " +cEOL
+			cQry+=  "AND Z30_STATUS IN ("+ cDel +") " +cEOL 
+			cQry+=  "AND Z30_ORIGEM = '"+ UPPER(cOrigem) +"' " +cEOL  
+			cQry+=  "AND Z30_FILIAL BETWEEN '"+  AllTrim(cFilDe)+"' AND '" +  AllTrim(cFilAte) + "' " +cEOL
+			cQry+=  "AND Z30_PARCEI BETWEEN '"+  AllTrim(cForDe)+"' AND '" +  AllTrim(cForAte) + "' " +cEOL
+			cQry+=  "AND Z30_LOJA BETWEEN '"+  AllTrim(cLojDe)+"' AND '" +  AllTrim(cLojAte) + "' " +cEOL
+
+			MemoWrite("C:\temp\Z30DEL_v2.sql",cQry)
+
+			cQry := ChangeQuery(cQry)
+
+			if Select("TRBDEL") > 0
+				TRB->(DbCloseArea())
+			endif
+
+			TcQuery cQry New Alias "TRBDEL"
+
+			TRBDEL->(DbGoTop())
+
+			If !TRBDEL->(EoF())
+
+				DO While !TRBDEL->(Eof())
+
+					//Aten��o quando for utilizar este exemplo, se passar a tabela Errada vai delar outros movimentos
+					IncProc("Processando Dele��o Z30... ")
+					cQryUpd := ""			
+					cQryUpd += " UPDATE "+ RetSqlName("Z30") 				
+					cQryUpd += " SET D_E_L_E_T_ = '*',"  
+					cQryUpd += " R_E_C_D_E_L_ =  " + alltrim(str(REC)) + " 
+					cQryUpd += " WHERE R_E_C_N_O_ = " + alltrim(str(REC)) "
+
+					MemoWrite("C:\temp\DELZ30_exluir.sql",cQryUpd)
+
+					lSqlOk := !(TCSQLExec(cQryUpd) < 0)
+					
+					If lSqlOk .and. (TcGetDB() == 'ORACLE')
+						lSqlOk := !(TCSQLExec("COMMIT") <0)
+					EndIf
+
+					If !lSqlOk
+						MsgStop("Erro ao excluir: "+Chr(13)+Chr(10)+TCSqlError(), "Aten��o")
+						Return .F.	
+					EndIf
+
+					TRBDEL->( dbSkip())
+
+				EndDo
+				Aviso("Aviso","Processado de exclus�o com sucesso!",{"Ok"})
+			Else 	
+				MsgStop("N�o foi encontrado informa��es com os filtros informados!", "Aten��o")  	   
+			Endif
+				TRBDEL->(DbCloseArea())
+				RestArea(aArea)
+		Else
+			Return
+		Endif
+
+Return
+
+//Rotina de Atualiza NF Entradas Excluidas - GMD
+Static Function CancZ30()
+
+Local aArea := GetArea()
+Local cQry := ""
+Local cEol := chr(13)+chr(10)
+Local nTotReg,_nReg := 0
+Local nCont := 1
+Local nAtual := 0
+Local nTotal := 0
+Local aPergs := {}
+Local aRet := {}
+Local aButtons := {}
+Local d_DTini := SuperGetMV("MV_XDTGMD", ,"01/01/1999")
+Local d_DTfin := CtoD('//')
+Local cOrigem := "ENTRADAS"
+
+	aAdd( aPergs ,{1,"Data Inicial"  ,d_DTini,"",".T.","",".F.",60,.T.}) // Tipo data
+	aAdd( aPergs ,{1,"Data Final"  ,d_DTfin,"","","","",60,.F.}) // Tipo data
+
+	//Se a pergunta foi confirmada
+	If ParamBox(aPergs, "Informe os par�metros para Atualiza��o", @aRet, {|| fValidOk()}, /*aButtons*/, /*lCentered*/, /*nPosX*/, /*nPosY*/, /*oDlgWizard*/, /*cLoad*/, .F., .F.)
+		d_DTfin := mv_par02	//aRet[2]
+
+				//Procura as NFs Entrada Excluidas que foram importadas
+				cQry:=  "SELECT Z30_STATUS,Z30_FILIAL,Z30_IDREG,D1_FILIAL,D1_DTDIGIT,D1_DOC,D1_NUMSEQ,D1_COD FROM SD1010    " +cEOL
+				cQry+=  "  INNER JOIN Z30010 ON Z30010.D_E_L_E_T_ = ' ' " +cEOL 
+                cQry+=  "       AND D1_FILIAL = Z30_FILIAL " +cEOL
+                cQry+=  "       AND D1_NUMSEQ = Z30_SEQ " +cEOL
+                cQry+=  "       AND D1_DTDIGIT = Z30_DTLANC " +cEOL
+                cQry+=  "       AND D1_COD = Z30_IDPROD " +cEOL          
+                cQry+=  "  WHERE SD1010.D_E_L_E_T_ = '*' " +cEOL 
+				cQry+=  "       AND D1_DTDIGIT  BETWEEN '"+ DtoS( d_DTini )+"' AND '" + DtoS(d_DTfin) + "' " +cEOL
+				cQry+=  "       AND Z30_ORIGEM = '"+ UPPER(cOrigem) +"' " +cEOL 	
+				//cQry+=  "AND Z30_FILIAL = '0102' " +cEOL
+				cQry+=  "       AND Z30_STATUS IN ('A','P','E')  " +cEOL  //Vai atualizar para NF Entrada Excluida
+
+		MemoWrite("C:\temp\Z30Canc.sql",cQry)
+
+		cQry := ChangeQuery(cQry)
+
+		If Select("TRB") > 0
+			TRB->(DbCloseArea())
+		EndIf
+
+		TcQuery cQry New Alias "TRB"
+		
+		//Se houver dados
+		If ! TRB->(EoF())
+		Count To nTotal
+   		ProcRegua(nTotal)
+
+		dbSelectArea("TRB")
+		TRB->(dbGoTop())
+
+		Z30->(DbSelectArea("Z30"))
+		Z30->(DbSetOrder(4))
+		Z30->(DbGotop())
+
+		While !TRB->(Eof())  
+
+			//Se existe na tabela Atualiza		 
+			//IF  Z30->(DbSeek(ALLTRIM(TRB->Z30_FILIAL)+ALLTRIM(TRB->Z30_DOC)+ALLTRIM(TRB->Z30_SEQ)))
+			If  Z30->(DbSeek(AllTrim(TRB->Z30_FILIAL)+AllTrim(TRB->Z30_IDREG)))
+				//Incrementa a mensagem na r�gua   
+				nAtual++
+        		IncProc("Registros de NF de Entrada Excluidas" + cValToChar(nAtual) + " de " + cValToChar(nTotal) + "...")
+				
+				RecLock("Z30",.F.)	
+
+				Z30_STATUS  := 'C'
+				Z30_USER	:= UsrRetName(RetCodUsr())
+		
+				Z30->(MsUnlock())
+
+				TRB->(DbSkip())
+			
+			Else	
+
+				TRB->(DbSkip())	
+
+			EndIf
+			
+		EndDo
+
+		Aviso("Aviso","Atualizado com sucesso!",{"Ok"})
+
+		//Se n�o houver, mostra mensagem
+		Else
+        	MsgStop("N�o foi encontrado informa��es com os filtros informados!", "Aten��o")
+    	EndIf
+
+		TRB->(DbCloseArea())
+		RestArea(aArea)
+    Else
+		Return 
+ 	EndIF
+
+Return
+
+
+/*
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+±±ÉÝÝÝÝÝÝÝÝÝÝÑÝÝÝÝÝÝÝÝÝÝËÝÝÝÝÝÝÝÑÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝËÝÝÝÝÝÝÑÝÝÝÝÝÝÝÝÝÝÝÝÝ»±±
+±±ºPrograma  ³ RFAT006L º Autor ³ Raphael Martins		 Data³ 22/03/2017 º±±
+±±ÌÝÝÝÝÝÝÝÝÝÝØÝÝÝÝÝÝÝÝÝÝÊÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÊÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝ¹±±
+±±ºDesc.     ³ Legenda do browser										  º±±
+±±ÌÝÝÝÝÝÝÝÝÝÝØÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝ¹±±
+±±ºUso       ³ Aviso Urgente	                                          º±±
+±±ÈÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝÝ¼±±
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
+*/
+
+
+Static Function Legenda()
+
+	BrwLegenda("Status do GMD","Legenda",{{"BR_VERDE","Analisado"},;
+										  {"BR_VERMELHO","Encerrado"},;
+										  {"BR_AMARELO","Pendente"},;
+										  {"BR_CINZA","NF Entrada Excluida"},;
+										  {"BR_AZUL","Provis�o"}})
+
+
+//Valida��o das Perguntas
+Static Function fValidOK()
+
+Local lRet := .T.
+Local dDataIni := MV_PAR01
+Local dDataFin := MV_PAR02
+ 
+    If  dDataFin < dDataIni
+        MsgStop("N�o � permitido utilizar a data Final menor que a data Inicial!")
+        lRet := .F.
+    EndIf
+
+Return lRet
+
+//Rotina Altera��o do Parametro Data Inicial
+
+User Function MVXDTGMD                         
+// Variaveis Locais da Funcao
+Local cEdit1 := GetMv("MV_XDTGMD")
+Local cEdit2 := GetMv("MV_XDTGMD")
+Local oEdit1
+Local oEdit2
+
+Private _oDlg // Dialog Principal
+Private _lReturn     := .F.
+
+	IF !fDigSenha()
+		Return
+	Endif
+
+	DEFINE MSDIALOG _oDlg TITLE "Parametro de Data Inicial MV_XDTGMD " FROM C(350),C(575) TO C(487),C(721) PIXEL
+	@ C(007),C(007) Say "Data Atual" Size C(027),C(008) COLOR CLR_BLACK PIXEL OF _oDlg
+	@ C(015),C(007) MsGet oEdit1 Var cEdit1 Size C(060),C(009) COLOR CLR_BLACK WHEN .F. PIXEL OF _oDlg
+	@ C(030),C(007) Say "Nova Data" Size C(028),C(008) COLOR CLR_BLACK PIXEL OF _oDlg
+	@ C(037),C(007) MsGet oEdit2 Var cEdit2 Size C(060),C(009) COLOR CLR_BLACK PIXEL OF _oDlg HASBUTTON
+	DEFINE SBUTTON FROM C(055),C(007) TYPE 1 ENABLE OF _oDlg ACTION _bOk(cEdit2)
+	DEFINE SBUTTON FROM C(055),C(040) TYPE 2 ENABLE OF _oDlg ACTION _oDlg:End()
+	ACTIVATE MSDIALOG _oDlg CENTERED
+
+Return(.T.)
+
+//**************************
+Static Function _bOk(cEdit2)
+//**************************
+	_oDlg:End()
+	PutMv("MV_XDTGMD",cEdit2)
+	Final("Aten��o", "A tela ser� fechada para carregar o novo parametro!")
+
+Return
+
+/*������������������������������������������������������������������������������
+��������������������������������������������������������������������������������
+����������������������������������������������������������������������������Ŀ��
+���Programa   �   C()   � Autores � Norbert/Ernani/Mansano � Data �10/05/2005���
+����������������������������������������������������������������������������Ĵ��
+���Descricao  � Funcao responsavel por manter o Layout independente da       ���
+���           � resolucao horizontal do Monitor do Usuario.                  ���
+�����������������������������������������������������������������������������ٱ�
+��������������������������������������������������������������������������������
+������������������������������������������������������������������������������*/
+Static Function C(nTam)
+
+Local nHRes	:=	oMainWnd:nClientWidth	// Resolucao horizontal do monitor
+	If nHRes == 640	// Resolucao 640x480 (soh o Ocean e o Classic aceitam 640)
+		nTam *= 0.8
+	ElseIf (nHRes == 798).Or.(nHRes == 800)	// Resolucao 800x600
+		nTam *= 1
+	Else	// Resolucao 1024x768 e acima
+		nTam *= 1.28
+	EndIf
+
+//���������������������������Ŀ
+//�Tratamento para tema "Flat"�
+//�����������������������������
+	If "MP8" $ oApp:cVersion
+		If (Alltrim(GetTheme()) == "FLAT") .Or. SetMdiChild()
+			nTam *= 0.90
+		EndIf
+	EndIf
+
+Return Int(nTam)
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Static Function fDigSenha()
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	Private cSenha   := Space(10)
+	Private cSenhAce := GETMV("MV_XGMD")
+	@ 067,020 To 169,312 Dialog Senhadlg Title OemToAnsi("Libera��o de Acesso")
+	@ 015,005 Say OemToAnsi("Informe a senha para o acesso ?") Size 80,8
+	@ 015,089 Get cSenha Size 50,10 Password
+	@ 037,106 BmpButton Type 1 Action fOK()
+	@ 037,055 BmpButton Type 2 Action Close(Senhadlg)
+	Activate Dialog Senhadlg CENTERED
+
+Return(_lReturn)
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Static Function fOK()
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	If ALLTRIM(cSenha)<> ALLTRIM(cSenhAce)
+		MsgStop("Senha n�o Confere !!!")
+		cSenha  := Space(10)
+		dlgRefresh(Senhadlg)
+	Else
+		_lReturn  := .T.
+		Close(Senhadlg)
+	Endif
+
+Return
+
+Static Function MarkProc()
+    Local aArea    := GetArea()
+    Local cMarca   := oMark:Mark()
+    Local lInverte := oMark:IsInvert()
+    Local nCt      := 0
+	Local aPergs := {}
+	Local aStatus := {"Analisado","Pendente"}
+	Local aRet := {}
+	Local cStatus := " "
+	Local d_DTini := SuperGetMV("MV_XDTGMD", ,"01/01/1999")
+	Local d_DTfin := CtoD('//')
+    
+	aAdd( aPergs ,{1,"Data Inicial"  ,d_DTini,"",".T.","",".F.",60,.T.}) // Tipo data
+	aAdd( aPergs ,{1,"Data Final"    ,d_DTfin,"","","","",60,.F.}) // Tipo data
+	aAdd( aPergs ,{2,"Status","Analisado",aStatus,60,"",.F.}) 
+
+	//Se a pergunta foi confirmada
+	If ParamBox(aPergs, "Informe o Status para altera��o", @aRet, {|| fValidOk()}, /*aButtons*/, /*lCentered*/, /*nPosX*/, /*nPosY*/, /*oDlgWizard*/, /*cLoad*/, .F., .F.)
+	d_DTfin := mv_par02
+	cStatus :=  IIF(AllTrim(mv_par03) == "Analisado","A","P")
+
+    //Percorrendo os registros da Z30
+    Z30->(DbGoTop())
+    While !Z30->(EoF())
+        //Caso esteja marcado, aumenta o contador e esteja dentro do range de Data para n�o permitir flegar movimentos do passado -> Analisado e Pendente 
+	    If (Z30_DTLANC >= d_DTini .And. Z30_DTLANC <= d_DTfin) .And. (AllTrim(Z30_STATUS) $ ('A/P'))
+			If oMark:IsMark(cMarca)
+				nCt++     
+				//Alterando Status conforme MarkBrowser
+				RecLock('Z30', .F.)
+					Z30_STATUS := cStatus
+					Z30_MARK   := ' '
+				Z30->(MsUnlock())
+			EndIf
+        EndIf
+        //Pulando registro
+        Z30->(DbSkip())
+    EndDo
+     
+    //Mostrando a mensagem de registros marcados
+    MsgInfo('<b> Foram alterados ' + cValToChar( nCt ) + ' registros com o Status para '+ mv_par03 +'</b>.', "Aten��o")
+     
+    //Restaurando �rea armazenada
+    RestArea(aArea)
+	Else
+	 	Return 
+	EndIf
+Return Nil
+
+Static Function CheckAll(cMarca, lMarcar)
+
+	Local cAliasTRB := Alias()
+	Local aAreaTRB  := (cAliasTRB)->(GetArea())
+	Local cTAB_OK   := IIf(lMarcar, cMarca, '  ')
+
+	dbSelectArea(cAliasTRB)
+	(cAliasTRB)->(dbGoTop())
+
+	While !(cAliasTRB)->(Eof())
+		RecLock((cAliasTRB), .F.)
+		(cAliasTRB)->Z30_MARK := cTAB_OK
+		MsUnlock()
+		(cAliasTRB)->(dbSkip())
+	EndDo
+
+	RestArea(aAreaTRB)
+
+Return(.T.)
+
+//Rotina nova Importa��o das Provis�o pelo arquivo CSV
+//-------------------------------------------------------------------
+// Faz importa��o dos dados de metas por arquivo CSV
+//-------------------------------------------------------------------
+User Function GMDPROV()
+
+	Local aMensagem := {}
+	Local aBotoes   := {}
+	Local bSair     := .T.
+    Local bOk 		:= {|| iif(ValidImp(),(oDlgFil:End(),Processa({|| ProcImp() })),) }  
+	Local bCancel 	:= {|| oDlgFil:End() }    
+	
+    Static oDlgFil                    
+	Private cTitulo := "Importa��o da Provis�o GMD"
+	Private oArq
+	Private cArq	:= ""
+	Private oTipo	
+	Private nTipo	:= 0
+	Private aTipos	:= {}
+		
+	Aadd( aMensagem, OemToAnsi("Este programa tem como objetivo importar Provis�o para GMD atrav�s de arquivo textos *.CSV ."))
+	Aadd( aMensagem, OemToAnsi("    "))
+	Aadd( aMensagem, OemToAnsi("Este arquivo dever� ser separado por ponto-e-virgula e o primeiro registro conter� os nomes dos campos a serem importados."))
+	Aadd( aMensagem, OemToAnsi("    "))
+	
+	AAdd( aBotoes, { 19, .T., { || FechaBatch(), bSair     := .F. } } )
+	AAdd( aBotoes, { 02, .T., { || FechaBatch(), bSair     := .T. } } )
+	
+	FormBatch( cTitulo, aMensagem, aBotoes, , 260,700  )
+	
+	if !bSair
+		
+		oDlgFil := TDialog():New(0,0,260,700,cTitulo,,,,,,,,,.T.)
+			
+			TGroup():New(10,10,100,340,'',oDlgFil,,,.T.)
+			
+			TSay():New( 20,20,{|| "Selecione o Arquivo:" }, oDlgFil,,,,,,.T.,CLR_BLACK,,100,9 )
+			oArq := TGet():New( 30, 20, {|u| iif( PCount()==0,cArq,cArq:= u) },oDlgFil,180,9,,/*bValid*/,,,,.F.,,.T.,,.F.,{|| .F.},.F.,.F.,/*bChange*/,.F.,.F.,,"cArq",,,,.T.,.F.)
+			SButton():New( 30, 202, 14, {|| DoSelFile() } ,oDlgFil,.T.,,) //avan�ar
+			
+			TSay():New( 60,20,{|| "Importa��o Provis�o:" }, oDlgFil,,,,,,.T.,CLR_BLACK,,100,9 )
+	//		aadd(aTipos, "Adicionar registros do arquivo mesclando com dados ja existentes.")
+			aadd(aTipos, "Esta Importacao ir� apagar os dados ja existentes, e incluir registros do arquivo.")
+			oTipo := TRadMenu():New(70,20,aTipos,{|u| iif( PCount()==0,nTipo,nTipo:= u) },oDlgFil,,,,,,,,300,12,,,,.T.)
+			
+			SButton():New( 110,275,19,bOk,oDlgFil,.T.,,) //avan�ar
+			SButton():New( 110,305,02,bCancel,oDlgFil,.T.,,) //cancelar
+			
+			oDlgFil:lCentered := .T.
+		oDlgFil:Activate()
+		
+	endif
+
+Return
+
+//-------------------------------------------------------------------
+// Busca arquivo para importa��o e valida-o
+//-------------------------------------------------------------------
+Static Function DoSelFile()
+
+	
+	Local cMaskFile := "Arquivos csv (*.csv) |*.CSV | "
+	
+	cArq := cGetFile(cMaskFile, OemToAnsi("Selecione o arquivo..."), 0, iif(empty(cArq),'C:\',cArq), .F., GETF_LOCALFLOPPY + GETF_LOCALHARD + GETF_NETWORKDRIVE ,.T., .T.)
+	
+	if empty(cArq)
+		cArq := space(300)
+	elseif Right(upper(alltrim(cArq)),3) != "CSV"
+		MsgStop("Selecione um arquivo do tipo CSV!","ATENCAO")
+		cArq := space(300)
+	endif
+	
+	oArq:Refresh()
+	
+Return
+
+//-------------------------------------------------------------------
+// Processa a importa��o dos dados
+//-------------------------------------------------------------------
+Static Function ValidImp()
+
+	Local lRet := .T.
+	
+	if empty(cArq)
+		MsgStop("Informe um arquivo para ser importado!","ATENCAO")
+		lRet := .F.	
+	elseif !File(cArq)
+		MsgStop("O arquivo " +cArq + " n�o foi encontrado. Selecione um arquivo v�lido!","ATENCAO")
+		lRet := .F.
+	//elseif empty(nTipo)
+	//	MsgStop("Selecione o tipo de importa��o!","ATENCAO")
+	//	lRet := .F.
+	EndIf	
+	
+Return lRet
+
+//-------------------------------------------------------------------
+// Processa a importa��o dos dados
+//-------------------------------------------------------------------
+Static Function ProcImp()
+
+	Local cLinha    := ''
+	Local lPrim     := .T.
+	Local aCampos   := {"Z30_ORIGEM","Z30_FILIAL","Z30_FILORI","Z30_DTLANC","Z30_EMISSA",;   
+                        "Z30_NFORIG","Z30_CONTA","Z30_PARCEI","Z30_LOJA","Z30_IDPROD","Z30_GASTO",;
+						"Z30_CLASSE","Z30_CONTAB","Z30_CDC","Z30_MES","Z30_VALORI","Z30_QTD","Z30_UNITAR",;
+                        "Z30_TOTAL","Z30_DESCF","Z30_REALIZ","Z30_TPSALD","Z30_HISTOR","Z30_FILNOM",;
+                        "Z30_IDREC"}
+	/*
+	Local aCampos   := {"Z30_ORIGEM","Z30_FILIAL","Z30_FILORI","Z30_DTLANC","Z30_EMISSA","Z30_DOC",;   
+                        "Z30_NFORIG","Z30_CONTA","Z30_PARCEI","Z30_LOJA","Z30_IDPROD","Z30_GASTO",;
+						"Z30_CLASSE","Z30_CONTAB","Z30_CDC","Z30_MES","Z30_VALORI","Z30_QTD","Z30_UNITAR",;
+                        "Z30_TOTAL","Z30_DESCF","Z30_REALIZ","Z30_TPSALD","Z30_HISTOR","Z30_FILNOM",;
+                        "Z30_DTENC","Z30_IDREC"}*/
+
+	Local aTipos	:= {}
+	Local aCpArq	:= {}
+	Local aDados    := {}
+	Local aExcluir	:= {}
+	Local aLog		:= {}
+	Local nCampos   := 0
+	Local cSQL      := ''
+	Local nI 		:= 0
+	Local cTipo     := ''
+	Local cItem		:= ''
+	Local lProc		:= .T.	
+	Local aChaves	:= {}
+	Local nPosFil	:= 0
+	Local _nTotReg  := 0
+	Local cRepAnt	:= ''
+	Local cFilOri	:= cFilAnt 
+	Local cNome 	:= ""
+	Local aArea		:= GetArea()
+	Local cDia		:= IIF(day( dDataBase ) < 9,cValtoChar( day( dDataBase )),Upper(chr( 55+Day( dDataBase ) ) ))// digito do dia, de 1 a 9 e A a V
+	Local nKey		:= Right( Str( Year( date() ),4 ), 2 )+Upper(chr( 64+Month( dDataBase ) ) )+ cDia 
+	Local cComp		:= StrTran(DtoC(date()),"/","")	
+	Local cProvisao := ''
+
+	If !File(cArq)
+		MsgStop("O arquivo " + cArq + " n�o foi encontrado. A importa��o ser� abortada!","ATENCAO")
+		Return
+	EndIf
+	
+	FT_FUSE(cArq)
+	FT_FGOTOP()
+	cLinha    := FT_FREADLN()
+	aCpArq	  := Separa(cLinha,";",.T.)
+	cTipo     := SUBSTR(aCpArq[1],1,3)
+
+	IF !(cTIPO == 'Z30')
+		MsgAlert('Arquivo com sintaxe incorreta! Primeira linha deve conter o nome dos campos da tabela Z30!')
+		Return
+	Endif
+		
+	dbSelectArea("SX3")
+	DbSetOrder(2)
+	For nI := 1 To Len(aCpArq)
+		IF cTipo <> SUBSTR(aCpArq[nI],1,3)
+			MsgAlert('Todos os campos devem pertencer a tabela Z30!')
+			Return
+		ENDIF
+		IF !SX3->(dbSeek(Alltrim(aCpArq[nI])))
+			MsgAlert('Campo n�o encontrado na tabela: '+aCpArq[nI]+' !')
+			Return
+		ELSEIF (SX3->X3_VISUAL $ ('V') ) .AND. (SX3->X3_CONTEXT == "V"  )
+			MsgAlert('Campo marcado na tabela como visual: '+aCpArq[nI]+' ! N�o necessita estar no arquivo de importa��o!')
+			Return
+		ELSE
+			aadd(aTipos, SX3->X3_TIPO) //gravo o tipo do campo 
+		ENDIF
+	Next nI
+	
+	//lendo dados do arquivo, e preenchendo no vetor aDados
+	ProcRegua(FT_FLASTREC())
+	FT_FGOTOP()
+	nI := 1
+	While !FT_FEOF()
+		IncProc("Lendo arquivo texto... linha: " + cValToChar(nI) )
+		cLinha := FT_FREADLN()
+		if !empty(cLinha)
+			If lPrim
+				aCampos := Separa(Upper(cLinha),";",.T.)
+				lPrim := .F.
+			Else
+				AADD(aDados,Separa(cLinha,";",.T.))
+			EndIf
+		endif
+		nI++
+		FT_FSKIP()
+	EndDo
+	
+	FT_FUSE() //fecha arquivo
+	
+	ProcRegua(Len(aDados))
+	For nI:=1 to  Len(aDados)
+			
+		cLinha := 'Linha ' + cValToChar(nI+1) + ' >> '	
+		IncProc("Validando dados... linha: " + cValToChar(nI+1))
+		
+		if len(aCampos) <> len(aDados[nI])		
+			lProc := .F.
+			cLog := 'Linha n�o est� estruturada corretamente.'
+			aadd(aLog, cLinha+cLog)
+		endif
+		
+		If lProc
+			For nCampos := 1 To Len(aCampos)
+				
+				aDados[nI][nCampos] := AjustaVal(aDados[nI][nCampos], aTipos[nCampos], aCampos[nCampos] )
+				
+				//pego posicao da filial
+				nPosFil := aScan(aCampos,"Z30_FILIAL")
+					
+				If cFilAnt != StrZero(Val(aDados[nI][nPosFil]),TamSx3("Z30_FILIAL")[1])
+					cFilAnt := StrZero(Val(aDados[nI][nPosFil]),TamSx3("Z30_FILIAL")[1])
+				Endif
+							
+				if nCampos == aScan(aCampos,"Z30_FILIAL")
+					//aDados[nI][nCampos] := PADL(aDados[nI][nCampos],TamSx3("Z30_FILIAL")[1],"0")
+					if (AllTrim(aDados[nI][nCampos]) < "0101" .And. AllTrim(aDados[nI][nCampos]) > "0114") .Or. Len(AllTrim(aDados[nI][nCampos])) < 4
+							cLog := 'Inconsist�ncia: Filial informada inv�lida ['+AllTrim(aDados[nI][nCampos])+'] !'
+							aadd(aLog, cLinha+cLog)
+							lProc := .F.
+					endif					
+                /*
+				elseif nCampos == aScan(aCampos,"ZEO_DTLANC")
+					//compatibilizando ano
+					aDados[nI][nCampos] := StrZero(val(aDados[nI][nCampos]),4)
+					if aDados[nI][nCampos] == "0000"
+						cLog := 'Inconsist�ncia: Ano informado inv�lido!'
+						aadd(aLog, cLinha+cLog)
+						lProc := .F.
+					endif
+				elseif nCampos == aScan(aCampos,"ZEO_MES")
+				
+					aDados[nI][nCampos] := StrZero(Val(aDados[nI][nCampos]),2)
+				
+					//compatibilizando ano
+					aDados[nI][nCampos] := StrZero(val(aDados[nI][nCampos]),2)
+					if aDados[nI][nCampos] <= "00" .OR. aDados[nI][nCampos] > "12" 
+						cLog := 'Inconsist�ncia: Mes informado inv�lido!'
+						aadd(aLog, cLinha+cLog)
+						lProc := .F.
+					endif
+                */
+				elseif nCampos == aScan(aCampos,"Z30_IDPROD")			
+					if !empty(aDados[nI][nCampos])
+						if empty(Posicione("SB1",1,xFilial("SB1")+AllTrim(aDados[nI][nCampos]),"B1_COD"))
+							cLog := 'Inconsist�ncia: C�digo Produto n�o cadastrado ['+aDados[nI][nCampos]+'] !'
+							aadd(aLog, cLinha+cLog)
+							lProc := .F.
+						endif
+					endif
+				
+				elseif nCampos == aScan(aCampos,"Z30_PARCEI") 
+					if !empty(aDados[nI][nCampos])
+						
+						If empty(Posicione("SA2",1,xFilial("SA2")+AllTrim(aDados[nI][nCampos])+aDados[nI][09],"A2_NOME"))
+							cLog := 'Inconsist�ncia: Fornecedor/Loja n�o existe ['+AllTrim(aDados[nI][nCampos])+'/'+aDados[nI][09]+'] !'
+							aadd(aLog, cLinha+cLog)
+							lProc := .F.
+						endif
+					endif
+
+				elseif nCampos == aScan(aCampos,"Z30_CLASSE") 
+					if !empty(aDados[nI][nCampos])
+					
+							If empty(Posicione("AK6",1,xFilial("AK6")+AllTrim(aDados[nI][nCampos]),"AK6_CODIGO"))
+								cLog := 'Inconsist�ncia: Classe n�o encontrada[' +aDados[nI][nCampos] + '] !'
+								aadd(aLog, cLinha+cLog)
+								lProc := .F.
+							Endif
+					endif
+
+				elseif nCampos == aScan(aCampos,"Z30_CONTA") 
+					if !empty(aDados[nI][nCampos])
+
+							if empty(Posicione("CT1",1,xFilial("CT1")+AllTrim(aDados[nI][nCampos]),"CT1_CONTA"))
+								cLog := 'Inconsist�ncia: Conta n�o encontrada[' +aDados[nI][nCampos] + '] !'
+								aadd(aLog, cLinha+cLog)
+								lProc := .F.
+							Endif
+					endif
+
+				elseif nCampos == aScan(aCampos,"Z30_CDC") 
+					
+					if !empty(aDados[nI][nCampos])
+					
+							if empty(Posicione("CTT",1,xFilial("CTT")+AllTrim(aDados[nI][nCampos]),"CTT_CUSTO"))
+								cLog := 'Inconsist�ncia: Centro de Cuto n�o encontrado [' +aDados[nI][nCampos] + '] !'
+								aadd(aLog, cLinha+cLog)
+								lProc := .F.
+							Endif
+					endif
+
+				elseif nCampos == aScan(aCampos,"Z30_TOTAL")
+					if empty(aDados[nI][nCampos])
+						cLog := 'Inconsist�ncia: Informe o valor Toal[Z30_TOTAL] !'
+						aadd(aLog, cLinha+cLog)
+						lProc := .F.
+					endif
+
+				elseif nCampos == aScan(aCampos,"Z30_REALIZ")
+					if empty(aDados[nI][nCampos])
+						cLog := 'Inconsist�ncia: Informe o valor Realizado[Z30_REALIZ] !'
+						aadd(aLog, cLinha+cLog)
+						lProc := .F.
+					endif
+					
+				elseif nCampos == aScan(aCampos,"Z30_UNITAR")
+					if empty(aDados[nI][nCampos])
+						cLog := 'Inconsist�ncia: Informe o Unit�rio [Z30_UNITAR] !'
+						aadd(aLog, cLinha+cLog)
+						lProc := .F.
+					endif
+
+                elseif nCampos == aScan(aCampos,"Z30_QTD")
+					if empty(aDados[nI][nCampos])
+						cLog := 'Inconsist�ncia: Informe a Quantidade [Z30_QTD] !'
+						aadd(aLog, cLinha+cLog)
+						lProc := .F.
+					endif
+				endif
+							
+			Next nCampos
+									
+		endif				
+	Next nI
+	
+	//Volto para filial original
+	cFilAnt := cFilOri
+	
+	//inicia grava��o dos dados
+	if lProc
+		
+		DbSelectArea("Z30")
+			
+		cLog := 'Iniciando Grava��es dos Dados...'
+		aadd(aLog, cLog)
+		
+		BeginTran()
+		
+
+		//oModel:SetPrimaryKey({'Z30_FILIAL','Z30_FILORI','Z30_DOC','Z30_SEQ','Z30_CDC','Z30_IDPRODUTO'})
+
+		//processa exclus�es
+		if nTipo == 1//se exclui pra depois importar
+			
+			cMsgExcl := ""
+			For nI:=1 to  Len(aDados)
+				if aScan(aExcluir, aDados[nI][aScan(aCampos,"Z30_FILIAL")]+aDados[nI][aScan(aCampos,"Z30_FILORI")]+aDados[nI][aScan(aCampos,"Z30_DOC")]+aDados[nI][aScan(aCampos,"Z30_CDC")]+aDados[nI][aScan(aCampos,"Z30_IDPROD")]) == 0 //vend+ano+mes
+					aadd(aExcluir, aDados[nI][aScan(aCampos,"Z30_FILIAL")]+aDados[nI][aScan(aCampos,"Z30_FILORI")]+aDados[nI][aScan(aCampos,"Z30_DOC")]+aDados[nI][aScan(aCampos,"Z30_CDC")]+aDados[nI][aScan(aCampos,"Z30_IDPROD")])
+					cMsgExcl += "FILIAL.: ["+aDados[nI][aScan(aCampos,"Z30_FILIAL")]+"], DOC.: ["+aDados[nI][aScan(aCampos,"Z30_DOC")]+"], CDC.: ["+aDados[nI][aScan(aCampos,"Z30_CDC")]+"], PRODUTO.: ["+aDados[nI][aScan(aCampos,"Z30_IDPROD")]+"]" + chr(13) + chr(10)
+				endif
+			next nI
+			
+			if !empty(cMsgExcl)
+				if MsgYesNo("Confirma exclus�o dos registros com as chaves: " + chr(13) + chr(10) + cMsgExcl)
+					
+					cLog := 'Buscando Registros para exclus�o...'
+					aadd(aLog, cLog)
+										
+					cSQL := "SELECT R_E_C_N_O_ FROM " + RetSqlName("Z30")+ " WHERE D_E_L_E_T_ <> '*' AND Z30_FILIAL||Z30_FILORI||Z30_DOC||Z30_CDC||Z30_IDPROD IN ("
+					For nI:=1 to  Len(aExcluir)
+						if nI > 1
+							cSQL += ","
+						endif
+						cSQL += "'" + aExcluir[nI] + "'"
+					next nI
+					cSQL += ")"
+					
+					If Select("QRYEXCL") > 0
+						QRYEXCL->(DbCloseArea())
+					EndIf
+					
+					cSQL := ChangeQuery(cSQL)
+					TcQuery cSQL New Alias "QRYEXCL" // Cria uma nova area com o resultado do query
+					
+
+
+					If !QRYEXCL->( Eof() ) 
+						cLog := 'Excluindo Registros...'
+					Else
+						cLog := 'N�o foram encontrados registros para exclus�o...'	
+					EndIf
+
+					aadd(aLog, cLog)
+					while !QRYEXCL->( Eof() )
+						
+						Z30->(DbGoTo(QRYEXCL->R_E_C_N_O_))
+						if Reclock("Z30", .F.)
+							Z30->(DbDelete())						
+							Z30->(MsUnlock())
+							
+							cLog := 'EXCLUIDO >> Recno: ' + cValtoChar(QRYEXCL->R_E_C_N_O_) + " Indice 1: " + Z30->(&(IndexKey(1)))
+							aadd(aLog, cLog)
+						else
+							cLog := 'Falha ao tentar excluir registros! Processo abortado!'
+							aadd(aLog, cLog)
+							lProc := .F.
+							Exit
+						endif
+						QRYEXCL->(DbSkip())
+				  	enddo
+				else
+					cLog := 'Exclus�o! Abortado pelo Usu�rio!'
+					aadd(aLog, cLog)
+					lProc := .F.				
+				endif
+			endif
+		endif
+		
+		//processa grava��es
+		if lProc
+		
+			ProcRegua(Len(aDados))
+			For nI:=1 to  Len(aDados)				
+				
+				IncProc("Processando Grava��es...")
+					_nTotReg++	
+				    cFilOld:=cFilAnt			
+				    cFilant:=aDados[nI][aScan(aCampos,"Z30_FILIAL" )]
+						
+					Reclock("Z30", .T.) //inclui
+						Z30->Z30_FILIAL := xFilial("Z30")				
+						Z30->Z30_ORIGEM	:= AllTrim(aDados[nI][aScan(aCampos,"Z30_ORIGEM"	 )])
+						Z30->Z30_FILORI	:= aDados[nI][aScan(aCampos,"Z30_FILORI"	 )]
+						Z30->Z30_DTLANC	:= aDados[nI][aScan(aCampos,"Z30_DTLANC"	 )]
+						Z30->Z30_EMISSA	:= aDados[nI][aScan(aCampos,"Z30_EMISSA" )]
+						
+						If(nI > 1)
+							cRepAnt := AllTrim(aDados[nI-1][25])	
+						EndIf
+						//Z30->Z30_DOC	:= aDados[nI][aScan(aCampos,"Z30_DOC" )]
+						
+						cProvisao := AllTrim("P"+SeqDoc("Z30","Z30_PROVIS","",8,"Z30_ORIGEM = '"+AllTrim(aDados[nI][1])+"' ",AllTrim(aDados[nI][25]),cRepAnt))
+						Z30->Z30_DOC	:= cProvisao //AllTrim("P"+SeqDoc("Z30","Z30_PROVIS","",8,"Z30_ORIGEM = '"+AllTrim(aDados[nI][1])+"' ",AllTrim(aDados[nI][25]),cRepAnt))
+						Z30->Z30_PROVIS := StrTran(cProvisao,"P","")//SeqDoc("Z30","Z30_PROVIS","",8,"Z30_ORIGEM = '"+AllTrim(aDados[nI][1])+"' ",AllTrim(aDados[nI][25]),cRepAnt)
+                        Z30->Z30_SEQ	:= ProxNum() //Corrigir Caique est� pegando Nunsque errado
+						Z30->Z30_NFORIG	:= aDados[nI][aScan(aCampos,"Z30_NFORIG"  )]
+						Z30->Z30_CONTAB	:= aDados[nI][13]
+						Z30->Z30_PARCEI	:= aDados[nI][aScan(aCampos,"Z30_PARCEI" )]
+						Z30->Z30_LOJA	:= aDados[nI][aScan(aCampos,"Z30_LOJA" )]
+						Z30->Z30_NOME	:= Posicione("SA2",1,xFilial("SA2")+AllTrim(aDados[nI][08])+aDados[nI][09],"A2_NOME")
+						Z30->Z30_IDPROD	:= aDados[nI][aScan(aCampos,"Z30_IDPROD"   )]
+						Z30->Z30_DESC	:= Posicione("SB1",1,xFilial("SB1")+aDados[nI][10],"B1_DESC")
+						Z30->Z30_GASTO	:= aDados[nI][aScan(aCampos,"Z30_GASTO" 	 )]
+						Z30->Z30_CLASSE	:= aDados[nI][aScan(aCampos,"Z30_CLASSE" )]
+						Z30->Z30_DESCLA	:= Posicione("AK6",1,xFilial("AK6")+AllTrim(aDados[nI][12]),"AK6_DESCRI")
+						Z30->Z30_PACOTE	:= Posicione("AK6",1,xFilial("AK6")+AllTrim(aDados[nI][12]),"AK6_XPACOT")
+						Z30->Z30_DESPAC := Posicione("ZCD",1,xFilial("ZCD")+Z30->Z30_PACOTE,"ZCD_DESCR")
+						Z30->Z30_CONTA	:= aDados[nI][07]
+						Z30->Z30_DESCON	:= Posicione("CT1",1,xFilial("CT1")+AllTrim(aDados[nI][07]),"CT1_DESC01")
+						Z30->Z30_CDC	:= aDados[nI][aScan(aCampos,"Z30_CDC"  )]
+						Z30->Z30_DESCDC	:= Posicione("CTT",1,xFilial("CTT")+AllTrim(aDados[nI][14]),"CTT_DESC01")
+						Z30->Z30_DESPES	:= Posicione("CTT",1,xFilial("CTT")+AllTrim(aDados[nI][14]),"CTT_XCD") 
+                        Z30->Z30_RESPON := Posicione("CTT",1,xFilial("CTT")+AllTrim(aDados[nI][14]),"CTT_XRESP") 
+						Z30->Z30_MES	:= aDados[nI][aScan(aCampos,"Z30_MES" )]
+                        Z30->Z30_VALORI := aDados[nI][aScan(aCampos,"Z30_VALORI" )]
+                        Z30->Z30_QTD    := aDados[nI][aScan(aCampos,"Z30_QTD" )]
+                        Z30->Z30_UNITAR := aDados[nI][aScan(aCampos,"Z30_UNITAR" )]
+                        Z30->Z30_TOTAL  := aDados[nI][aScan(aCampos,"Z30_TOTAL" )]
+                        Z30->Z30_DESCF  := aDados[nI][aScan(aCampos,"Z30_DESCF" )]
+                        Z30->Z30_REALIZ := aDados[nI][aScan(aCampos,"Z30_REALIZ" )]
+                        Z30->Z30_TPSALD := aDados[nI][aScan(aCampos,"Z30_TPSALD" )]
+                        Z30->Z30_HISTOR := aDados[nI][aScan(aCampos,"Z30_HISTOR" )]
+						
+						//_alias, _campo, _filial, _ntam, _where, _repAtu, _repAnt, _lDelet
+						/*
+						If(nI > 1)
+							//Z30->Z30_HISTOR	:= AllTrim("P"+SeqDoc("Z30","Z30_HISTOR","",8,"Z30_ORIGEM = '"+AllTrim(aDados[nI][1])+"' ",AllTrim(aDados[nI][26])))
+							cRepAnt := AllTrim(aDados[nI-1][27])	
+						EndIf
+						
+						Z30->Z30_HISTOR	:= AllTrim("P"+SeqDoc("Z30","Z30_HISTOR","",8,"Z30_ORIGEM = '"+AllTrim(aDados[nI][1])+"' ",AllTrim(aDados[nI][27]),cRepAnt))
+						*/
+                        Z30->Z30_FILNOM := aDados[nI][aScan(aCampos,"Z30_FILNOM" )]
+                        //Z30->Z30_DTENC  := aDados[nI][aScan(aCampos,"Z30_DTENC" )]
+						//Z30->Z30_DTENC  := aDados[nI][26]
+						Z30->Z30_STATUS := 'S' //Provis�o
+                        Z30->Z30_USER   := UsrRetName(RetCodUsr()) 
+                        Z30->Z30_IDREG  := cValToChar(nKey)+'-'+cComp//aDados[nI][aScan(aCampos,"Z30_IDREG" )]						
+
+					Z30->(MsUnlock())	
+					cFilAnt:=cFilOld							
+			Next nI
+			
+			cLog := 'Processo finalizado com sucesso! Importados '+ AllTrim(Str(_nTotReg)) + ' registros' 
+			aadd(aLog, cLog)
+			EndTran() 
+		else
+			cLog := 'Desfazendo grava��es realizadas... OK'
+			aadd(aLog, cLog)
+			DisarmTransaction()
+		endif
+		
+	endif
+	
+	if lProc
+		if MsgYesNo('Arquivo importado com sucesso! Deseja ver arquivo de LOG?')
+			ShowLog(aLog)
+		endif
+	else
+		if MsgYesNo('Arquivo n�o processado por erros! Deseja ver arquivo de LOG?')
+			ShowLog(aLog)
+		endif
+	endif
+	
+	
+RestArea(aArea)
+
+Return 
+
+//-------------------------------------------------------------------
+// Faz ajustedo valor de acordo com tipo
+//-------------------------------------------------------------------
+Static Function AjustaVal(xValor, cTipo, cCampo)
+
+	if cTipo == "C"
+		xValor := PadR(xValor, TamSx3(cCampo)[1])
+	
+	elseif cTipo == 'D'
+        xValor := StoD(xValor)
+
+	elseif cTipo == "N"
+		xValor := Val(StrTran(StrTran(xValor,".",""),",","."))
+		//Ver se importar com valor Negativos Ok
+		//if xValor < 0
+			//xValor := xValor * (-1)
+		//Endif
+	endif
+	
+Return xValor
+
+//-------------------------------------------------------------------
+// Relat�rio de impress�o de log
+//-------------------------------------------------------------------
+Static Function ShowLog(aLog)
+
+	Local oReport := TReport():New("GMDPROV","Log de Importa��o Provis�o GMD",/*SX1*/,{|oReport| PrintReport(oReport, aLog)},"Este relatorio ira imprimir a relacao de logs de importa��o Provis�o.") 
+	Local oSection := TRSection():New(oReport,OemToAnsi("Log de Importa��o Arquivos"),{"TMP"})	
+	
+	TRCell():New(oSection,"ITEMLOG"	,"TMP", "Descricao do Log", ,200)
+	
+	//oReport:PrintDialog()
+	oReport:Print()	
+
+Return	
+
+//-------------------------------------------------------------------
+// Relat�rio de impress�o de log
+//-------------------------------------------------------------------	
+Static Function PrintReport(oReport, aLog)
+
+	Local oSection 	:= oReport:Section(1)
+	Local nX 		:= 1
+	
+	oReport:SetMeter(len(aLog))
+	
+	oSection:Init()
+	
+	For nX := 1 to len(aLog)
+		
+		If oReport:Cancel()
+			Exit
+		EndIf
+		
+		oSection:Cell("ITEMLOG"):SetValue(aLog[nX])
+		oSection:PrintLine()
+		
+		oReport:IncMeter()
+	Next nX
+	
+	oSection:Finish()
+
+Return
+
+Static Function SeqDoc(_alias, _campo, _filial, _ntam, _where, _repAtu, _repAnt, _lDelet)
+
+	Local _cLocal	:= getarea()
+	Local _cProx	:= ""
+	Local _cCampo	:= _campo
+	Local _cAlias	:= _alias
+	Local _cFilial	:= _filial
+	Local _cRepAtu	:= _repAtu
+	Local _cRepAnt  := _repAnt
+	Default _where  := ""
+	Default _lDelet := .T.
+
+	
+	If Empty(_cCampo) .or. Empty(_cAlias)
+		Return nil
+	Endif
+
+	cQry := "SELECT (MAX(SUBSTR("+_cCampo+",1,8))) PROX "
+	cQry += " FROM " + RetSqlName(_cAlias)
+	if _lDelet
+		cQry += " WHERE D_E_L_E_T_ <> '*' "
+	endif
+
+	If !Empty(_cFilial)
+		if "WHERE" $ cQry
+			cQry += " AND "
+		else
+			cQry += " WHERE "
+		endif
+		//preenche filial do alias
+		If Left(_cAlias,1)<>"S"
+			cQry += _cAlias+"_FILIAL = '"+_cFilial+"' " //ZZZ_FILIAL := xfilial("ZZZ")
+		Else
+			cQry += right(_cAlias,2)+"_FILIAL = '"+_cFilial+"' " //Z1_FILIAL := xfilial("SZ1")
+		Endif
+	EndIf
+
+	
+	If !Empty(_where)
+		if "WHERE" $ cQry
+			cQry += " AND "
+		else
+			cQry += " WHERE "
+		endif
+		cQry += _where
+	EndIf
+
+	If Select("QAUX") > 0
+		QAUX->(dbCloseArea())
+	EndIf
+
+	cQry := ChangeQuery(cQry)
+	dbUseArea(.T.,"TOPCONN", TCGenQry(,,cQry), "QAUX", .F., .T.)
+		
+		_cProx := " "
+
+		If Empty(QAUX->PROX)
+			_cProx := '00000001'
+		
+		ElseIf(Empty(_cRepAnt))
+			_cProx := Soma1(QAUX->PROX) 
+			
+			FreeUsedCode()
+			While !MayIUseCode( _cAlias + xFilial(_cAlias) + _cProx  )
+				_cProx := Soma1(_cProx)//_nAux += 1
+			EndDo
+		
+		ElseIf( (_cRepAtu == 'N' .And. _cRepAnt  == 'R')  .OR. (_cRepAtu == 'N' .And. _cRepAnt  == 'N')  ) 
+			_cProx := Soma1(QAUX->PROX)
+
+			FreeUsedCode()
+			While !MayIUseCode( _cAlias + xFilial(_cAlias) + _cProx  )
+				_cProx := Soma1(_cProx)//_nAux += 1
+			EndDo
+
+		Else
+			_cProx := QAUX->PROX		
+				
+		EndIf
+/*
+	If Empty(QAUX->PROX)
+		_cProx := '00000001'
+		ElseIf(Empty(_cRepAnt))
+			_cProx := Soma1(QAUX->PROX) 
+			
+			FreeUsedCode()
+			While !MayIUseCode( _cAlias + xFilial(_cAlias) + _cProx  )
+				_cProx := Soma1(_cProx)//_nAux += 1
+			EndDo
+		
+		ElseIf(_cRepAtu == 'R' .And. _cRepAnt  == 'R'   )
+			_cProx := QAUX->PROX
+		Else
+			_cProx := Soma1(QAUX->PROX) 
+			
+			FreeUsedCode()
+			While !MayIUseCode( _cAlias + xFilial(_cAlias) + _cProx  )
+				_cProx := Soma1(_cProx)//_nAux += 1
+			EndDo
+				
+	EndIf
+*/
+	If Select("QAUX") > 0
+		QAUX->(dbCloseArea())
+	EndIf
+
+	restarea( _cLocal )
+
+Return _cProx

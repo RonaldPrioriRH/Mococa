@@ -1,0 +1,3377 @@
+#include 'totvs.ch'
+#INCLUDE 'PROTHEUS.CH'
+#INCLUDE "rwmake.ch"
+#INCLUDE "topconn.ch"
+
+#Define CRLF chr(13)+chr(10)
+
+/*/{Protheus.doc} FatTriang
+
+Classe responsável por fazer processamentos do processo de faturamento triangular.
+
+@author Danilo Brito
+@since 02/03/2017
+@version P12
+@param Nao recebe parametros
+@return nulo
+/*/
+
+CLASS FatTriang
+
+	DATA lShowMsg
+	DATA cMsgErro
+	DATA cFilVen	//Filial de Venda
+	DATA cFilEst	//Filial de Estoque
+	DATA cFilInt	//Filial Intermediaria
+	DATA cTipo 		//Tipo Processamento: 1=Por Carga, 2=Por Pedido
+	DATA cIdTriang	//Id da Triangulação
+	DATA aPvSolicit	//Array de numero de pedidos da Solicitação de Triangulação
+	DATA aItSolicit	//Array de Itens da Solicitação de Triangulação
+	DATA aRecPvFE 	//Recno do pedido de transferência na FE gerado pela solicitação
+	DATA aNumPvFE   //Numero do pedido de transferência na FE gerado pela solicitação
+	DATA aPvNfFE 	//Array de numero de pedidos da Nf Transferencia FE
+	DATA aItNfFE 	//Array de Itens da Nf Transferencia FE
+	DATA aPvNfFI 	//Array de numero de pedidos da Nf Transferencia FI
+	DATA aItNfFI 	//Array de Itens da Nf Transferencia FI
+	DATA aPvNfFV 	//Array de numero de pedidos da Nf Transferencia FV
+	DATA aSF2_FE	//Notas fiscais de saida FE
+	DATA aSF2_FI	//Notas fiscais de saida FI
+	DATA aSF1_FI	//Notas fiscais de entrada FI
+	DATA aSF1_FV	//Notas fiscais de entrada FV
+	DATA aProcLog	//Processos a mostrar no grid de log processamento
+	DATA cProcExec	//Proximo Processo a executar
+
+	//----------------- Metodos MANIPULAÇAO OBJETO --------------------\\
+	//Metodo construtor da classe
+	METHOD New(lShowMsg) CONSTRUCTOR
+
+	//Metodo Interno para mostrar erros de processamento
+	METHOD ShowError(lInfo, lMostraErro)
+
+	//Metodo para obter erros de processamento
+	METHOD GetError()
+
+	//Metodo destrutor da classe
+	METHOD Destroy()
+
+
+	//----------------- Metodos para SOLICITAÇÃO --------------------\\
+	//Metodo para fazer a solicitação da triangulação
+	METHOD AbreSolicitacao(cPedido, cCarga, lAuto)
+
+	//Metodo para validar se pode continuar a solicitação de triangulação, para carga ou pedido
+	METHOD VldSolicitacao(cPedido, cCarga)
+
+	//Metodo para montar tela de solicitação da triangulação
+	METHOD TelaSolicitacao()
+
+	//Metodo para montar grid de itens da solicitação
+	METHOD DoGridSol(oDlg, nTop, nLeft, nBottom, nRight)
+
+	//Metodo para gravar solicitação da triangulação
+	METHOD GravaSolicitacao()
+
+	//Metodo para gravar um pedido de venda na Fil Estoque
+	METHOD GerarPvEst(cFilPV, aItens, cCli, cLoj, cCondPg, cC6Oper, cTipPrc, cTabPrc, nIndPrc, lLibEst, lEmpDif, cTranspDAK)
+
+	//Metodo para obter o Recno do Pedido de Transferencia da FE gerado pela solicitação
+	METHOD GetRecnoPvFE()
+
+	//Metodo para obter o numero do Pedido de Transferencia da FE gerado pela solicitação
+	METHOD GetNumPvFE()
+
+	//----------------- Metodos para NF TRANSFERÊNCIA --------------------\\
+	//Metodo para fazer/acompanhar NF de transferência dos itens para filial de venda
+	METHOD NfTransferencia(cIdTriang)
+
+	//Metodo para validar o Id Triangulaçao se pode ou não executar processos
+	METHOD VldIdTriangNf()
+
+	//Metodo para montar tela de Nf Transferência
+	METHOD TelaNfTransf()
+
+	//Metodo para montar grid de itens da Nf Transferência
+	METHOD DoGridNfTran(oDlg, nTop, nLeft, nBottom, nRight)
+
+	//Metodo para montar grid de log de processamento
+	METHOD DoGridLogProc(oDlg, nTop, nLeft, nBottom, nRight)
+
+	//Metodo para definir processos que serão executados e verificados
+	METHOD MontaProcLog()
+
+	//Metodo para atualizar o status do processamento (grid log)
+	METHOD AtuStatusProc()
+
+	//Metodo para executar processos pendentes
+	METHOD DoProcNfTran(nRecDAK, nRecSC5)
+
+	//Metodo para faturar o pedido posicionado
+	METHOD GerarDocSaida(cProcess, cFilPv, aPvOri, aItOri, aNotas)
+
+	//Metodo para transmissão da NFe
+	METHOD TransmiteNFe(cProcess, cFilNF, aNotas)
+
+	//Metodo para monitorar a transmissão/retorno SEFAZ da NFe
+	METHOD MonitorarNFe(cProcess, cFilNF, aNotas)
+
+	//Metodo para impressao da DANFE
+	METHOD ImpDANFE(cProcess, cFilNF, aNotas)
+
+	//Metodo para gerar documento de entrada
+	METHOD GerarDocEntrada(cProcess, cFilDoc, cFilOri, aNFSaida, aNFEntra)
+
+	//Metodo para gerar Pedido de Venda intermediario
+	METHOD GerarPVInt(cProcess)
+
+	//Metodo para verificar se item do pedido ja está foi transferido para a filial
+	METHOD VldItemTrf(cChavItem, cFilPv)
+
+	//Metodo para distribuir os lotes no pedido
+	METHOD DistribuiLotes(cProcess, aSF1)
+
+	//----------------- Metodos AUXILIARES GERAIS --------------------\\
+	//Metodo para obter sequencial da triangulação
+	METHOD GetIdTriang()
+
+	//Metodo para posicionar no cliente da filial
+	METHOD PosCliFil(cFilGet, cCli, cLoj)
+
+	//Metodo para posicionar no fornecedor da filial
+	METHOD PosForFil(cFilGet, cForn, cLoj)
+
+	//Metodo para obter o preço unitario do pedido
+	METHOD GetPrcUnit(cTipPrc, cTabPrc, cProdut, nPrcVend, nIndPrc )
+
+	//Metodo para criar perguntas da chave
+	METHOD CriaSX1(cPerg)
+
+	// Verifica se mesmo com erro no execauto, o pedido foi incluido.
+	METHOD VerifIncPV(cFilPV)
+
+	// Valida se conseguiu liberar os estoques.
+	METHOD ValidBlqEst(aPedVen, cFilPv)
+
+	//Pega o tipo da Carga
+	METHOD GetTipoCarga()
+
+ENDCLASS
+
+
+//********************************** Metodos MANIPULAÇAO OBJETO ************************************\\
+
+//-----------------------------------------------------------------
+// Metodo Contrutor da Classe
+//-----------------------------------------------------------------
+METHOD New(lShowMsg) CLASS FatTriang
+
+	Default lShowMsg := .T.
+
+	//inicializando variaveis
+	::lShowMsg	:= lShowMsg
+	::cMsgErro	:= ""
+	::cFilVen	:= ""
+	::cFilEst	:= ""
+	::cFilInt	:= ""
+	::cTipo 	:= ""
+	::cIdTriang	:= ""
+	::aPvSolicit := {}
+	::aItSolicit := {}
+	::aRecPvFE  := {}
+	::aNumPvFE  := {}
+	::aPvNfFE := {}
+	::aItNfFE := {}
+	::aPvNfFI := {}
+	::aItNfFI := {}
+	::aSF2_FE := {}
+	::aSF2_FI := {}
+	::aSF1_FI := {}
+	::aSF1_FV := {}
+	::aProcLog  := {}
+	::cProcExec := "DOCSFE"
+
+Return
+
+//-----------------------------------------------------------------
+// Metodo para mostrar erro em tela ou via conout
+//-----------------------------------------------------------------
+METHOD ShowError(lInfo, lMostraErro) CLASS FatTriang
+	Default lInfo := .T.
+	Default lMostraErro := .F.
+	if !empty(::cMsgErro)
+		if ::lShowMsg
+			if lInfo
+				MsgInfo(::cMsgErro,"Atenção!")
+			else
+				MsgStop(::cMsgErro,"Atenção!")
+			endif
+			if lMostraErro
+				MostraErro()
+			endif
+		else
+			Conout(">> CLASS FatTriang: " + ::cMsgErro)
+		endif
+	endif
+Return
+
+//-----------------------------------------------------------------
+// Metodo para retornar erro
+//-----------------------------------------------------------------
+METHOD GetError() CLASS FatTriang
+Return ::cMsgErro
+
+//-----------------------------------------------------------------
+// Metodo para destrutor da classe
+//-----------------------------------------------------------------
+METHOD Destroy() CLASS FatTriang
+	//freeObj(self)
+Return
+
+
+//********************************** Metodos para SOLICITAÇÃO **********************************\\
+
+//-----------------------------------------------------------------
+//Metodo para fazer a solicitação da triangulação
+//-----------------------------------------------------------------
+METHOD AbreSolicitacao(cPedido, cCarga, lAuto) CLASS FatTriang
+
+	Local lOK	:= .F.
+	Local lRet  := .F.
+	Local cPerg := "TBCFTRI1"
+
+	Default cPedido := ""
+	Default cCarga  := ""
+	Default lAuto := .F.
+
+	::cFilVen := cFilAnt
+
+	if empty(cPedido+cCarga)
+		::CriaSX1(cPerg)
+
+		while Pergunte(cPerg, .T.) //Chama a tela de parametros
+			if !empty(MV_PAR01+MV_PAR02)
+				cCarga  := MV_PAR01
+				cPedido := MV_PAR02
+				lOK := .T.
+				EXIT
+			endif
+		enddo
+	else
+		lOK := .T.
+	endif
+
+	if lOK
+		::cTipo := iif(empty(cCarga),"2","1") //1=Por Carga, 2=Por Pedido
+
+		if lRet := ::VldSolicitacao(cPedido, cCarga)
+
+			if lAuto //se automatico, gravo direto
+				MsAguarde({|| lRet := ::GravaSolicitacao() },"Aguarde...","Gerando pedido de transferência...",.T.)
+			else //senao abro tela
+				lRet := ::TelaSolicitacao()
+			endif
+
+		endif
+	endif
+
+Return lRet
+
+//-----------------------------------------------------------------------------------------
+//Metodo para validar se pode continuar a solicitação de triangulação, para carga ou pedido
+//Também é populado as variaveis de dados: aPvSolicit,aItSolicit,cFilEst,cFilInt
+//-----------------------------------------------------------------------------------------
+METHOD VldSolicitacao(cPedido, cCarga) CLASS FatTriang
+
+	Local lRet := .T.
+	//Local nX := 0
+	//Local aTES := {}
+	Local cSeq := "00"
+	Local cPVFin := ""
+
+	if ::cTipo == '1' //se por carga
+
+		DbSelectArea("DAK")
+		DAK->(DbSetOrder(1)) //DAK_FILIAL+DAK_COD+DAK_SEQCAR
+		if DAK->(DbSeek(xFilial("DAK")+cCarga))
+			if DAK->DAK_FEZNF == '2' .And. DAK->DAK_ACECAR == '2'.And.(DAK->DAK_BLQCAR == '2' .Or. DAK->DAK_BLQCAR == ' ') .And. (DAK->DAK_JUNTOU=='MANUAL'.Or.DAK->DAK_JUNTOU=='ASSOCI'.Or.DAK->DAK_JUNTOU=='JUNTOU')
+				if empty(DAK->DAK_XIDTRI)
+					//percorro pedidos da carga
+					DbSelectArea("DAI")
+					DAI->(DbSetOrder(1)) //DAI_FILIAL+DAI_COD+DAI_SEQCAR+DAI_SEQUEN+DAI_PEDIDO
+					DAI->( dbSeek(xFilial("DAI") + DAK->DAK_COD) )
+					while DAI->(!EOF()) .And. DAI->DAI_FILIAL+DAI->DAI_COD == xFilial("DAI")+DAK->DAK_COD
+
+						//verifico se o pedido foi replicado para outra filial
+						SC5->(DbSetOrder(1))
+						SC5->(dbSeek(xFilial("SC5") + DAI->DAI_PEDIDO))
+						if empty(SC5->C5_XFILEST)
+							::cMsgErro := "Há pedidos na carga que não estão marcados para retirar estoque em outra filial."
+							::ShowError()
+							::aPvSolicit := {}
+							lRet := .F.
+							EXIT
+							//Validação para não deixar Triangular sem antes faturar o PVFinanceiro primeiro
+							if !empty(SC5->C5_XPVREMS)
+								cPVFin := PVFin(SC5->C5_XPVREMS)
+								If empty(Posicione("SD2",8,xFilial("SD2")+cPVFin,"D2_DOC"))
+									::cMsgErro := "Pedido Financeiro:"+cPVFin+" no Protheus deve estar faturado primeiro! Ação nao permitida."
+									::ShowError()
+									::aPvSolicit := {}
+									lRet := .F.
+									EXIT
+								endif
+							Endif
+						else
+							if empty(::cFilEst)
+								::cFilEst := SC5->C5_XFILEST
+								::cFilInt := SC5->C5_XFILINT
+							elseif SC5->C5_XFILEST <> ::cFilEst
+								::cMsgErro := "Não é permitido pedidos com retirada de estoque em mais de uma filial, na mesma carga."
+								::ShowError()
+								::aPvSolicit := {}
+								lRet := .F.
+								EXIT
+							endif
+						endif
+
+						aAdd(::aPvSolicit, SC5->C5_NUM)
+
+						SC9->(DbSetOrder(5)) //C9_FILIAL+C9_CARGA+C9_SEQCAR+C9_SEQENT
+						SC9->(DbSeek(xFilial("SC9")+DAI->DAI_COD+DAI->DAI_SEQCAR+DAI->DAI_SEQUEN ))
+						While SC9->(!Eof()) .AND. SC9->C9_FILIAL+SC9->C9_CARGA+SC9->C9_SEQCAR+SC9->C9_SEQENT == xFilial("SC9")+DAI->DAI_COD+DAI->DAI_SEQCAR+DAI->DAI_SEQUEN
+
+							SC6->(DbSetOrder(1)) //C6_FILIAL+C6_NUM+C6_ITEM+C6_PRODUTO
+							SC6->(dbSeek( SC9->C9_FILIAL+SC9->C9_PEDIDO+SC9->C9_ITEM ) )
+							SB1->(DbSetOrder(1))
+							SB1->( dbSeek(xFilial("SB1")+SC6->C6_PRODUTO) )
+
+							//verifico tes
+							/*if aScan(aTES, SC6->C6_TES)==0
+							aadd(aTES, SC6->C6_TES)
+							endif*/
+
+							cSeq := Soma1(cSeq)
+
+							aAdd(::aItSolicit, {cSeq ,;
+							SC6->C6_NUM,;
+							SC6->C6_ITEM,;
+							SC6->C6_PRODUTO,;
+							SB1->B1_DESC,;
+							SC6->C6_QTDVEN,;
+							SC6->C6_UM,;
+							SC5->C5_EMISSAO,;
+							SC5->C5_CLIENTE,;
+							SC5->C5_LOJACLI,;
+							Posicione("SA1",1,xFilial("SA1")+SC5->C5_CLIENTE+SC5->C5_LOJACLI,"A1_NOME"),;
+							SC6->(Recno()),;
+							.F.; //deleted
+							});
+
+
+							SC9->(DbSkip())
+						enddo
+
+						DAI->(DbSkip())
+					enddo
+				else
+					::cMsgErro := "Carga informada já possui solicitação de Triangulação."
+					::ShowError()
+					lRet := .F.
+				endif
+			else
+				::cMsgErro := "Carga informada com bloqueio ou ja faturada."
+				::ShowError()
+				lRet := .F.
+			endif
+		else
+			::cMsgErro := "Carga informada não encontrada nesta Filial."
+			::ShowError()
+			lRet := .F.
+		endif
+
+	else //por Pedido
+
+		DbSelectArea("SC5")
+		SC5->(DbSetOrder(1))
+		if SC5->(DbSeek(xFilial("SC5")+cPedido))
+			if empty(SC5->C5_XFILEST)
+				::cMsgErro := "Pedido informado não marcado para retirar estoque em outra filial."
+				::ShowError()
+				lRet := .F.
+			elseif Empty(SC5->C5_LIBEROK) .And. Empty(SC5->C5_NOTA) .And. Empty(SC5->C5_BLQ)
+				::cMsgErro := "Pedido não liberado."
+				::ShowError()
+				lRet := .F.
+			elseif !empty(SC5->C5_NOTA)
+				::cMsgErro := "Pedido ja faturado. Ação não permitida."
+				::ShowError()
+				lRet := .F.
+			elseif !empty(SC5->C5_XIDTRI)
+				::cMsgErro := "Pedido já possui solicitção de Triangulação."
+				::ShowError()
+				lRet := .F.
+			elseif !empty(SC5->C5_BLQ) .OR. SC5->C5_LIBEROK == 'E'
+				::cMsgErro := "Pedido com bloqueio ou elminiado residuo."
+				::ShowError()
+				lRet := .F.
+			elseif U_CORX(SC5->C5_NUM)
+				::cMsgErro := "Pedido com bloqueio de Crédito."
+				::ShowError()
+				lRet := .F.
+			else
+
+				DbSelectArea("DAI")
+				DAI->(DbSetOrder(4)) //DAI_FILIAL+DAI_PEDIDO+DAI_COD+DAI_SEQCAR
+				if DAI->( dbSeek(xFilial("DAI") + SC5->C5_NUM) )
+					::cMsgErro := "Pedido informado está vinculado a carga "+DAI->DAI_COD+". Ação não permitida."
+					::ShowError()
+					lRet := .F.
+				else //tudo ok
+
+					aAdd(::aPvSolicit, SC5->C5_NUM)
+
+					::cFilEst := SC5->C5_XFILEST
+					::cFilInt := SC5->C5_XFILINT
+
+					SB1->(DbSetOrder(1))
+					SC6->(DbSetOrder(1))
+					SC6->(dbSeek(xFilial("SC6") + SC5->C5_NUM) )
+					While SC6->(!Eof()) .AND. SC6->C6_FILIAL+SC6->C6_NUM == xFilial("SC6")+SC5->C5_NUM
+
+						//verifico tes
+						/*if aScan(aTES, SC6->C6_TES)==0
+						aadd(aTES, SC6->C6_TES)
+						endif*/
+
+						SB1->( dbSeek(xFilial("SB1")+SC6->C6_PRODUTO) ) //posiciono no produto
+
+						cSeq := Soma1(cSeq)
+
+						aAdd(::aItSolicit, {cSeq ,;
+						SC6->C6_NUM,;
+						SC6->C6_ITEM,;
+						SC6->C6_PRODUTO,;
+						SB1->B1_DESC,;
+						SC6->C6_QTDVEN,;
+						SC6->C6_UM,;
+						SC5->C5_EMISSAO,;
+						SC5->C5_CLIENTE,;
+						SC5->C5_LOJACLI,;
+						Posicione("SA1",1,xFilial("SA1")+SC5->C5_CLIENTE+SC5->C5_LOJACLI,"A1_NOME"),;
+						SC6->(Recno()),;
+						.F.; //deleted
+						});
+
+						SC6->(DbSkip())
+					enddo
+
+				endif
+			endif
+		else
+			::cMsgErro := "Pedido informado não encontrado nesta Filial."
+			::ShowError()
+			lRet := .F.
+		endif
+	endif
+
+	//verificação do campo F4_XTESTRF da tes utilizada no pedido
+	/*if lRet
+	SF4->( dbSetOrder(1))
+	for nX := 1 to len(aTES)
+	if SF4->( dbSeek(xFilial("SF4") + aTES[nX] ) ) .AND. empty(SF4->F4_XTESTRF)
+	::cMsgErro := "A TES "+aTES[nX]+" utilizada no pedido "+::aPvSolicit[nX]+" não está configurada para esse processo. Campo F4_XTESTRF."
+	::ShowError()
+	lRet := .F.
+	::aPvSolicit := {}
+	::aItSolicit := {}
+	EXIT
+	endif
+	next nX
+	endif*/
+
+Return lRet
+
+//-----------------------------------------------------------------
+//Metodo para montar tela de solicitação da triangulação
+//-----------------------------------------------------------------
+METHOD TelaSolicitacao() CLASS FatTriang
+
+	Local lRet := .F.
+	Local nRecDAK, nRecSC5
+
+	//dimensionamento de tela e componentes
+	Local aSize 	:= MsAdvSize() // Retorna a área útil das janelas Protheus
+	Local aInfo 	:= {aSize[1], aSize[2], aSize[3], aSize[4], 2, 2}
+	Local aPObj 	:= MsObjSize(aInfo, {{ 100, 100, .T., .T.}, { 100, 000, .T., .F.}})
+
+	//enchoicebar
+	Local bOk := {|| MsAguarde({|| lRet := ::GravaSolicitacao(), oDlg:End() },"Aguarde...","Gerando pedido de transferência...",.T.) }
+	Local bCancel := {|| oDlg:End() }
+	Local aButtons := {}
+	Local oFontTitle := TFont():New('Arial',,23,.T.,.F.)
+	Local oFontGrid := TFont():New('Arial',,18,.T.,.T.)
+	Local nCorGrid	:= 7888896
+
+	//variáveis de dados
+	Private cCadastro := "Solicitação de Triangulação"
+	Private cSC5
+	Private cDAK
+
+	//variaveis objetos da tela
+	Private oDlg
+	Private oGridItens
+
+	if ::cTipo == '1' //se por carga
+		//faço lock na carga
+		nRecDAK := DAK->(Recno())
+		cDAK := DAK->DAK_COD
+		cSC5 := ""
+		SoftLock("DAK")
+	else
+		//faço lock no pedido
+		nRecSC5 := SC5->(Recno())
+		cDAK := ""
+		cSC5 := SC5->C5_NUM
+		SoftLock("SC5")
+	endif
+
+	//começa montagem do DLG
+	DEFINE MSDIALOG oDlg TITLE cCadastro FROM aSize[7],aSize[1] TO aSize[6],aSize[5] PIXEL OF GetWndDefault() STYLE nOr(WS_VISIBLE, WS_POPUP)
+
+	//barra de menus e titulo
+	EnchoiceBar(oDlg, bOk, bCancel,.F.,@aButtons,0,"SC5", .F., .F., .T., .T., .F.)
+
+	//campos da tela
+	TSay():New( 38,10,{|| "Data Solicit." }, oDlg,,,,,,.T.,CLR_BLACK,,50,9 )
+	TGet():New( 35,45,{|u| dDataBase },oDlg,50,12,,/*bValid*/,,,,.F.,,.T.,,.F.,{|| .T.},.F.,.F.,/*bChange*/,.T.,.F.,,"",,,,.T.,.F.)
+
+	TSay():New( 38,120,{|| "Solicitante" }, oDlg,,,,,,.T.,CLR_BLACK,,50,9 )
+	TGet():New( 35,155,{|u| USRRETNAME(RETCODUSR()) },oDlg,50,12,,/*bValid*/,,,,.F.,,.T.,,.F.,{|| .T.},.F.,.F.,/*bChange*/,.T.,.F.,,"",,,,.T.,.F.)
+
+	TSay():New( 38,230,{|| "Cod.Carga" }, oDlg,,,,,,.T.,CLR_BLACK,,50,9 )
+	TGet():New( 35,270,{|u| cDAK },oDlg,50,12,,/*bValid*/,,,,.F.,,.T.,,.F.,{|| .T.},.F.,.F.,/*bChange*/,.T.,.F.,,"",,,,.T.,.F.)
+
+	TSay():New( 38,340,{|| "Num.Pedido" }, oDlg,,,,,,.T.,CLR_BLACK,,50,9 )
+	TGet():New( 35,370,{|u| cSC5 },oDlg,50,12,,/*bValid*/,,,,.F.,,.T.,,.F.,{|| .T.},.F.,.F.,/*bChange*/,.T.,.F.,,"",,,,.T.,.F.)
+
+	//grid Itens
+	TSay():New( aPObj[1,1]+25,07,{|| "Itens da Solicitação" }, oDlg,,oFontGrid,,,,.T.,nCorGrid,,200,15 )
+	TSay():New( aPObj[1,1]+25,aPObj[1,2],{|| Replicate("_",aPObj[1,4]) }, oDlg,,oFontTitle,,,,.T.,nCorGrid,,aPObj[1,4],15 )
+
+	oGridItens := ::DoGridSol(oDlg, aPObj[1,1]+38, aPObj[1,2], aPObj[1,3]+15, aPObj[1,4]+3)
+	oGridItens:aCols := ::aItSolicit
+
+	//encerra montagem DLG
+	oDlg:lCentered := .T.
+	oDlg:Activate()
+
+	if ::cTipo == '1' //se por carga
+		DAK->(DbGoTo(nRecDAK))
+		DAK->(MsUnlock())
+	else
+		SC5->(DbGoTo(nRecSC5))
+		SC5->(MsUnlock())
+	endif
+
+Return lRet
+
+
+//---------------------------------------------------------
+// Monta Grid de Itens
+//---------------------------------------------------------
+METHOD DoGridSol(oDlg, nTop, nLeft, nBottom, nRight) CLASS FatTriang
+
+	Local nX
+	Local aHeaderEx    := {}
+	Local aColsEx      := {}
+	Local aFieldFill   := {}
+	Local aFields      := {"D2_ITEM","C6_NUM","C6_ITEM","C6_PRODUTO","B1_DESC","C6_QTDVEN","C6_UM","C5_EMISSAO","C5_CLIENTE","C5_LOJACLI","A1_NOME"}
+	Local aAlterFields := {}
+	Local nLinMax 	   := 999  // Quantidade de linha na getdados
+	Local cTitField	   := ""
+
+	// Define field properties
+	DbSelectArea("SX3")
+	SX3->(DbSetOrder(2))
+	For nX := 1 to Len(aFields)
+		If SX3->(DbSeek(aFields[nX]))
+			if aFields[nX] == "D2_ITEM"
+				cTitField := "Seq."
+			else
+				cTitField := AllTrim(X3Titulo())
+			endif
+
+			Aadd(aHeaderEx, {cTitField,SX3->X3_CAMPO,SX3->X3_PICTURE,SX3->X3_TAMANHO,SX3->X3_DECIMAL,SX3->X3_VALID,;
+			SX3->X3_USADO,SX3->X3_TIPO,SX3->X3_F3,SX3->X3_CONTEXT,SX3->X3_CBOX,SX3->X3_RELACAO})
+
+			if SX3->X3_TIPO == "N"
+				Aadd(aFieldFill,0)
+			elseif SX3->X3_TIPO == "D"
+				Aadd(aFieldFill,CTOD(""))
+			elseif SX3->X3_TIPO == "L"
+				Aadd(aFieldFill,.F.)
+			else
+				Aadd(aFieldFill,"")
+			endif
+		Endif
+	Next nX
+	Aadd(aFieldFill,.F.) //deletado
+
+	Aadd(aColsEx, aFieldFill)
+
+Return MsNewGetDados():New( nTop, nLeft, nBottom, nRight, , "AllwaysTrue", "AllwaysTrue", "AllwaysTrue",;
+aAlterFields, , nLinMax, "AllwaysTrue", "AllwaysTrue", "AllwaysTrue", oDlg, aHeaderEx, aColsEx)
+
+//-----------------------------------------------------------------
+//Metodo para gravar solicitação da triangulação
+//-----------------------------------------------------------------
+METHOD GravaSolicitacao() CLASS FatTriang
+
+	Local lRet := .F.
+	Local lLibEst := SuperGetMv("FT_LIBESTA",,.F.) //define se tenta liberar estoque automaticamente
+	Local nX := 1
+	Local cFilCli := ::cFilVen
+	Local cCli, cLoj
+	Local cCondPg := SuperGetMv("FT_CDPAGFE",,"",::cFilEst)
+	Local cC6Oper := SuperGetMv("FT_OPERFE",,"",::cFilEst) //operaçao quando tem filial intermediaria (transferencia)
+	Local cTipPrc := SuperGetMv("FT_TPPRCFE",,"2",::cFilEst)//1-tabela de preço;2-Custo SB2;3-Custo SB9;4-% do Preço de Venda Origem
+	Local cTabPrc := SuperGetMv("FT_TABPFE",,"",::cFilEst)
+	Local nIndPrc := SuperGetMv("FT_INDPRFE",,0,::cFilEst)
+	Local nTamEmp := len(alltrim(cEmpAnt))
+	Local cTranspDAK := DAK->DAK_TRANSP
+	
+	//	If DAK->DAK_XTIPO = 'E'
+	//		cC6Oper := SuperGetMv("FT_OPFEE",,"",::cFilEst)
+	//	ElseIf DAK->DAK_XTIPO = 'F'
+	//		cC6Oper := SuperGetMv("FT_OPFEF",,"",::cFilEst)
+	//	EndIf
+
+	//caso tenha filial intermediaria, altero filial do cliente
+	if !empty(::cFilInt)
+		cFilCli := ::cFilInt
+	Endif
+
+	//se grupo empresa é diferente, a operação será venda
+	if SubStr(cFilCli,1,nTamEmp) <> SubStr(::cFilEst,1,nTamEmp)
+		cC6Oper := SuperGetMv("FT_OPERFEV",,"",::cFilEst) //mudo o tipo de operação, para venda
+		//mudo os tipos de preço
+		cTipPrc := SuperGetMv("FT_TPPRCFV",,"2",::cFilEst)
+		cTabPrc := SuperGetMv("FT_TABPFV",,"",::cFilEst)
+		nIndPrc := SuperGetMv("FT_INDPRFV",,0,::cFilEst)
+		lEmpDif := .T.
+
+		//		If DAK->DAK_XTIPO = 'E'
+		//			cC6Oper := SuperGetMv("FT_OPFEEV",,"",::cFilEst)
+		//		ElseIf DAK->DAK_XTIPO = 'F'
+		//			cC6Oper := SuperGetMv("FT_OPFEFV",,"",::cFilEst)
+		//		EndIf
+	else
+	
+		lEmpDif := .F.
+		
+	endif
+
+	if empty(cCondPg)
+		::cMsgErro := "Condição de pagamento não parametrizada. "+CRLF+" Parametro: FT_CDPAGFE "
+		::ShowError()
+		Return lRet
+	endif
+
+	if empty(cC6Oper)
+		::cMsgErro := "Tipo Operação não parametrizado. "+CRLF+"Parametro: FT_OPERFE" + iif(empty(::cFilInt),"V","")
+		::ShowError()
+		Return lRet
+	endif
+
+	if cTipPrc == "1" .and. empty(cTabPrc) //se tabela de preço não preenchido
+		::cMsgErro := "Tabela de preço não parametrizada. "+CRLF+"Parametro: FT_TABPFE "
+		::ShowError()
+		Return .F.
+	endif
+
+	BeginTran()
+
+	//posiciona no cliente da filial que será usado no pedido
+	if ::PosCliFil(cFilCli, @cCli, @cLoj)
+
+		if ::GerarPvEst(::aItSolicit, cCli, cLoj, cCondPg, cC6Oper, cTipPrc, cTabPrc, nIndPrc, lLibEst, lEmpDif, cTranspDAK)
+
+			if lLibEst
+				if !::ValidBlqEst(::GetNumPvFE(), ::cFilEst)
+					if !MsgYesNo("Há itens no pedido "+SC5->C5_NUM+" gerado pelo processamento que ficaram bloquedos por estoque."+CRLF+CRLF+;
+					"Deseja manter o pedido e prosseguir com a solicitaçao de transferência?","Atenção")
+
+						::cMsgErro := "Abortado por não liberaçao de estoque!"
+						::ShowError()
+						DisarmTransaction()
+						Return .F.
+					endif
+				endif
+			endif
+
+			//gravando flag na carga
+			if ::cTipo == "1"
+				RecLock("DAK", .F.)
+				DAK->DAK_XIDTRI := ::GetIdTriang()
+				DAK->(MsUnlock())
+			endif
+
+			//gravando flag nos pedidos
+			SC5->(DbSetOrder(1))
+			for nX := 1 to len(::aPvSolicit)
+				if SC5->(DbSeek(xFilial("SC5")+::aPvSolicit[nX]))
+					Reclock("SC5",.F.)
+					SC5->C5_XIDTRI := ::GetIdTriang()
+					SC5->(MsUnlock())
+				endif
+			next nX
+
+			lRet := .T.
+
+		else
+			DisarmTransaction()
+			Return .F.
+		endif
+
+	else
+		::cMsgErro := "Cliente da filial "+cFilCli+" não encontrado para geração do pedido de transferência!"
+		::ShowError()
+	endif
+
+	EndTran()
+
+Return lRet
+
+
+//********************************** Metodos para NF TRANSFERÊNCIA **********************************\\
+
+//-----------------------------------------------------------------
+//Metodo para fazer/acompanhar NF de transferência dos itens para filial de venda
+//-----------------------------------------------------------------
+METHOD NfTransferencia(cIdTriang) CLASS FatTriang
+
+	Local lOK	:= .F.
+	Local cPerg := "TBCFTRI2"
+
+	Default cIdTriang := ""
+
+	if empty(cIdTriang)
+		::CriaSX1(cPerg)
+
+		while Pergunte(cPerg, .T.) //Chama a tela de parametros
+			if !empty(MV_PAR01)
+				cIdTriang  := MV_PAR01
+				lOK := .T.
+				EXIT
+			endif
+		enddo
+	else
+		lOK := .T.
+	endif
+
+	if lOK
+		::cIdTriang := cIdTriang
+
+		if ::VldIdTriangNf()
+
+			::TelaNfTransf()
+
+		endif
+	endif
+
+Return
+
+//-----------------------------------------------------------------
+//Metodo para validar o Id Triangulaçao se pode ou não executar processos
+//-----------------------------------------------------------------
+METHOD VldIdTriangNf() CLASS FatTriang
+
+	Local nRecPv := 0
+	Local lRet := .T.
+	Local cSeq := "0000"
+
+	DAK->(dbOrderNickName("IDTRIANG"))
+	if DAK->(DbSeek(::cIdTriang))
+		::cTipo := "1" //1=Por Carga, 2=Por Pedido
+	endif
+
+	SC5->(dbOrderNickName("IDTRIANG"))
+	if SC5->(DbSeek(::cIdTriang))
+		if empty(::cTipo)
+			::cTipo := "2" //1=Por Carga, 2=Por Pedido
+		endif
+		//encontrando pedido da FV
+		While SC5->(!Eof()) .AND. SC5->C5_XIDTRI == ::cIdTriang
+
+			if !empty(SC5->C5_XFILEST)
+				::cFilVen := SC5->C5_FILIAL
+				::cFilEst := SC5->C5_XFILEST
+				::cFilInt := SC5->C5_XFILINT
+				nRecPv := SC5->(Recno())
+				EXIT
+			endif
+
+			SC5->(DbSkip())
+		enddo
+	endif
+
+	if empty(::cTipo) .OR. empty(::cFilVen)
+		lRet := .F.
+		::cMsgErro := "Id Triangulação não encontrado ou pedido/carga não configurados corretamente para essa transação!"
+		::ShowError()
+	endif
+
+	if lRet
+
+		//montando vetor de itens
+		SC5->(dbOrderNickName("IDTRIANG"))
+		if SC5->(DbSeek(::cIdTriang))
+			While SC5->(!Eof()) .AND. SC5->C5_XIDTRI == ::cIdTriang
+				//somente filial estoque
+				if empty(SC5->C5_XFILEST) .AND. SC5->C5_FILIAL == xFilial("SC5",::cFilEst)
+
+					aadd(::aPvNfFE, SC5->C5_NUM )
+
+					SC6->(DbSetOrder(1))
+					SB1->(DbSetOrder(1))
+					SC9->(DbSetOrder(1))
+					if SC9->(DbSeek(SC5->C5_FILIAL + SC5->C5_NUM))
+						While SC9->(!Eof()) .AND. SC9->C9_FILIAL+SC9->C9_PEDIDO == SC5->C5_FILIAL+SC5->C5_NUM
+
+							cSeq := Soma1(cSeq)
+
+							SC6->(DbSeek(SC5->C5_FILIAL + SC5->C5_NUM + SC9->C9_ITEM)) //posiciono no item
+							SB1->( dbSeek(xFilial("SB1")+SC6->C6_PRODUTO) ) //posiciono no produto
+
+							//{"D2_ITEM","C6_PRODUTO","B1_DESC","C6_QTDVEN","C6_UM","C6_LOCAL","C6_LOTECTL","C6_LOCALIZ","C6_FILIAL","C6_NUM","C6_ITEM","C6_XTFIORI","C6_XTPVORI","C6_XTITORI"}
+							aAdd(::aItNfFE, {cSeq ,;
+							SC6->C6_PRODUTO,;
+							SB1->B1_DESC,;
+							SC9->C9_QTDLIB,;
+							SC6->C6_UM,;
+							SC9->C9_LOCAL,;
+							SC9->C9_LOTECTL,;
+							SC6->C6_LOCALIZ,;
+							SC6->C6_FILIAL,;
+							SC6->C6_NUM,;
+							SC6->C6_ITEM,;
+							SC6->C6_XTFIORI,;
+							SC6->C6_XTPVORI,;
+							SC6->C6_XTITORI,;
+							SC6->(Recno()),;
+							.F.; //deleted
+							});
+
+							SC9->(DbSkip())
+						enddo
+					else
+						::cMsgErro := "Pedido de transferência "+SC5->C5_NUM+" não foi empenhado!"
+						::ShowError()
+						lRet := .F.
+						EXIT
+					endif
+				endif
+
+				SC5->(DbSkip())
+			enddo
+		endif
+
+	endif
+
+	//deixar posicionado no pedido da FV
+	if lRet .AND. nRecPv > 0
+		SC5->(DbGoTo(nRecPv))
+	endif
+
+	if lRet .AND.  empty(::aPvNfFE) .OR. empty(::aItNfFE)
+		::cMsgErro := "Não foi possível carregar os itens para processamento!"
+		::ShowError()
+		lRet := .F.
+	endif
+
+Return lRet
+
+//-----------------------------------------------------------------
+//Metodo para montar tela de Nf Transferência
+//-----------------------------------------------------------------
+METHOD TelaNfTransf() CLASS FatTriang
+
+	Local nRecDAK, nRecSC5
+	//Local lRet := .F.
+
+	//dimensionamento de tela e componentes
+	Local aSize 	:= MsAdvSize() // Retorna a área útil das janelas Protheus
+	Local aInfo 	:= {aSize[1], aSize[2], aSize[3], aSize[4], 2, 2}
+	Local aPObj 	:= MsObjSize(aInfo, {{ 100, 100, .T., .T.}, { 100, 000, .T., .F.}})
+
+	//enchoicebar
+	Local bOk := {|| ::DoProcNfTran(nRecDAK, nRecSC5) }
+	Local bCancel := {|| oDlg:End() }
+	Local aButtons := {}
+	Local oFontTitle := TFont():New('Arial',,23,.T.,.F.)
+	Local oFontGrid := TFont():New('Arial',,18,.T.,.T.)
+	Local nCorGrid	:= 7888896
+
+	//variáveis de dados
+	Private cCadastro := "Nota Fiscal Transferência - Faturamento Triangular"
+	Private cSC5	  := ""
+	Private cDAK 	  := ""
+
+	//variaveis objetos da tela
+	Private oDlg
+	Private oGridItens
+	Private oGridLog
+
+	if ::cTipo == '1' //se por carga
+		//faço lock na carga
+		nRecDAK := DAK->(Recno())
+		cDAK := DAK->DAK_COD
+		cSC5 := ""
+		SoftLock("DAK")
+	else
+		//faço lock no pedido
+		nRecSC5 := SC5->(Recno())
+		cDAK := ""
+		cSC5 := SC5->C5_NUM
+		SoftLock("SC5")
+	endif
+
+	//começa montagem do DLG
+	DEFINE MSDIALOG oDlg TITLE cCadastro FROM aSize[7],aSize[1] TO aSize[6],aSize[5] PIXEL OF GetWndDefault() STYLE nOr(WS_VISIBLE, WS_POPUP)
+
+	//barra de menus e titulo
+	EnchoiceBar(oDlg, bOk, bCancel,.F.,@aButtons,0,"SC5", .F., .F., .T., .T., .F.)
+	AltBtnEnch(oDlg, "Confirmar", "Processar")
+	AltBtnEnch(oDlg, "Cancelar", "Fechar")
+
+	//campos da tela
+	TSay():New( 38,10,{|| "Id. Triang." }, oDlg,,,,,,.T.,CLR_BLACK,,50,9 )
+	TGet():New( 35,45,{|u| ::cIdTriang },oDlg,50,12,,/*bValid*/,,,,.F.,,.T.,,.F.,{|| .T.},.F.,.F.,/*bChange*/,.T.,.F.,,"",,,,.T.,.F.)
+
+	TSay():New( 38,120,{|| "Data" }, oDlg,,,,,,.T.,CLR_BLACK,,50,9 )
+	TGet():New( 35,155,{|u| dDataBase },oDlg,50,12,,/*bValid*/,,,,.F.,,.T.,,.F.,{|| .T.},.F.,.F.,/*bChange*/,.T.,.F.,,"",,,,.T.,.F.)
+
+	TSay():New( 38,230,{|| "Carga FV" }, oDlg,,,,,,.T.,CLR_BLACK,,50,9 )
+	TGet():New( 35,270,{|u| cDAK },oDlg,50,12,,/*bValid*/,,,,.F.,,.T.,,.F.,{|| .T.},.F.,.F.,/*bChange*/,.T.,.F.,,"",,,,.T.,.F.)
+
+	TSay():New( 38,340,{|| "Pedido FV" }, oDlg,,,,,,.T.,CLR_BLACK,,50,9 )
+	TGet():New( 35,370,{|u| cSC5 },oDlg,50,12,,/*bValid*/,,,,.F.,,.T.,,.F.,{|| .T.},.F.,.F.,/*bChange*/,.T.,.F.,,"",,,,.T.,.F.)
+
+	//grid itens
+	TSay():New( aPObj[1,1]+25,07,{|| "Itens a Faturar" }, oDlg,,oFontGrid,,,,.T.,nCorGrid,,200,15 )
+	TSay():New( aPObj[1,1]+25,aPObj[1,2],{|| Replicate("_",aPObj[1,4]) }, oDlg,,oFontTitle,,,,.T.,nCorGrid,,aPObj[1,4],15 )
+
+	oGridItens := ::DoGridNfTran(oDlg, aPObj[1,1]+38, aPObj[1,2], aPObj[1,3]-100, aPObj[1,4]+3)
+	oGridItens:aCols := ::aItNfFE
+
+	//grid log processamento
+	TSay():New( aPObj[1,3]-95,07,{|| "Log do Processamento" }, oDlg,,oFontGrid,,,,.T.,nCorGrid,,200,15 )
+	TSay():New( aPObj[1,3]-95,aPObj[1,2],{|| Replicate("_",aPObj[1,4]) }, oDlg,,oFontTitle,,,,.T.,nCorGrid,,aPObj[1,4],15 )
+
+	oGridLog := ::DoGridLogProc(oDlg, aPObj[1,3]-82, aPObj[1,2], aPObj[1,3], aPObj[1,4]+3)
+	::MontaProcLog()
+	oGridLog:aCols := ::aProcLog
+
+	@ aPObj[1,3]+5, 010 BITMAP ResName "BR_AZUL" OF oDlg Size 10, 10 NoBorder When .F. PIXEL
+	@ aPObj[1,3]+5, 110 BITMAP ResName "BR_VERDE" OF oDlg Size 10, 10 NoBorder When .F. PIXEL
+	@ aPObj[1,3]+5, 210 BITMAP ResName "BR_VERMELHO" OF oDlg Size 10, 10 NoBorder When .F. PIXEL
+
+	TSay():New( aPObj[1,3]+5,023,{|| "Agardando Execução" }, oDlg,,,,,,.T.,CLR_BLACK,,100,9 )
+	TSay():New( aPObj[1,3]+5,123,{|| "Processo Executado" }, oDlg,,,,,,.T.,CLR_BLACK,,100,9 )
+	TSay():New( aPObj[1,3]+5,223,{|| "Execução Abortada" }, oDlg,,,,,,.T.,CLR_BLACK,,100,9 )
+
+	@ aPObj[1,3]+5,aPObj[1,2] SAY ("Siglas: FE=Filial Estoque" + space(10) + "FI=Filial Intermediária" + space(10) + "FV=Filial Venda") RIGHT OF oDlg COLORS CLR_BLACK PIXEL
+
+	//encerra montagem DLG
+	oDlg:bInit := {||( MsAguarde({|| ::AtuStatusProc()  },"Aguarde...","Avaliando status processamento...",.T.) )}
+	oDlg:lCentered := .T.
+	oDlg:Activate()
+
+	if ::cTipo == '1' //se por carga
+		DAK->(DbGoTo(nRecDAK))
+		DAK->(MsUnlock())
+	else
+		SC5->(DbGoTo(nRecSC5))
+		SC5->(MsUnlock())
+	endif
+
+Return
+
+//-----------------------------------------------------------------
+//Metodo para montar grid de itens da Nf Transferência
+//-----------------------------------------------------------------
+METHOD DoGridNfTran(oDlg, nTop, nLeft, nBottom, nRight) CLASS FatTriang
+
+	Local nX
+	Local aHeaderEx    := {}
+	Local aColsEx      := {}
+	Local aFieldFill   := {}
+	Local aFields      := {"D2_ITEM","C6_PRODUTO","B1_DESC","C6_QTDVEN","C6_UM","C6_LOCAL","C6_LOTECTL","C6_LOCALIZ","C6_FILIAL","C6_NUM","C6_ITEM","C6_XTFIORI","C6_XTPVORI","C6_XTITORI"}
+	Local aAlterFields := {}
+	Local nLinMax 	   := 999  // Quantidade de linha na getdados
+	Local cTitField	   := ""
+
+	// Define field properties
+	DbSelectArea("SX3")
+	SX3->(DbSetOrder(2))
+	For nX := 1 to Len(aFields)
+		If SX3->(DbSeek(aFields[nX]))
+			if aFields[nX] == "D2_ITEM"
+				cTitField := "Seq."
+			elseif aFields[nX] == "C6_FILIAL"
+				cTitField := "Fil.Estoque"
+			elseif aFields[nX] == "C6_NUM"
+				cTitField := "Pedido FE"
+			elseif aFields[nX] == "C6_ITEM"
+				cTitField := "Item FE"
+			elseif aFields[nX] == "C6_XTFIORI"
+				cTitField := "Fil.Venda"
+			elseif aFields[nX] == "C6_XTPVORI"
+				cTitField := "Pedido FV"
+			elseif aFields[nX] == "C6_XTITORI"
+				cTitField := "Item FV"
+			else
+				cTitField := AllTrim(X3Titulo())
+			endif
+
+			Aadd(aHeaderEx, {cTitField,SX3->X3_CAMPO,SX3->X3_PICTURE,SX3->X3_TAMANHO,SX3->X3_DECIMAL,SX3->X3_VALID,;
+			SX3->X3_USADO,SX3->X3_TIPO,SX3->X3_F3,SX3->X3_CONTEXT,SX3->X3_CBOX,SX3->X3_RELACAO})
+
+			if SX3->X3_TIPO == "N"
+				Aadd(aFieldFill,0)
+			elseif SX3->X3_TIPO == "D"
+				Aadd(aFieldFill,CTOD(""))
+			elseif SX3->X3_TIPO == "L"
+				Aadd(aFieldFill,.F.)
+			else
+				Aadd(aFieldFill,"")
+			endif
+		Endif
+	Next nX
+	Aadd(aFieldFill,.F.) //deletado
+
+	Aadd(aColsEx, aFieldFill)
+
+Return MsNewGetDados():New( nTop, nLeft, nBottom, nRight, , "AllwaysTrue", "AllwaysTrue", "AllwaysTrue",;
+aAlterFields, , nLinMax, "AllwaysTrue", "AllwaysTrue", "AllwaysTrue", oDlg, aHeaderEx, aColsEx)
+
+//-----------------------------------------------------------------
+//Metodo para montar grid de log de processamento
+//-----------------------------------------------------------------
+METHOD DoGridLogProc(oDlg, nTop, nLeft, nBottom, nRight) CLASS FatTriang
+
+	Local aHeaderEx    := {}
+	Local aColsEx      := {}
+	Local aFieldFill   := {}
+	Local aAlterFields := {}
+	Local nLinMax 	   := 999  // Quantidade de linha na getdados
+
+	Aadd(aHeaderEx,{'','LEG','@BMP',2,0,'','€€€€€€€€€€€€€€','C','','','',''})
+	Aadd(aFieldFill,"BR_AZUL")
+
+	Aadd(aHeaderEx,{'Processo','PROCESSO','',40,0,'','€€€€€€€€€€€€€€','C','','','',''})
+	Aadd(aFieldFill, space(40))
+
+	Aadd(aHeaderEx,{'Processo','MENSAGEM','',150,0,'','€€€€€€€€€€€€€€','C','','','',''})
+	Aadd(aFieldFill, space(150))
+
+	Aadd(aFieldFill,.F.) //deletado
+
+	Aadd(aColsEx, aFieldFill)
+
+Return MsNewGetDados():New( nTop, nLeft, nBottom, nRight, , "AllwaysTrue", "AllwaysTrue", "AllwaysTrue",;
+aAlterFields, , nLinMax, "AllwaysTrue", "AllwaysTrue", "AllwaysTrue", oDlg, aHeaderEx, aColsEx)
+
+//-----------------------------------------------------------------
+//Metodo para definir processos que serão executados e verificados
+//-----------------------------------------------------------------
+METHOD MontaProcLog() CLASS FatTriang
+
+	Local cLegInicial := "BR_AZUL"
+	Local cAguardando := "Aguardando Execução..."
+	aadd(::aProcLog, {cLegInicial,"Gerar Documento Saída FE ("+::cFilEst+")", cAguardando, "DOCSFE", .F.})
+	aadd(::aProcLog, {cLegInicial,"Transmitir NF-e FE ("+::cFilEst+")", cAguardando, "NFE_FE", .F.})
+	aadd(::aProcLog, {cLegInicial,"Autorização NF-e FE ("+::cFilEst+")", cAguardando, "AUT_FE", .F.})
+	aadd(::aProcLog, {cLegInicial,"Imprimir DANFE FE ("+::cFilEst+")", cAguardando, "DAN_FE", .F.})
+	if !empty(::cFilInt)
+		aadd(::aProcLog, {cLegInicial,"Gerar Documento Entrada FI ("+::cFilInt+")", cAguardando, "DOCEFI", .F.})
+		aadd(::aProcLog, {cLegInicial,"Gerar Pedido de Venda FI ("+::cFilInt+")", cAguardando, "PEDVFI", .F.})
+		aadd(::aProcLog, {cLegInicial,"Gerar Documento Saída FI ("+::cFilInt+")", cAguardando, "DOCSFI", .F.})
+		aadd(::aProcLog, {cLegInicial,"Transmitir NF-e FI ("+::cFilInt+")", cAguardando, "NFE_FI", .F.})
+		aadd(::aProcLog, {cLegInicial,"Autorização NF-e FI ("+::cFilInt+")", cAguardando, "AUT_FI", .F.})
+		aadd(::aProcLog, {cLegInicial,"Imprimir DANFE FI ("+::cFilInt+")", cAguardando, "DAN_FI", .F.})
+	endif
+	aadd(::aProcLog, {cLegInicial,"Gerar Documento Entrada FV ("+::cFilVen+")", cAguardando, "DOCEFV", .F.})
+	aadd(::aProcLog, {cLegInicial,"Distribuir Lotes nos Pedidos FV ("+::cFilVen+")", cAguardando, "DLOTFV", .F.})
+
+Return
+
+//-----------------------------------------------------------------
+//Metodo para atualizar o status do processamento (grid log)
+//-----------------------------------------------------------------
+METHOD AtuStatusProc() CLASS FatTriang
+
+	Local lContinua := .T.
+	Local cNFAux := ""
+	Local nX := 1
+	Local cPVAtu := ""
+	Local nPosFilFE := aScan(oGridItens:aHeader,{|x| AllTrim(x[2])=="C6_FILIAL"})
+	Local nPosPvFE := aScan(oGridItens:aHeader,{|x| AllTrim(x[2])=="C6_NUM"})
+	Local nPosItFE := aScan(oGridItens:aHeader,{|x| AllTrim(x[2])=="C6_ITEM"})
+	Local nPosFilFV := aScan(oGridItens:aHeader,{|x| AllTrim(x[2])=="C6_XTFIORI"})
+	Local nPosPvFV := aScan(oGridItens:aHeader,{|x| AllTrim(x[2])=="C6_XTPVORI"})
+	Local nPosItFV := aScan(oGridItens:aHeader,{|x| AllTrim(x[2])=="C6_XTITORI"})
+	Local nPosLote := aScan(oGridItens:aHeader,{|x| AllTrim(x[2])=="C6_LOTECTL"})
+	Local cBkpFil := cFilAnt
+	Local lPreNota := .F.
+	Local lCtrEnd := .F.
+	Local nPosProc := 1
+	Local lEnderecar := .F.
+
+	//limpo variaveis
+	::aSF2_FE	:= {} //Notas fiscais de saida FE
+	::aSF2_FI	:= {} //Notas fiscais de saida FI
+	::aSF1_FI	:= {} //Notas fiscais de entrada FI
+	::aSF1_FV	:= {} //Notas fiscais de entrada FV
+	::aPvNfFI 	:= {} //Pedidos na FI
+	::aItNfFI 	:= {} //Itens pedido na FI
+
+	::cProcExec := "DOCSFE" // processo inicial
+	cFilAnt := ::cFilEst
+
+	//verifico se ja fez as NFs de Saída da FE
+	SC6->(DbSetOrder(1))
+	SF2->(DbSetOrder(1))
+	cPVAtu := ""
+	For nX := 1 to len(::aItNfFE)
+		if ::aItNfFE[nX][nPosPvFE] <> cPVAtu //verifico só um item de cada pedido
+			cPVAtu := ::aItNfFE[nX][nPosPvFE]
+			if SC6->(DbSeek( ::aItNfFE[nX][nPosFilFE] + ::aItNfFE[nX][nPosPvFE] + ::aItNfFE[nX][nPosItFE] ))
+				if !empty(SC6->C6_NOTA)
+					if aScan(::aSF2_FE, {|x| x[1]+x[2] == SC6->C6_NOTA+SC6->C6_SERIE }) == 0
+						if SF2->(DbSeek(xFilial("SF2")+SC6->C6_NOTA+SC6->C6_SERIE))
+							aAdd(::aSF2_FE, {SC6->C6_NOTA, SC6->C6_SERIE, SF2->F2_FIMP, iif(!Empty(SF2->F2_CHVNFE),SF2->F2_CHVNFE,SF2->F2_XIDTRI)} )
+							cNFAux += SC6->C6_NOTA+"/"+SC6->C6_SERIE + " "
+						endif
+					endif
+				endif
+			endif
+		endif
+	next nX
+
+	if empty(::aSF2_FE) //se não há notas
+		lContinua := .F.
+	else
+		//VarInfo( "FatTri:"+ ::cIdTriang +" AtuStatusProc:aSF2_FE", ::aSF2_FE,, .F. )
+		nPosProc := aScan(::aProcLog, {|x| x[4] == "DOCSFE"})
+		::aProcLog[nPosProc][1] := "BR_VERDE"
+		::aProcLog[nPosProc][3] := "Documento Saída gerado: " + cNFAux
+		::cProcExec := "NFE_FE" //proximo passo
+	endif
+
+	/* PARA CONHECIMENTO
+	{"F2_FIMP==' ' .AND. AllTrim(F2_ESPECIE)=='SPED'",'DISABLE' },;	//NF não transmitida
+	{"F2_FIMP=='S'",'ENABLE'},;										//NF Autorizada
+	{"F2_FIMP=='T'",'BR_AZUL'},;									//NF Transmitida
+	{"F2_FIMP=='D'",'BR_CINZA'},;									//NF Uso Denegado
+	{"F2_FIMP=='N'",'BR_PRETO'}}									//NF nao autorizada
+	*/
+	//verifico se há notas sem transmitir
+	if lContinua
+		nPosProc := aScan(::aProcLog, {|x| x[4] == "NFE_FE"})
+		if ::GetTipoCarga() <> 'E' .AND. aScan(::aSF2_FE, {|x| empty(x[3]) }) > 0  //::aSF2_FE={{SC6->C6_NOTA, SC6->C6_SERIE, SF2->F2_FIMP, SF2->F2_CHVNFE}} If ::GetTipoCarga() <> 'E'
+			lContinua := .F.
+		else
+			::aProcLog[nPosProc][1] := "BR_VERDE"
+			::aProcLog[nPosProc][3] := "NF-e Transmitida para SEFAZ"
+			::cProcExec := "AUT_FE" //proximo passo
+		endif
+	endif
+
+	//verifico se as notas foram autorizadas
+	if lContinua
+		nPosProc := aScan(::aProcLog, {|x| x[4] == "AUT_FE"})
+		if ::GetTipoCarga() <> 'E' .AND. aScan(::aSF2_FE, {|x| x[3]<>"S" }) > 0  //::aSF2_FE={{SC6->C6_NOTA, SC6->C6_SERIE, SF2->F2_FIMP, SF2->F2_CHVNFE}}
+			::aProcLog[nPosProc][1] := "BR_VERMELHO"
+			::aProcLog[nPosProc][3] := "NF-e não autorizada ou aguardando retorno! Verifique na rotina NF-e Sefaz."
+			lContinua := .F.
+		else
+			::aProcLog[nPosProc][1] := "BR_VERDE"
+			::aProcLog[nPosProc][3] := "NF-e Autorizadas pelo SEFAZ"
+
+			nPosProc := aScan(::aProcLog, {|x| x[4] == "DAN_FE"})
+			::aProcLog[nPosProc][1] := "BR_VERDE"
+			::aProcLog[nPosProc][3] := "DANFE Impressa"
+
+			::cProcExec := "DOCEFV" //proximo passo
+		endif
+	endif
+
+	//processos na filial intermediaria
+	if lContinua .AND. !empty(::cFilInt)
+
+		cFilAnt := ::cFilInt //vou para filial intermediaria
+		::cProcExec := "DOCEFI" //proximo passo
+
+		//verifico se ja foi gerado doc de entrada para cada nf
+		if lContinua
+			cNFAux := ""
+			lPreNota := .F.
+			lCtrEnd := GetMV("MV_LOCALIZ",, "N") == "S"
+			nPosProc := aScan(::aProcLog, {|x| x[4] == "DOCEFI"})
+			for nX := 1 to len(::aSF2_FE)
+				SF1->(DbSetOrder(8)) //F1_FILIAL+F1_CHVNFE
+				if !empty(::aSF2_FE[nX][4]) .AND. SF1->(DbSeek(xFilial("SF1")+::aSF2_FE[nX][4] ))
+					aadd(::aSF1_FI, {SF1->F1_DOC, SF1->F1_SERIE, SF1->F1_FORNECE, SF1->F1_LOJA, SF1->F1_CHVNFE} )
+					cNFAux += SF1->F1_DOC +"/"+ SF1->F1_SERIE + " "
+					if Empty(SF1->F1_STATUS)
+						cNFAux += "(Pré-Nota) "
+						lPreNota := .T.
+						lContinua := .F. //falta gerar
+					else
+						//verifico saldo a endereçar
+						SD1->( dbSetOrder(1)) //D1_FILIAL+D1_DOC+D1_SERIE+D1_FORNECE+D1_LOJA+D1_COD+D1_ITEM
+						SD1->( dbSeek(SF1->F1_FILIAL+SF1->F1_DOC+SF1->F1_SERIE+SF1->F1_FORNECE+SF1->F1_LOJA) )
+						while SD1->(!EOF()) .And. SD1->D1_FILIAL+SD1->D1_DOC+SD1->D1_SERIE+SD1->D1_FORNECE+SD1->D1_LOJA == SF1->F1_FILIAL+SF1->F1_DOC+SF1->F1_SERIE+SF1->F1_FORNECE+SF1->F1_LOJA
+
+							SB1->(DbSetOrder(1))
+							SB1->(dbSeek(xFilial("SB1") + SD1->D1_COD) )
+							if SB1->B1_LOCALIZ <> "S"
+								SD1->( dbSkip() )
+								LOOP
+							endif
+							//verifico se o saldo ficou a endereçar
+							SDA->(DbSetOrder(1)) //DA_FILIAL+DA_PRODUTO+DA_LOCAL+DA_NUMSEQ
+							if SDA->(DBSeek(xFilial("SDA")+SD1->D1_COD+SD1->D1_LOCAL+SD1->D1_NUMSEQ )) .AND. SDA->DA_SALDO > 0
+								lContinua := .F. //falta endereçar
+								alert("Falta Endereçar: " + SD1->D1_COD+SD1->D1_LOCAL+SD1->D1_NUMSEQ)
+								lEnderecar := .T.
+								EXIT
+							endif
+
+							SD1->(DbSkip())
+						enddo
+					endif
+				else
+					lContinua := .F. //falta gerar
+				endif
+			next nX
+			if lContinua
+				::aProcLog[nPosProc][1] := "BR_VERDE"
+				::aProcLog[nPosProc][3] := "Documento Entrada gerado: " + cNFAux
+				::cProcExec := "PEDVFI" //proximo passo
+			else
+				::aProcLog[nPosProc][1] := "BR_VERMELHO"
+				if lPreNota
+					cNFAux += " >> Classifique manualmente"
+					if lCtrEnd
+						cNFAux += " e aponte saldo a endereçar dos produtos habilitados"
+					endif
+					cNFAux += "."
+					::aProcLog[nPosProc][3] := "Documento Entrada gerado: " + cNFAux
+				endif
+				if lEnderecar
+					cNFAux += " >> Falta produtos a endereçar."
+					::aProcLog[nPosProc][3] := "Documento Entrada gerado: " + cNFAux
+				endif
+			endif
+			//VarInfo( "FatTri:"+ ::cIdTriang +" AtuStatusProc:aSF1_FI", ::aSF1_FI,, .F. )
+		endif
+
+		lEnderecar := .F.
+
+		//verifico se ja gerou pedido venda na FI
+		if lContinua
+			cNFAux := ""
+			nPosProc := aScan(::aProcLog, {|x| x[4] == "PEDVFI"})
+			cSeq := "0000"
+
+			//montando vetor de itens
+			SC5->(dbOrderNickName("IDTRIANG"))
+			if SC5->(DbSeek(::cIdTriang))
+				While SC5->(!Eof()) .AND. SC5->C5_XIDTRI == ::cIdTriang
+
+					//somente pedidos da filial intermediaria
+					if empty(SC5->C5_XFILEST) .AND. SC5->C5_FILIAL == xFilial("SC5",::cFilInt)
+
+						aadd(::aPvNfFI, SC5->C5_NUM )
+						cNFAux += SC5->C5_NUM + " "
+
+						SB1->(DbSetOrder(1))
+						SC6->(DbSetOrder(1))
+						SC6->(DbSeek(SC5->C5_FILIAL + SC5->C5_NUM))
+						While SC6->(!Eof()) .AND. SC6->C6_FILIAL+SC6->C6_NUM == SC5->C5_FILIAL+SC5->C5_NUM
+
+							cSeq := Soma1(cSeq)
+
+							SB1->( dbSeek(xFilial("SB1")+SC6->C6_PRODUTO) ) //posiciono no produto
+
+							//{"D2_ITEM","C6_PRODUTO","B1_DESC","C6_QTDVEN","C6_UM","C6_LOCAL","C6_LOTECTL","C6_LOCALIZ","C6_FILIAL","C6_NUM","C6_ITEM","C6_XTFIORI","C6_XTPVORI","C6_XTITORI"}
+							aAdd(::aItNfFI, {cSeq ,;
+							SC6->C6_PRODUTO,;
+							SB1->B1_DESC,;
+							SC6->C6_QTDVEN,;
+							SC6->C6_UM,;
+							SC6->C6_LOCAL,;
+							SC6->C6_LOTECTL,;
+							SC6->C6_LOCALIZ,;
+							SC6->C6_FILIAL,;
+							SC6->C6_NUM,;
+							SC6->C6_ITEM,;
+							SC6->C6_XTFIORI,;
+							SC6->C6_XTPVORI,;
+							SC6->C6_XTITORI,;
+							SC6->(Recno()),;
+							.F.; //deleted
+							});
+
+							SC6->(DbSkip())
+						enddo
+					endif
+
+					SC5->(DbSkip())
+				enddo
+			endif
+			//VarInfo( "FatTri:"+ ::cIdTriang +" AtuStatusProc:aPvNfFI", ::aPvNfFI,, .F. )
+			//se nao tem pedido ou está incompleto (qtd itens)
+			if empty(::aPvNfFI) .OR. empty(::aItNfFI) .OR. len(::aItNfFI) <> len(::aItNfFE)
+				lContinua := .F. //falta gerar
+			else
+				::aProcLog[nPosProc][1] := "BR_VERDE"
+				::aProcLog[nPosProc][3] := "Pedido de Venda gerado: " + cNFAux
+				::cProcExec := "DOCSFI" //proximo passo
+			endif
+
+		endif
+
+		//verifico se ja fez as NFs de Saída da FI
+		if lContinua
+			nPosProc := aScan(::aProcLog, {|x| x[4] == "DOCSFI"})
+			SC6->(DbSetOrder(1))
+			SF2->(DbSetOrder(1))
+			cPVAtu := ""
+			cNFAux := ""
+			For nX := 1 to len(::aItNfFI)
+				if ::aItNfFI[nX][nPosPvFE] <> cPVAtu //verifico só um item de cada pedido
+					cPVAtu := ::aItNfFI[nX][nPosPvFE]
+					if SC6->(DbSeek( ::aItNfFI[nX][nPosFilFE] + ::aItNfFI[nX][nPosPvFE] + ::aItNfFI[nX][nPosItFE] ))
+						if !empty(SC6->C6_NOTA)
+							if aScan(::aSF2_FI, {|x| x[1]+x[2] == SC6->C6_NOTA+SC6->C6_SERIE }) == 0
+								if SF2->(DbSeek(xFilial("SF2")+SC6->C6_NOTA+SC6->C6_SERIE))
+									aAdd(::aSF2_FI, {SC6->C6_NOTA, SC6->C6_SERIE, SF2->F2_FIMP, SF2->F2_CHVNFE} )
+									cNFAux += SC6->C6_NOTA+"/"+SC6->C6_SERIE + " "
+								endif
+							endif
+						endif
+					endif
+				endif
+			next nX
+
+			if empty(::aSF2_FI) //se não há notas
+				lContinua := .F.
+			else
+				//VarInfo( "FatTri:"+ ::cIdTriang +" AtuStatusProc:aSF2_FI", ::aSF2_FI,, .F. )
+				::aProcLog[nPosProc][1] := "BR_VERDE"
+				::aProcLog[nPosProc][3] := "Documento Saída gerado: " + cNFAux
+				::cProcExec := "NFE_FI" //proximo passo
+			endif
+		endif
+
+		//verifico se há notas sem transmitir
+		if lContinua
+			nPosProc := aScan(::aProcLog, {|x| x[4] == "NFE_FI"})
+			if ::GetTipoCarga() <> 'E' .AND. aScan(::aSF2_FI, {|x| empty(x[3]) }) > 0  //::aSF2_FI={{SC6->C6_NOTA, SC6->C6_SERIE, SF2->F2_FIMP, SF2->F2_CHVNFE}}
+				lContinua := .F.
+			else
+				::aProcLog[nPosProc][1] := "BR_VERDE"
+				::aProcLog[nPosProc][3] := "NF-e Transmitida para SEFAZ"
+				::cProcExec := "AUT_FI" //proximo passo
+			endif
+		endif
+
+		//verifico se as notas foram autorizadas
+		if lContinua
+			nPosProc := aScan(::aProcLog, {|x| x[4] == "AUT_FI"})
+			if ::GetTipoCarga() <> 'E' .AND. aScan(::aSF2_FI, {|x| x[3]<>"S" }) > 0  //::aSF2_FI={{SC6->C6_NOTA, SC6->C6_SERIE, SF2->F2_FIMP, SF2->F2_CHVNFE}}
+				::aProcLog[nPosProc][1] := "BR_VERMELHO"
+				::aProcLog[nPosProc][3] := "NF-e não autorizada ou aguardando retorno! Verifique na rotina NF-e Sefaz."
+				lContinua := .F.
+			else
+				::aProcLog[nPosProc][1] := "BR_VERDE"
+				::aProcLog[nPosProc][3] := "NF-e Autorizadas pelo SEFAZ"
+
+				nPosProc := aScan(::aProcLog, {|x| x[4] == "DAN_FI"})
+				::aProcLog[nPosProc][1] := "BR_VERDE"
+				::aProcLog[nPosProc][3] := "DANFE Impressa"
+
+				::cProcExec := "DOCEFV" //proximo passo
+			endif
+		endif
+
+		cFilAnt := ::cFilVen //vou para filial de venda
+
+		//verifico se ja foi gerado doc de entrada para cada nf, a partir das nota FI
+		if lContinua
+			cNFAux := ""
+			lPreNota := .F.
+			lCtrEnd := GetMV("MV_LOCALIZ",, "N") == "S"
+			nPosProc := aScan(::aProcLog, {|x| x[4] == "DOCEFV"})
+			for nX := 1 to len(::aSF2_FI)
+				SF1->(DbSetOrder(8)) //F1_FILIAL+F1_CHVNFE
+				if !empty(::aSF2_FI[nX][4]) .AND. SF1->(DbSeek(xFilial("SF1")+::aSF2_FI[nX][4] ))
+					aadd(::aSF1_FV, {SF1->F1_DOC, SF1->F1_SERIE, SF1->F1_FORNECE, SF1->F1_LOJA, SF1->F1_CHVNFE} )
+					cNFAux += SF1->F1_DOC +"/"+ SF1->F1_SERIE + " "
+					if Empty(SF1->F1_STATUS)
+						cNFAux += "(Pré-Nota) "
+						lPreNota := .T.
+						lContinua := .F. //falta gerar
+					else
+						//verifico saldo a endereçar
+						SD1->( dbSetOrder(1)) //D1_FILIAL+D1_DOC+D1_SERIE+D1_FORNECE+D1_LOJA+D1_COD+D1_ITEM
+						SD1->( dbSeek(SF1->F1_FILIAL+SF1->F1_DOC+SF1->F1_SERIE+SF1->F1_FORNECE+SF1->F1_LOJA) )
+						while SD1->(!EOF()) .And. SD1->D1_FILIAL+SD1->D1_DOC+SD1->D1_SERIE+SD1->D1_FORNECE+SD1->D1_LOJA == SF1->F1_FILIAL+SF1->F1_DOC+SF1->F1_SERIE+SF1->F1_FORNECE+SF1->F1_LOJA
+
+							SB1->(DbSetOrder(1))
+							SB1->(dbSeek(xFilial("SB1") + SD1->D1_COD) )
+							if SB1->B1_LOCALIZ <> "S"
+								SD1->( dbSkip() )
+								LOOP
+							endif
+							//verifico se o saldo ficou a endereçar
+							SDA->(DbSetOrder(1)) //DA_FILIAL+DA_PRODUTO+DA_LOCAL+DA_NUMSEQ
+							if SDA->(DBSeek(xFilial("SDA")+SD1->D1_COD+SD1->D1_LOCAL+SD1->D1_NUMSEQ )) .AND. SDA->DA_SALDO > 0
+								lContinua := .F. //falta gerar
+								lEnderecar := .T.
+								EXIT
+							endif
+
+							SD1->(DbSkip())
+						enddo
+					endif
+				else
+					lContinua := .F. //falta gerar
+				endif
+			next nX
+			if lContinua
+				::aProcLog[nPosProc][1] := "BR_VERDE"
+				::aProcLog[nPosProc][3] := "Documento Entrada gerado: " + cNFAux
+				::cProcExec := "DLOTFV" //proximo passo
+			else
+				::aProcLog[nPosProc][1] := "BR_VERMELHO"
+				if lPreNota
+					cNFAux += " >> Classifique manualmente"
+					if lCtrEnd
+						cNFAux += " e aponte saldo a endereçar dos produtos habilitados"
+					endif
+					cNFAux += "."
+					::aProcLog[nPosProc][3] := "Documento Entrada gerado: " + cNFAux
+				endif
+				if lEnderecar
+					cNFAux += " >> Falta produtos a endereçar."
+					::aProcLog[nPosProc][3] := "Documento Entrada gerado: " + cNFAux
+				endif
+			endif
+			//VarInfo( "FatTri:"+ ::cIdTriang +" AtuStatusProc:aSF1_FV", ::aSF1_FV,, .F. )
+		endif
+
+	else
+		cFilAnt := ::cFilVen  //vou para filial de venda
+		lEnderecar := .F.
+
+		//verifico se ja foi gerado doc de entrada para cada nf
+		if lContinua
+			cNFAux := ""
+			lPreNota := .F.
+			lCtrEnd := GetMV("MV_LOCALIZ",, "N") == "S"
+			nPosProc := aScan(::aProcLog, {|x| x[4] == "DOCEFV"})
+			for nX := 1 to len(::aSF2_FE)
+				SF1->(DbSetOrder(8)) //F1_FILIAL+F1_CHVNFE
+				if !empty(::aSF2_FE[nX][4]) .AND. SF1->(DbSeek(xFilial("SF1")+::aSF2_FE[nX][4] ))
+					aadd(::aSF1_FV, {SF1->F1_DOC, SF1->F1_SERIE, SF1->F1_FORNECE, SF1->F1_LOJA, SF1->F1_CHVNFE} )
+					cNFAux += SF1->F1_DOC +"/"+ SF1->F1_SERIE + " "
+					if Empty(SF1->F1_STATUS)
+						cNFAux += "(Pré-Nota) "
+						lPreNota := .T.
+						lContinua := .F. //falta gerar
+					else
+						//verifico saldo a endereçar
+						SD1->( dbSetOrder(1)) //D1_FILIAL+D1_DOC+D1_SERIE+D1_FORNECE+D1_LOJA+D1_COD+D1_ITEM
+						SD1->( dbSeek(SF1->F1_FILIAL+SF1->F1_DOC+SF1->F1_SERIE+SF1->F1_FORNECE+SF1->F1_LOJA) )
+						while SD1->(!EOF()) .And. SD1->D1_FILIAL+SD1->D1_DOC+SD1->D1_SERIE+SD1->D1_FORNECE+SD1->D1_LOJA == SF1->F1_FILIAL+SF1->F1_DOC+SF1->F1_SERIE+SF1->F1_FORNECE+SF1->F1_LOJA
+
+							SB1->(DbSetOrder(1))
+							SB1->(dbSeek(xFilial("SB1") + SD1->D1_COD) )
+							if SB1->B1_LOCALIZ <> "S"
+								SD1->( dbSkip() )
+								LOOP
+							endif
+							//verifico se o saldo ficou a endereçar
+							SDA->(DbSetOrder(1)) //DA_FILIAL+DA_PRODUTO+DA_LOCAL+DA_NUMSEQ
+							if SDA->(DBSeek(xFilial("SDA")+SD1->D1_COD+SD1->D1_LOCAL+SD1->D1_NUMSEQ )) .AND. SDA->DA_SALDO > 0
+								lContinua := .F. //falta gerar
+								lEnderecar := .T.
+								EXIT
+							endif
+
+							SD1->(DbSkip())
+						enddo
+					endif
+				else
+					lContinua := .F. //falta gerar
+				endif
+			next nX
+			if lContinua
+				::aProcLog[nPosProc][1] := "BR_VERDE"
+				::aProcLog[nPosProc][3] := "Documento Entrada gerado: " + cNFAux
+				::cProcExec := "DLOTFV" //proximo passo
+			else
+				::aProcLog[nPosProc][1] := "BR_VERMELHO"
+				if lPreNota
+					cNFAux += " >> Classifique manualmente"
+					if lCtrEnd
+						cNFAux += " e aponte saldo a endereçar dos produtos habilitados"
+					endif
+					cNFAux += "."
+					::aProcLog[nPosProc][3] := "Documento Entrada gerado: " + cNFAux
+				endif
+				if lEnderecar
+					cNFAux += " >> Falta produtos a endereçar."
+					::aProcLog[nPosProc][3] := "Documento Entrada gerado: " + cNFAux
+				endif
+			endif
+			//VarInfo( "FatTri:"+ ::cIdTriang +" AtuStatusProc:aSF1_FV", ::aSF1_FV,, .F. )
+		endif
+	endif
+
+	//verifico se lotes foram distribuidos
+	if lContinua
+		nPosProc := aScan(::aProcLog, {|x| x[4] == "DLOTFV"})
+
+		SC9->(DbSetOrder(1))
+		For nX := 1 to len(::aItNfFE)
+			lLoteOk := .F.
+			if SC9->(DbSeek( ::aItNfFE[nX][nPosFilFV] + ::aItNfFE[nX][nPosPvFV] + ::aItNfFE[nX][nPosItFV] ))
+				While SC9->(!Eof()) .AND. SC9->C9_FILIAL+SC9->C9_PEDIDO+SC9->C9_ITEM == ::aItNfFE[nX][nPosFilFV]+::aItNfFE[nX][nPosPvFV]+::aItNfFE[nX][nPosItFV]
+					if ::aItNfFE[nX][nPosLote] == SC9->C9_LOTECTL //procuro lote
+						lLoteOk := .T.
+						EXIT
+					endif
+					SC9->(DbSkip())
+				enddo
+				if !lLoteOk
+					lContinua := .F. //falta distribuir
+					EXIT
+				endif
+			else
+				lContinua := .F. //falta distribuir
+				EXIT
+			endif
+		next nX
+
+		if lContinua
+			::aProcLog[nPosProc][1] := "BR_VERDE"
+			::aProcLog[nPosProc][3] := "Lotes distribuidos com sucesso!"
+			::cProcExec := "FIM"
+			nPosProc := 1 //deixo no 1 por causo do goto
+		endif
+	endif
+
+	oGridLog:GoTo(nPosProc)
+	oGridLog:oBrowse:Refresh()
+	cFilAnt := cBkpFil
+
+Return
+
+//-----------------------------------------------------------------
+//Metodo para executar processos pendentes
+//-----------------------------------------------------------------
+METHOD DoProcNfTran(nRecDAK, nRecSC5) CLASS FatTriang
+
+	Local lOk := .T.
+
+	//posiciono na carga ou pedido principal
+	if ::cTipo == '1' //se por carga
+		DAK->(DbGoTo(nRecDAK))
+		DAK->(MsUnlock())
+	else
+		SC5->(DbGoTo(nRecSC5))
+		SC5->(MsUnlock())
+	endif
+
+	if ::cProcExec <> "FIM"
+
+		if ::cProcExec == "DOCSFE"
+			MsAguarde({|| lOk := ::GerarDocSaida(::cProcExec, ::cFilEst, ::aPvNfFE, ::aItNfFE, @::aSF2_FE) },"Aguarde...","Gerando documento de saída na FE...",.T.)
+			//VarInfo( "FatTri:"+ ::cIdTriang +" DOCSFE:aSF2_FE", ::aSF2_FE,, .F. )
+			if lOk
+				//::cMsgErro
+				::cProcExec := "NFE_FE" //proximo passo
+			endif
+		endif
+
+		if ::cProcExec == "NFE_FE"
+			If ::GetTipoCarga() <> 'E'
+				MsAguarde({|| lOk := ::TransmiteNFe(::cProcExec, ::cFilEst, @::aSF2_FE) },"Aguarde...","Transmitindo notas para SEFAZ...",.T.)
+			Else
+				::aProcLog[nPosProc][1] := "BR_VERDE"
+				::aProcLog[nPosProc][3] := "NF-e Transmitida para SEFAZ"
+			Endif
+			//VarInfo( "FatTri:"+ ::cIdTriang +" NFE_FE:aSF2_FE", ::aSF2_FE,, .F. )
+			if lOk
+				::cProcExec := "AUT_FE" //proximo passo
+			endif
+		endif
+
+		if ::cProcExec == "AUT_FE"
+			If ::GetTipoCarga() <> 'E'
+				MsAguarde({|| lOk := ::MonitorarNFe(::cProcExec, ::cFilEst, @::aSF2_FE) },"Aguarde...","Monitorando retorno do SEFAZ...",.T.)
+			Else
+				::aProcLog[nPosProc][1] := "BR_VERDE"
+				::aProcLog[nPosProc][3] := "NF-e Autorizadas pelo SEFAZ"
+			Endif
+			//VarInfo( "FatTri:"+ ::cIdTriang +" AUT_FE:aSF2_FE", ::aSF2_FE,, .F. )
+			if lOk
+				::cProcExec := "DAN_FE" //proximo passo
+			endif
+		endif
+
+		if ::cProcExec == "DAN_FE"
+			If ::GetTipoCarga() <> 'E'
+				MsAguarde({|| lOk := ::ImpDANFE(::cProcExec, ::cFilEst, @::aSF2_FE) },"Aguarde...","Imprimindo DANFEs...",.T.)
+			Else
+				::aProcLog[nPosProc][1] := "BR_VERDE"
+				::aProcLog[nPosProc][3] := "DANFEs Impressas"
+			Endif
+
+			if lOk
+				if !empty(::cFilInt)
+					::cProcExec := "DOCEFI" //proximo passo
+				else
+					::cProcExec := "DOCEFV" //proximo passo
+				endif
+			endif
+		endif
+
+		if ::cProcExec == "DOCEFI"
+			MsAguarde({|| lOk := ::GerarDocEntrada( ::cProcExec,;
+			::cFilInt,; //destino
+			::cFilEst,; //origem
+			::aSF2_FE,;
+			@::aSF1_FI) },"Aguarde...","Gerando documento entrada na FI...",.T.)
+			//VarInfo( "FatTri:"+ ::cIdTriang +" DOCEFI:aSF1_FI", ::aSF1_FI,, .F. )
+			if lOk
+				::cProcExec := "PEDVFI" //proximo passo
+			endif
+		endif
+
+		if ::cProcExec == "PEDVFI"
+			MsAguarde({|| lOk := ::GerarPVInt(::cProcExec) },"Aguarde...","Criando pedido de venda na FI...",.T.)
+			//VarInfo( "FatTri:"+ ::cIdTriang +" PEDVFI:aPvNfFI", ::aPvNfFI,, .F. )
+			//VarInfo( "FatTri:"+ ::cIdTriang +" PEDVFI:aItNfFI", ::aItNfFI,, .F. )
+			if lOk
+				::cProcExec := "DOCSFI" //proximo passo
+			endif
+		endif
+
+		if ::cProcExec == "DOCSFI"
+			MsAguarde({|| lOk := ::GerarDocSaida(::cProcExec, ::cFilInt, ::aPvNfFI, ::aItNfFI, @::aSF2_FI) },"Aguarde...","Gerando documento de saída na FI...",.T.)
+			//VarInfo( "FatTri:"+ ::cIdTriang +" DOCSFI:aSF2_FI", ::aSF2_FI,, .F. )
+			if lOk
+				//::cMsgErro
+				::cProcExec := "NFE_FI" //proximo passo
+			endif
+		endif
+
+		if ::cProcExec == "NFE_FI"
+			If ::GetTipoCarga() <> 'E'
+				MsAguarde({|| lOk := ::TransmiteNFe(::cProcExec, ::cFilInt, @::aSF2_FI) },"Aguarde...","Transmitindo notas para SEFAZ...",.T.)
+			Else
+				::aProcLog[nPosProc][1] := "BR_VERDE"
+				::aProcLog[nPosProc][3] := "NF-e Transmitida para SEFAZ"
+			Endif
+			//VarInfo( "FatTri:"+ ::cIdTriang +" NFE_FI:aSF2_FI", ::aSF2_FI,, .F. )
+			if lOk
+				::cProcExec := "AUT_FI" //proximo passo
+			endif
+		endif
+
+		if ::cProcExec == "AUT_FI"
+			If ::GetTipoCarga() <> 'E'
+				MsAguarde({|| lOk := ::MonitorarNFe(::cProcExec, ::cFilInt, @::aSF2_FI) },"Aguarde...","Monitorando retorno do SEFAZ...",.T.)
+			Else
+				::aProcLog[nPosProc][1] := "BR_VERDE"
+				::aProcLog[nPosProc][3] := "NF-e Autorizadas pelo SEFAZ"
+			Endif
+			//VarInfo( "FatTri:"+ ::cIdTriang +" AUT_FI:aSF2_FI", ::aSF2_FI,, .F. )
+			if lOk
+				::cProcExec := "DAN_FI" //proximo passo
+			endif
+		endif
+
+		if ::cProcExec == "DAN_FI"
+			If ::GetTipoCarga() <> 'E'
+				MsAguarde({|| lOk := ::ImpDANFE(::cProcExec, ::cFilInt, @::aSF2_FI) },"Aguarde...","Imprimindo DANFEs...",.T.)
+			Else
+				::aProcLog[nPosProc][1] := "BR_VERDE"
+				::aProcLog[nPosProc][3] := "DANFEs Impressas"
+			Endif
+
+			if lOk
+				::cProcExec := "DOCEFV" //proximo passo
+			endif
+		endif
+
+		if ::cProcExec == "DOCEFV"
+			MsAguarde({|| lOk := ::GerarDocEntrada( ::cProcExec,;
+			::cFilVen,; //destino
+			iif(empty(::cFilInt),::cFilEst,::cFilInt),; //origem
+			iif(empty(::cFilInt),::aSF2_FE,::aSF2_FI),;
+			@::aSF1_FV) },"Aguarde...","Gerando documento entrada na FV...",.T.)
+			//VarInfo( "FatTri:"+ ::cIdTriang +" DOCEFV:aSF1_FV", ::aSF1_FV,, .F. )
+			if lOk
+				::cProcExec := "DLOTFV" //proximo passo
+			endif
+		endif
+
+		if ::cProcExec == "DLOTFV"
+			MsAguarde({|| lOk := ::DistribuiLotes(::cProcExec, ::aSF1_FV) },"Aguarde...","Distribuindo lotes no pedido da FV...",.T.)
+
+			if lOk
+				::cProcExec := "FIM" //proximo passo
+				MsgInfo("Processamento Finalizado com Sucesso!")
+			endif
+		endif
+
+	else
+		MsgInfo("Processamento já realizado por completo!")
+	endif
+
+Return
+
+//-----------------------------------------------------------------
+//Metodo para faturar o pedido posicionado
+//-----------------------------------------------------------------
+METHOD GerarDocSaida(cProcess, cFilPv, aPvOri, aItOri, aNotas) CLASS FatTriang
+
+	Local nX
+	Local lOk := .T.
+	Local nPosProc := aScan(::aProcLog, {|x| x[4] == cProcess})
+	Local cBkpFil := cFilAnt
+	Local aItensFat := {}
+	Local aPvlNfs := {}, aBloqueio := {}
+	Local cNFAux := ""
+	Local cMsgLog := ""
+	Local cNota, cSerie, lMostraCtb, lAglutCtb, lCtbOnLine, lCtbCusto, lReajuste, nCalAcrs, nArredPrcLis, lAtuSA7, lECF
+
+	//BeginTran()
+
+	cFilAnt := cFilPv
+
+	cSerie := PadR(SuperGetMv("FT_SERTRSF",,""),TamSx3("F2_SERIE")[1]) //serie para NF
+
+	If ::GetTipoCarga() = 'E'
+		cSerie := PadR(SuperGetMv("FT_STRSFAF",,""),TamSx3("F2_SERIE")[1]) //serie para NF
+	EndIf
+
+	For nX := 1 to len(aPvOri)
+
+		aItensFat := {}
+		lOk := .T.
+
+		//posiciono no pedido
+		SC5->(DbSetOrder(1))
+		SC5->(DbSeek(xFilial("SC5") + aPvOri[nX]) )
+		SC6->(DbSetOrder(1))
+		if SC6->( dbSeek(xFilial("SC6") + SC5->C5_NUM) )
+			if !empty(SC6->C6_NOTA) //ja faturado
+				lOk := .F. //não processa, pula pedido
+				cNFAux += SC6->C6_NOTA+"/"+SC6->C6_SERIE + " "
+			endif
+		endif
+
+		//verifica liberação do pedido
+		if lOk
+			aPvlNfs := {}
+			aBloqueio := {}
+			Ma410LbNfs(1,@aPvlNfs,@aBloqueio)
+			if !empty(aBloqueio) .OR. !empty(SC5->C5_BLQ)
+				aPvlNfs := {}
+				aBloqueio := {}
+				Ma410LbNfs(2,@aPvlNfs,@aBloqueio) //tenta liberar
+				Ma410LbNfs(1,@aPvlNfs,@aBloqueio) //verifica se há bloqueios
+				if !empty(aBloqueio) .OR. !empty(SC5->C5_BLQ)
+					cMsgLog := "Pedido "+SC5->C5_NUM+" com algum bloqueio de crédito ou estoque. Operação Abortada!"
+					//DisarmTransaction()
+					lOk := .F.
+					EXIT
+				endif
+			endif
+		endif
+
+		if lOK
+			if !Empty(aPvlNfs)
+				//ALTERADO A PEDIDO DA MOCOCA, PARA EVITAR ERROS DE USUARIO SELECIONAR SERIE ERRADA.
+				//AGORA IRÁ PEGAR DOS PARMETROS FT_SERTRSF OU FT_STRSFAF, SE PREENCHIDOS
+				If !empty(cSerie) .OR. Sx5NumNota(@cSerie,SuperGetMV("MV_TPNRNFS")) //para escolher numero da NF
+					// Declarei as variáveis para lembrar o que é cada posição da função MaPvlNfs.
+					lMostraCtb   := .F.
+					lAglutCtb    := .F.
+					lCtbOnLine   := .F.
+					lCtbCusto    := .F.
+					lReajuste    := .F.
+					nCalAcrs     := 0
+					nArredPrcLis := 0
+					lAtuSA7      := .T.
+					lECF         := .F.
+
+					cNota := MaPvlNfs(aPvlNfs, cSerie, lMostraCtb, lAglutCtb, lCtbOnLine, lCtbCusto, lReajuste, nCalAcrs, nArredPrcLis, lAtuSA7, lECF)
+					if !empty(cNota)
+						cNota := PadR(cNota, TamSX3("F2_DOC")[1])
+						aAdd(aNotas, {cNota, cSerie, " ", ""} ) //adiciono a nota no vetor de notas fiscais
+						cNFAux += cNota+"/"+cSerie + " "
+					else
+						cMsgLog := "Falha ao gerar Documento Saída sobre o Pedido "+SC5->C5_NUM+". Operação Abortada! (MaPvlNfs)"
+						//DisarmTransaction()
+						lOk := .F.
+						EXIT
+					endif
+				else
+					cMsgLog := "Falha ao gerar Documento Saída sobre o Pedido "+SC5->C5_NUM+". Operação Abortada! (Sx5NumNota)"
+					//DisarmTransaction()
+					lOk := .F.
+					EXIT
+				endif
+			else
+				cMsgLog := "Pedido "+SC5->C5_NUM+" com algum bloqueio de crédito ou estoque. Operação Abortada!"
+				//DisarmTransaction()
+				lOk := .F.
+				EXIT
+			endif
+		endif
+
+	next nX
+
+	if lOK
+		//EndTran()
+		::aProcLog[nPosProc][1] := "BR_VERDE"
+		::aProcLog[nPosProc][3] := "Documento Saída gerado: " + cNFAux
+	else
+		::aProcLog[nPosProc][1] := "BR_VERMELHO"
+		::aProcLog[nPosProc][3] := cMsgLog
+	endif
+
+	cFilAnt := cBkpFil
+	oGridLog:GoTo(nPosProc)
+	oGridLog:oBrowse:Refresh()
+
+Return lOk
+
+//-----------------------------------------------------------------
+//Metodo para transmissão da NFe
+//-----------------------------------------------------------------
+METHOD TransmiteNFe(cProcess, cFilNF, aNotas)  CLASS FatTriang
+
+	Local cSerie := cDocIni := cDocFim := ""
+	Local lOK := .F.
+	Local nX := 0
+	Local nPosProc := aScan(::aProcLog, {|x| x[4] == cProcess})
+	Local nRecSM0 := SM0->(Recno())
+	Local cBkpFil := cFilAnt
+
+	cFilAnt := cFilNF
+	SM0->( dbSeek( cEmpAnt + cFilAnt ) )
+
+	For nX := 1 to len(aNotas)
+		cSerie  := aNotas[nX][2]
+		cDocIni := aNotas[nX][1]
+		cDocFim := aNotas[nX][1]
+
+		SF2->(DbSetOrder(1))
+		SF2->(DbSeek(xFilial("SF2")+cDocIni+cSerie ))
+
+		if empty(SF2->F2_FIMP) //se nao foi transmitida ainda
+
+			/*Parametros AutoNfeEnv :
+			cEmpresa,
+			cFilial,
+			cEspera,
+			cAmbiente (1=producao,2=Homologação)
+			cSerie
+			cDoc.Inicial
+			cDoc.Final
+			*/
+			//TODO Descomentar quando passar pra produçao, e comentar a outra
+			
+			//Mococa 
+			//Fonte da função de transmissão da NF descontinuada na realease 12.1.27
+			u_autoNfeEnv(cEmpAnt, cFilAnt, "", "", cSerie, cDocIni, cDocFim) //Produção
+			//autoNfeEnv(cEmpAnt, cFilAnt, "", "2", cSerie, cDocIni, cDocFim) //Homologaçao
+
+			Sleep(3000) //espera 3 segundos
+
+			if !empty(SF2->F2_FIMP)
+				aNotas[nX][3] := SF2->F2_FIMP
+				lOK := .T.
+			endif
+		endif
+	next nX
+
+	if lOK
+		::aProcLog[nPosProc][1] := "BR_VERDE"
+		::aProcLog[nPosProc][3] := "NF-e Transmitida para SEFAZ"
+	else
+		::aProcLog[nPosProc][1] := "BR_VERMELHO"
+		::aProcLog[nPosProc][3] := "Não foi possível transmitir NF-e para SEFAZ. Verifique configurações do SPED."
+	endif
+
+	cFilAnt := cBkpFil
+	SM0->(DbGoTo(nRecSM0))
+	oGridLog:GoTo(nPosProc)
+	oGridLog:oBrowse:Refresh()
+
+Return lOK
+
+//-----------------------------------------------------------------
+//Metodo para monitorar a transmissão/retorno SEFAZ da NFe
+//-----------------------------------------------------------------
+METHOD MonitorarNFe(cProcess, cFilNF, aNotas) CLASS FatTriang
+
+	Local lOK := .F.
+	Local nPosProc := aScan(::aProcLog, {|x| x[4] == cProcess})
+	Local cBkpFil := cFilAnt
+	Local nRet := 1, nVezes := 5, nX := 0
+	Local cMsgRet := ""
+	Local nRecSM0 := SM0->(Recno())
+	Local nRecSF2 := 0
+
+	cFilAnt := cFilNF
+	SM0->( dbSeek( cEmpAnt + cFilAnt ) )
+
+	while nRet == 1
+
+		nQtd := 0
+		For nX := 1 to len(aNotas)
+
+			SF2->(DbSetOrder(1))
+			SF2->(DbSeek(xFilial("SF2")+aNotas[nX][1]+aNotas[nX][2] ))
+			nRecSF2 := SF2->(Recno())
+
+			//monitora NF-e
+			SpedNFe6Mnt(SF2->F2_SERIE,SF2->F2_DOC,SF2->F2_DOC,,,,,.T./*lAutoColab*/)
+
+			SF2->(DbGoTo(nRecSF2)) //posiciono novamente, para garantir
+
+			if empty(SF2->F2_FIMP) .OR. SF2->F2_FIMP == 'T' //verifico
+				nQtd++
+			endif
+
+		next nX
+
+		if nQtd == 0
+			EXIT //finalizou todas
+		endif
+
+		nRet := Aviso("Aguarde...Monitorando nota(s)", "De " + cValToChar(len(aNotas)) + " nota(s) falta obter retorno de " + cValToChar(nQtd) + " nota(s). "+CRLF+"Aguarde alguns segundos e faça a checagem novamente.", iif(nVezes<=0,{"Checar", "Sair"},{"Checar"}),2)
+
+		nVezes-- //controle de escape do laço
+	enddo
+
+	For nX := 1 to len(aNotas)
+		SF2->(DbSetOrder(1))
+		SF2->(DbSeek(xFilial("SF2")+aNotas[nX][1]+aNotas[nX][2] ))
+
+		aNotas[nX][4] := SF2->F2_CHVNFE
+
+		if SF2->F2_FIMP <> "S" //se nao autorizada
+			cMsgRet += "NF: "+aNotas[nX][1]+"/"+aNotas[nX][2]+" NÃO autorizada! "
+			if MsgYesNo("Nota nao autorizada! Deseja ver tela monitor?")
+				//monitora NF-e
+				SpedNFe6Mnt(SF2->F2_SERIE,SF2->F2_DOC,SF2->F2_DOC,,,,,,.T./*lExibTela*/)
+			endif
+		endif
+	next nX
+
+	if empty(cMsgRet)
+		lOk := .T. //todas autorizadas
+		::aProcLog[nPosProc][1] := "BR_VERDE"
+		::aProcLog[nPosProc][3] := "NF-e Autorizadas pelo SEFAZ"
+	else
+		::aProcLog[nPosProc][1] := "BR_VERMELHO"
+		::aProcLog[nPosProc][3] := cMsgRet+"Verifique na rotina NF-e Sefaz."
+	endif
+
+	cFilAnt := cBkpFil
+	SM0->(DbGoTo(nRecSM0))
+	oGridLog:GoTo(nPosProc)
+	oGridLog:oBrowse:Refresh()
+
+Return lOK
+
+//-----------------------------------------------------------------
+//Metodo para impressao da DANFE
+//-----------------------------------------------------------------
+METHOD ImpDANFE(cProcess, cFilNF, aNotas) CLASS FatTriang
+	Local lOK := .T.
+	Local nPosProc := aScan(::aProcLog, {|x| x[4] == cProcess})
+	Local cBkpFil := cFilAnt
+	Local cMsgRet := ""
+	Local nRecSM0 := SM0->(Recno())
+	Local cDocIni := cDocFim := cSerie := ""
+	Local nX := 0
+
+	Private aFilBrw := {"SF2",".T."}
+
+	cFilAnt := cFilNF
+	SM0->( dbSeek( cEmpAnt + cFilAnt ) )
+
+	For nX := 1 to len(aNotas)
+		SF2->(DbSetOrder(1))
+		SF2->(DbSeek(xFilial("SF2")+aNotas[nX][1]+aNotas[nX][2] ))
+
+		if SF2->F2_FIMP == "S" //se nao autorizada
+
+			cDocIni := iif(empty(cDocIni),SF2->F2_DOC,iif(SF2->F2_DOC < cDocIni, SF2->F2_DOC, cDocIni))
+			cDocFim := iif(empty(cDocFim),SF2->F2_DOC,iif(SF2->F2_DOC > cDocFim, SF2->F2_DOC, cDocFim))
+			cSerie := SF2->F2_SERIE
+
+		endif
+	next nX
+
+	if !empty(cDocIni+cDocFim)
+		
+/*** Ash BRASIL 2022/07/27 alterando para substituir a função u_zAtuPerg
+		Caique - Removi o UPDATE na MP_SYSTEM_PROFILE e troquei a função u_zAtuPerg por SetMVValue()  ***/
+		/*
+		Begin Transaction      
+
+    		//Monta o Update
+    		cQry := "UPDATE MP_SYSTEM_PROFILE SET D_E_L_E_T_ = '*', R_E_C_D_E_L_ = R_E_C_N_O_"  + CRLF
+    		cQry += "WHERE P_NAME = '"+RetCodUsr()+"' "                                         + CRLF
+			cQry += "AND P_PROG = 'NFSIGW' "                                                    + CRLF
+    		cQry += "AND D_E_L_E_T_ <> '*' "                                                    + CRLF
+ 
+
+    		MemoWrite("C:\TEMP\MP_SYSTEM_PROFILE.txt",cQry)
+
+        	//Tenta executar o update
+        	nErro := TcSqlExec(cQry)
+
+        		If nErro != 0
+        
+      	    		MsgStop("Erro na execução da query: "+TcSqlError(), "Atenção")
+       	    		DisarmTransaction()
+			
+				EndIf
+
+		End Transaction
+		*/
+		Pergunte("NFSIGW",.F.)
+
+		SetMVValue("NFSIGW","MV_PAR01",cDocIni)
+		SetMVValue("NFSIGW","MV_PAR02",cDocFim)
+		SetMVValue("NFSIGW","MV_PAR03",cSerie)
+		//u_zAtuPerg("NFSIGW", "MV_PAR01", cDocIni) //doc de
+		//u_zAtuPerg("NFSIGW", "MV_PAR02", cDocFim) //doc até
+		//u_zAtuPerg("NFSIGW", "MV_PAR03", cSerie) //serie
+		if dDataBase < MV_PAR07 .OR. dDataBase > MV_PAR08
+			SetMVValue("NFSIGW","MV_PAR07",dDataBase)
+			SetMVValue("NFSIGW","MV_PAR08",dDataBase)
+			//u_zAtuPerg("NFSIGW", "MV_PAR07", dDataBase) //data de
+			//u_zAtuPerg("NFSIGW", "MV_PAR08", dDataBase) //data ate
+		endif
+
+		SpedDanfe()
+	else
+		cMsgRet := "DANFEs Não Impressas. Imprimir manualmente."
+	endif
+
+	if empty(cMsgRet)
+		::aProcLog[nPosProc][1] := "BR_VERDE"
+		::aProcLog[nPosProc][3] := "DANFEs Impressas"
+	else
+		::aProcLog[nPosProc][1] := "BR_VERMELHO"
+		::aProcLog[nPosProc][3] := cMsgRet
+	endif
+
+	cFilAnt := cBkpFil
+	SM0->(DbGoTo(nRecSM0))
+	oGridLog:GoTo(nPosProc)
+	oGridLog:oBrowse:Refresh()
+
+Return lOk
+
+//-----------------------------------------------------------------
+//Metodo para gerar documento de entrada
+//-----------------------------------------------------------------
+METHOD GerarDocEntrada(cProcess, cFilDoc, cFilOri, aNFSaida, aNFEntra) CLASS FatTriang
+
+	Local lOK := .F.
+	Local nPosProc := aScan(::aProcLog, {|x| x[4] == cProcess})
+	Local cBkpFil := cFilAnt
+	Local cLocTrf, lCtrEnd, cEndTrf
+	Local cForn := "", cLoj := "", cMsgRet := "", cNFAux := ""
+	Local nX := 0
+	Local aCab := {}, aIte := {}, aAux := {}
+	Local aCEnd := {}, aIEnd := {}
+	Local cSeq := "0000"
+	Local lPreNota := .F.
+	Local lAuxPreNF := .F. //indica se tem pre nota no geral
+	Local nRecSDA := 0
+	Local aAreaSD1
+	Local cMsgChv := ""
+
+	cFilAnt := cFilDoc
+
+	//verificando parametros
+	cLocTrf := SuperGetMv("FT_LOCTRF",,"") //Define local de estoque a ser considerado no doc de entrada, no processo de transferência. Preencher por filial.
+	lCtrEnd := GetMV("MV_LOCALIZ",, "N") == "S"
+	cEndTrf := SuperGetMv("FT_ENDTRF",,"") //Define endereço de estoque a ser considerado no doc de entrada, no processo de transferência. Preencher por filial.
+
+	if ::PosForFil(cFilOri, @cForn, @cLoj)
+
+		lOk := .T.
+
+		if lCtrEnd .AND. empty(cEndTrf)
+			cMsgRet := "Parametro FT_ENDTRF não configurado corretamente!"
+			lOk := .F.
+		endif
+
+		if lOk
+
+			BeginTran()
+			lOk := .F.  //Define .F. para processar Claudio 11.01.18
+			For nX := 1 to len(aNFSaida)
+
+				aCab := {}
+				aIte := {}
+				cSeq := "0000"
+				lPreNota := .F.
+// Melhoria para enviar o ID de triangulação para a nota de entrada 29.01.2018
+// Alexandre e Tarcisio
+				if empty(aNFSaida[nX][4])
+
+					aNFSaida[nX][4] := SF2->F2_XIDTRI
+
+				endif
+// Fim
+				if empty(aNFSaida[nX][4])
+					if empty(aNFSaida[nX][4])
+				    	cMsgChv+="NFe "+aNFSaida[nX][1]+"/"+aNFSaida[nX][2]+" sem Chave; "
+						LOOP
+					endif
+					LOOP
+				endif
+
+				//verifico se ja gerou nota da chave, se sim, pula
+				SF1->(DbSetOrder(8)) //F1_FILIAL+F1_CHVNFE
+				if !SF1->(DbSeek(xFilial("SF1")+aNFSaida[nX][4] ))
+
+					//vou para filial de origem para montar vetores execauto
+					cFilAnt := cFilOri
+					
+					//posiciono na NF saída
+					SF2->( dbSetOrder(1) )
+					SF2->( dbSeek(xFilial("SF2") + aNFSaida[nX][1] + aNFSaida[nX][2]) )
+
+					aAdd(aCab, {"F1_TIPO"   , "N"                               , nil})
+					aAdd(aCab, {"F1_FORMUL" , "N"                               , nil})
+					aAdd(aCab, {"F1_DOC"    , StrZero(Val(SF2->F2_DOC),9)       , nil})
+					aAdd(aCab, {"F1_SERIE"  , SF2->F2_SERIE                     , nil})
+					aAdd(aCab, {"F1_EMISSAO", SF2->F2_EMISSAO                   , nil})
+					aAdd(aCab, {"F1_FORNECE", cForn								, nil})
+					aAdd(aCab, {"F1_LOJA"   , cLoj								, nil})
+					If ::GetTipoCarga() <> 'E'
+						aAdd(aCab, {"F1_ESPECIE", "SPED"                            , nil})
+					Else
+						aAdd(aCab, {"F1_ESPECIE", "NF"                            , nil})
+					Endif
+					aAdd(aCab, {"F1_COND"	, SF2->F2_COND                      , nil})
+					aAdd(aCab, {"F1_CHVNFE" , iif(!Empty(SF2->F2_CHVNFE),SF2->F2_CHVNFE,SF2->F2_XIDTRI) , nil}) //Claudio Utiliza o ID para NF sem chave
+					aAdd(aCab, {"F1_XIDTRI" , SF2->F2_XIDTRI                    , nil})
+
+					SD2->( dbSetOrder(3) )
+					SD2->( dbSeek(SF2->F2_FILIAL+SF2->F2_DOC+SF2->F2_SERIE+SF2->F2_CLIENTE+SF2->F2_LOJA) )
+					while SD2->(!EOF()) .And. SD2->D2_FILIAL+SD2->D2_DOC+SD2->D2_SERIE+SD2->D2_CLIENTE+SD2->D2_LOJA == SF2->F2_FILIAL+SF2->F2_DOC+SF2->F2_SERIE+SF2->F2_CLIENTE+SF2->F2_LOJA
+						aAux := {}
+						cSeq  := soma1(cSeq)
+
+						SF4->( dbSetOrder(1))
+						SF4->( dbSeek(xFilial("SF4") + SD2->D2_TES) )
+						if empty(SF4->F4_XTESTRF)
+							lPreNota := .T.
+							lAuxPreNF := .T.
+						endif
+
+						//aAdd(aAux, {"D1_ITEM"   , cSeq           , nil}) //ajuste realizado para corrigir a entrada na filial destino
+						//aAdd(aAux, {"D1_ITEM"   , SD2->D2_ITEM     , nil}) //ajuste abaixo realizado para corrigir triangulação aonde SD2 campo Item tamanho 2 e na SD1 campo Item tamanho 4 gerando problemas no custo incluimos zeros. 
+						aAdd(aAux,{"D1_ITEM"	,StrZero(Val(SD2->D2_ITEM),TamSx3("D1_ITEM")[1]),Nil}) // 17/04/19  Transferência entre Filiais MATR715	 NF 000139266 Filial 0104 para 0105	 
+						aAdd(aAux, {"D1_COD"    , SD2->D2_COD    , nil})
+						aAdd(aAux, {"D1_UM"    , SD2->D2_UM     , nil})
+						aAdd(aAux, {"D1_QUANT"  , SD2->D2_QUANT  , nil})
+						aAdd(aAux, {"D1_TES"    , SF4->F4_XTESTRF, nil})
+						aAdd(aAux, {"D1_VUNIT"  , SD2->D2_PRCVEN , nil})
+						aAdd(aAux, {"D1_TOTAL"  , SD2->D2_TOTAL  , nil})
+						if empty(cLocTrf)
+							aAdd(aAux, {"D1_LOCAL" , SD2->D2_LOCAL    , nil})
+						else
+							aAdd(aAux, {"D1_LOCAL", cLocTrf		 , nil})
+						endif
+						aAdd(aAux, {"D1_LOTECTL", SD2->D2_LOTECTL, nil})
+						aAdd(aAux ,{"D1_DTVALID", SD2->D2_DTVALID, nil})
+						aAdd(aAux ,{"D1_XTFIORI", SD2->D2_XTFIORI, nil})  // cFilOri       //"SD2->D2_XTFIORI"
+						aAdd(aAux ,{"D1_XTPVORI", SD2->D2_XTPVORI, nil})
+						aAdd(aAux ,{"D1_XTITORI", SD2->D2_XTITORI, nil})
+
+						aAdd(aIte, aClone(aAux))
+
+						SD2->( dbSkip() )
+					enddo
+
+					Private lMsErroAuto := .F.
+
+					//vou para filial de destino para gravaçao
+					cFilAnt := cFilDoc
+
+					SF1->(dbSetOrder(1))
+					if lPreNota
+						MSExecAuto({|x, y, z| MATA140(x, y, z)}, aCab, aIte, 3) //pré-nota
+					else
+						MSExecAuto({|x, y, z| MATA103(x, y, z)}, aCab, aIte, 3) //doc classificado
+					endif
+
+					if lMsErroAuto
+						MostraErro()
+
+						//verifico se mesmo com erros incluiu o documento
+						SF1->( dbSetOrder(1) ) //F1_FILIAL+F1_DOC+F1_SERIE+F1_FORNECE+F1_LOJA+F1_TIPO
+						if !SF1->( dbSeek(xFilial("SF1") + aNFSaida[nX][1] + aNFSaida[nX][2] + cForn + cLoj) )
+							lOk := .F.
+							cNFAux := ""
+							cMsgRet := "Falha ao incluir documento de entrada."
+							DisarmTransaction()
+							EXIT
+						endif
+					else
+					  lOk := .T.  //Define .T se Ok Claudio 11.01.18
+					endif
+					if lOk
+						aadd(aNFEntra, {SF1->F1_DOC, SF1->F1_SERIE, SF1->F1_FORNECE, SF1->F1_LOJA, SF1->F1_CHVNFE} )
+						if lPreNota
+							cMsgRet := "Documento de Entrada gerado: "
+						endif
+						cNFAux += SF1->F1_DOC + "/" + SF1->F1_SERIE + iif(lPreNota," (Pré-Nota) "," ")
+					endif
+				else
+					cNFAux += SF1->F1_DOC + "/" + SF1->F1_SERIE
+				endif
+
+				if lOk
+
+					// Endereçando os produtos.
+					if lCtrEnd .AND. !lPreNota
+
+						SD1->( dbSetOrder(1)) //D1_FILIAL+D1_DOC+D1_SERIE+D1_FORNECE+D1_LOJA+D1_COD+D1_ITEM
+						SD1->( dbSeek(SF1->F1_FILIAL+SF1->F1_DOC+SF1->F1_SERIE+SF1->F1_FORNECE+SF1->F1_LOJA) )
+						while ! SD1->( EOF() ) .And. SD1->D1_FILIAL+SD1->D1_DOC+SD1->D1_SERIE+SD1->D1_FORNECE+SD1->D1_LOJA == SF1->F1_FILIAL+SF1->F1_DOC+SF1->F1_SERIE+SF1->F1_FORNECE+SF1->F1_LOJA
+
+							aAreaSD1 := SD1->(GetArea())
+
+							SB1->(DbSetOrder(1))
+							SB1->(dbSeek(xFilial("SB1") + SD1->D1_COD) )
+							if SB1->B1_LOCALIZ <> "S"
+								SD1->( dbSkip() )
+								LOOP
+							endif
+
+							//verifico se o saldo ficou a endereçar realmente
+							SDA->(DbSetOrder(1)) //DA_FILIAL+DA_PRODUTO+DA_LOCAL+DA_NUMSEQ
+							if SDA->(DBSeek(xFilial("SDA")+SD1->D1_COD+SD1->D1_LOCAL+SD1->D1_NUMSEQ )) .AND. SDA->DA_SALDO > 0
+
+								//alert("Tenta Endereçar: " + SD1->D1_COD+SD1->D1_LOCAL+SD1->D1_NUMSEQ)
+								nRecSDA := SDA->(Recno())
+
+								//Tratamento para endereço nao ficar com status de ocupado
+								SBE->(DbSetOrder(1)) //BE_FILIAL+BE_LOCAL+BE_LOCALIZ+BE_ESTFIS
+								if SBE->(DbSeek(xFilial("SBE")+SD1->D1_LOCAL+Alltrim(cEndTrf) )) .AND. SBE->BE_STATUS == "2"
+									Reclock("SBE", .F.)
+									SBE->BE_STATUS := '1' //forço ser desocupado
+									SBE->(MsUnlock())
+								endif
+
+								//cabeçalho
+								aCEnd := {  {"DA_FILIAL" , xFilial("SDA") , nil},;
+								{"DA_PRODUTO", SD1->D1_COD    , nil},;
+								{"DA_LOCAL"  , SD1->D1_LOCAL  , nil},;
+								{"DA_NUMSEQ" , SD1->D1_NUMSEQ , nil} }
+
+								//itens
+								aIEnd := {}
+								aAdd(aIEnd, {   {"DB_FILIAL" , xFilial("SDB"), nil},;
+								{"DB_ITEM"   , "0001"        , nil},;
+								{"DB_ESTORNO", " "			 , nil},;
+								{"DB_DATA"   , dDataBase     , nil},;
+								{"DB_LOCALIZ", Padr(cEndTrf,TamSx3("DB_LOCALIZ")[1])       , nil},; //{"DB_NUMSERI", ""            , nIL},;
+								{"DB_QUANT"  , SDA->DA_SALDO , nil}})
+
+								lMsErroAuto := .F.
+								MsExecAuto({|x, y, z| MATA265(x, y, z)}, aCEnd, aIEnd, 3)
+
+								IF lMsErroAuto
+									lOk := .F.
+									MostraErro()
+									cNFAux := ""
+									cMsgRet := "Problemas ao endereçar os produtos da nota de entrada."
+									DisarmTransaction()
+									EXIT
+								ENDIF
+
+								SDA->(DbGoTo(nRecSDA))
+								if SDA->DA_SALDO > 0
+									lOk := .F.
+									cNFAux := ""
+									cMsgRet := "Problemas ao endereçar os produtos da nota de entrada."
+									DisarmTransaction()
+									EXIT
+								endif
+							endif
+
+							RestArea(aAreaSD1)
+
+							SD1->( dbSkip() )
+						enddo
+					endif
+
+					if !lOk //saio do laço for
+						EXIT
+					endif
+
+				endif
+
+			Next nX
+
+			if lOk
+				EndTran()
+				if lAuxPreNF
+					cNFAux += " >> Classifique manualmente"
+					if lCtrEnd
+						cNFAux += " e aponte saldo a endereçar dos produtos habilitados"
+					endif
+					cNFAux += "."
+				endif
+			else
+			 DisarmTransaction()
+			endif
+		endif
+	elseif lOk
+		cMsgRet := "Fornecedor da filial "+cFilOri+" não encontrado para geração do Doc.Entrada!"
+		lOk := .F.
+	endif
+
+	if lOk .AND. !lAuxPreNF
+		::aProcLog[nPosProc][1] := "BR_VERDE"
+		::aProcLog[nPosProc][3] := "Documento de Entrada gerado: " + cNFAux
+	else
+		lOk := .F.
+		::aProcLog[nPosProc][1] := "BR_VERMELHO"
+		::aProcLog[nPosProc][3] := cMsgRet + cNFAux + cMsgChv
+	endif
+
+	cFilAnt := cBkpFil
+	oGridLog:GoTo(nPosProc)
+	oGridLog:oBrowse:Refresh()
+
+Return lOk
+
+//-----------------------------------------------------------------
+//Metodo para gerar Pedido de Venda intermediario
+//-----------------------------------------------------------------
+METHOD GerarPVInt(cProcess) CLASS FatTriang
+
+	Local lOK := .T.
+	Local nX := 1
+	Local cCli, cLoj, cCondPg, cC6Oper, cTipPrc, cTabPrc, nIndPrc
+	Local nPosProc := aScan(::aProcLog, {|x| x[4] == cProcess})
+	Local cBkpFil := cFilAnt
+	Local cPVAux := ""
+	Local aCabAuto := {}
+	Local aIteAuto := {}
+	Local aAux := {}
+	Local cItem := replicate("0", tamSX3("C6_ITEM")[1])
+	Local cSeq := "0000"
+	Local nPrcUnit := 0, nPrcOrig := 0
+	Local aRecSC5 := {}
+	Local c_TpCrg := ' '
+	Local c_Tes := ' '
+
+	//mudo a filial
+	cFilAnt := ::cFilInt
+
+	cCondPg := SuperGetMv("FT_CDPAGFI",,"")
+	cC6Oper := SuperGetMv("FT_OPERFI",,"")
+	cTipPrc := SuperGetMv("FT_TPPRCFI",,"2")//1-tabela de preço;2-Custo SB2;3-Custo SB9;4-% do Preço de Venda Origem
+	cTabPrc := SuperGetMv("FT_TABPFI",,"")
+	nIndPrc := SuperGetMv("FT_INDPRFI",,0)
+
+	//	c_TpCrg := GetTipoCarga()
+	//
+	//	If c_TpCrg = 'E'
+	//		cC6Oper := SuperGetMv("FT_OPFIE",,"",::cFilEst)
+	//	ElseIf c_TpCrg = 'F'
+	//		cC6Oper := SuperGetMv("FT_OPFIF",,"",::cFilEst)
+	//	EndIf
+
+
+	if lOk .AND. empty(cCondPg)
+		cMsgRet := "Condição de pagamento não parametrizada. Parametro: FT_CDPAGFI "
+		lOk := .F.
+	endif
+
+	if lOk .AND. !empty(cCondPg) .AND. empty(Posicione("SE4",1,xFilial("SE4")+cCondPg,"E4_CODIGO"))
+		cMsgRet := "Condição de Pagamento não encontrada na filial "+cFilAnt+"."
+		lOk := .F.
+	endif
+
+	if lOk .AND. empty(cC6Oper)
+		cMsgRet := "Tipo Operação não parametrizado. Parametro: FT_OPERFI "
+		lOk := .F.
+	endif
+
+	if lOk .AND. cTipPrc == "1" .AND. empty(cTabPrc) //se tabela de preço não preenchido
+		cMsgRet := "Tabela de preço não parametrizada. Parametro: FT_TABPFI "
+		lOk := .F.
+	endif
+
+	if lOk .AND. cTipPrc == "1" .AND. empty(Posicione("DA0",1,xFilial("DA0")+cTabPrc,"DA0_CODTAB"))
+		cMsgRet := "Tabela de preço não encontrada na filial "+cFilAnt+"."
+		lOk := .F.
+	endif
+
+	if lOK
+		BeginTran()
+
+		//posiciona no cliente da filial que será usado no pedido
+		if ::PosCliFil(::cFilVen, @cCli, @cLoj)
+
+			aAdd(aCabAuto, {"C5_TIPO"   , "N"           , nil}) // TIPO DO PEDIDO
+			aAdd(aCabAuto, {"C5_CLIENTE", cCli          , nil}) // CÓDIGO DO CLIENTE
+			aAdd(aCabAuto, {"C5_LOJACLI", cLoj          , nil}) // LOJA DO CLIENTE
+			aAdd(aCabAuto, {"C5_EMISSAO", dDataBase     , nil}) // DATA DE EMISSÃO
+			aAdd(aCabAuto, {"C5_CONDPAG", cCondPg    	, nil}) // CONDIÇÃO
+			aAdd(aCabAuto, {"C5_TIPLIB", "2"    		, nil}) // libera por item
+			aAdd(aCabAuto, {"C5_XIDTRI" , ::GetIdTriang() , nil}) // ID TRIANGULAÇÂO
+
+			for nX := 1 to len(::aSF1_FI)
+
+				cItem := replicate("0", tamSX3("C6_ITEM")[1])
+				aIteAuto := {}
+
+				//montando itens
+				SD1->(DbSetOrder(1)) //D1_FILIAL+D1_DOC+D1_SERIE+D1_FORNECE+D1_LOJA+D1_COD+D1_ITEM
+				SD1->(DbSeek(xFilial("SF1")+::aSF1_FI[nX][1]+::aSF1_FI[nX][2]+::aSF1_FI[nX][3]+::aSF1_FI[nX][4] ))
+				While SD1->(!Eof()) .AND. SD1->D1_FILIAL+SD1->D1_DOC+SD1->D1_SERIE+SD1->D1_FORNECE+SD1->D1_LOJA == xFilial("SF1")+::aSF1_FI[nX][1]+::aSF1_FI[nX][2]+::aSF1_FI[nX][3]+::aSF1_FI[nX][4]
+
+					//verifica se o item não está em algum pedido nesta filial
+					//COMENTADO POIS TUDO QUE TEM NA SD1 DEVE IR PARA O PEDIDO, OBRIGATORIAMENTE
+					//if ::VldItemTrf(SD1->D1_XTFIORI+SD1->D1_XTPVORI+SD1->D1_XTITORI, ::cFilInt)
+
+					aAux := {}
+					cItem := soma1(cItem)
+
+					//preço original na FV
+					nPrcOrig := Posicione("SC6",1,SD1->D1_XTFIORI+SD1->D1_XTPVORI+SD1->D1_XTITORI,"C6_PRCVEN")
+					//se tipo preço é % sobre preço origem, pego aliquota do cadastro SB1
+					if cTipPrc=="4"
+						nIndPrc := Posicione("Z06",1,xFilial("Z06")+SD1->D1_COD,"Z06_INDICE")
+					endif
+					nPrcUnit := ::GetPrcUnit(cTipPrc, cTabPrc, SD1->D1_COD, nPrcOrig, nIndPrc )
+
+					c_Tes := U_MaTesInt(2,cC6Oper,cCli,cLoj,"C",SC6->C6_PRODUTO,"C6_TES")
+
+					c_TpCrg := ::GetTipoCarga()
+
+					If c_TpCrg = 'E'
+						c_Tes := Posicione("SF4",1, xFilial("SF4") + c_Tes, "F4_XTESEST")
+					ElseIf c_TpCrg = 'F'
+						c_Tes := Posicione("SF4",1, xFilial("SF4") + c_Tes, "F4_XTESFIN")
+					EndIf
+
+					aAdd(aAux, {"C6_ITEM"   , cItem                       			, nil}) //  ITEM DO PEDIDO
+					aAdd(aAux, {"C6_PRODUTO", SD1->D1_COD             				, nil}) //  CÓDIGO DO PRODUTO
+					aAdd(aAux, {"C6_QTDVEN" , SD1->D1_QUANT              			, nil}) //  QUANTIDADE VENDIDA
+					aAdd(aAux, {"C6_PRCVEN" , NoRound(nPrcUnit,2)   				, nil}) //  PREÇO DE VENDA
+					aAdd(aAux, {"C6_VALOR"  , NoRound(SD1->D1_QUANT * NoRound(nPrcUnit,2),2) , nil}) //  VALOR TOTAL
+
+					If c_TpCrg <> ' '
+						aAdd(aAux, {"C6_TES"   , c_Tes                     			, nil}) //  TES
+					Else
+						aAdd(aAux, {"C6_OPER"   , cC6Oper                     			, nil}) //  TIPO OPERAÇÂO TRANSFERENCIA
+					Endif
+
+					aAdd(aAux, {"C6_LOCAL"  , SD1->D1_LOCAL                			, nil}) //  FILLIAL PEDIDO DE ORIGEM
+					aAdd(aAux, {"C6_XTFIORI", SD1->D1_XTFIORI              			, nil}) //  FILLIAL PEDIDO DE ORIGEM
+					aAdd(aAux, {"C6_XTPVORI", SD1->D1_XTPVORI              			, nil}) //  NUMERO PEDIDO DE ORIGEM
+					aAdd(aAux, {"C6_XTITORI", SD1->D1_XTITORI              			, nil}) //  ITEM PEDIDO DE ORIGEM
+					aadd(aAux, {"C6_QTDLIB" , SD1->D1_QUANT							, nil}) //  LIBERAÇAO ESTOQUE AUTOMATICA
+					if c_TpCrg = 'E'
+						aadd(aAux, {"C6_LOTECTL", SD1->D1_LOTECTL						, nil}) //  LOTE PRODUTO
+						aadd(aAux, {"C6_DTVALID", SD1->D1_DTVALID						, nil}) //  VALIDADE LOTE
+					endif
+
+					aAdd(aIteAuto, aClone(aAux) )
+
+					//endif
+
+					SD1->(DbSkip())
+				enddo
+
+				if !empty(aIteAuto)
+					Private lMsErroAuto := .F.
+
+					MSExecAuto({|x,y,z| Mata410(x,y,z)}, aCabAuto, aIteAuto, 3)
+
+					If lMsErroAuto
+						if !::VerifIncPV(::cFilInt)
+							DisarmTransaction()
+							lOk := .F.
+							cMsgRet := "Falha execauto inclusão do pedido de vendas!"
+							MostraErro()
+							EXIT
+						endif
+					endif
+
+					if lOk
+
+						aadd(aRecSC5, SC5->(Recno()))
+						aadd(::aPvNfFI, SC5->C5_NUM )
+						cPVAux += SC5->C5_NUM + " "
+
+						//itens
+						SB1->(DbSetOrder(1))
+						SC6->(DbSetOrder(1))
+						SC6->(DbSeek(SC5->C5_FILIAL + SC5->C5_NUM))
+						While SC6->(!Eof()) .AND. SC6->C6_FILIAL+SC6->C6_NUM == SC5->C5_FILIAL+SC5->C5_NUM
+
+							cSeq := Soma1(cSeq)
+
+							SB1->( dbSeek(xFilial("SB1")+SC6->C6_PRODUTO) ) //posiciono no produto
+
+							//{"D2_ITEM","C6_PRODUTO","B1_DESC","C6_QTDVEN","C6_UM","C6_LOCAL","C6_LOTECTL","C6_LOCALIZ","C6_FILIAL","C6_NUM","C6_ITEM","C6_XTFIORI","C6_XTPVORI","C6_XTITORI"}
+							aAdd(::aItNfFI , {cSeq ,;
+							SC6->C6_PRODUTO,;
+							SB1->B1_DESC,;
+							SC6->C6_QTDVEN,;
+							SC6->C6_UM,;
+							SC6->C6_LOCAL,;
+							SC6->C6_LOTECTL,;
+							SC6->C6_LOCALIZ,;
+							SC6->C6_FILIAL,;
+							SC6->C6_NUM,;
+							SC6->C6_ITEM,;
+							SC6->C6_XTFIORI,;
+							SC6->C6_XTPVORI,;
+							SC6->C6_XTITORI,;
+							SC6->(Recno()),;
+							.F.; //deleted
+							});
+
+							SC6->(DbSkip())
+						enddo
+
+					endif
+				else
+					DisarmTransaction()
+					cMsgRet := "Falha ao gerar montar itens do pedido."
+					lOk := .F.
+					EXIT
+				endif
+
+			next nX
+		else
+			DisarmTransaction()
+			cMsgRet := "Cliente da filial "+::cFilVen+" não encontrado para geração do pedido de transferência!"
+			lOk := .F.
+		endif
+
+		if lOk
+			EndTran()
+
+			//se nao liberou automatico pedidos, tenta forçar liberar
+			for nX := 1 to len(aRecSC5)
+				SC5->(DbGoTo(aRecSC5[nX]))
+				if !::ValidBlqEst({SC5->C5_NUM}, ::cFilInt)
+					 &("StaticCall(FatTriang, MATA455)") //chamo rotina de liberaçao automatica
+				endif
+			next nX
+		endif
+
+	endif
+
+	if lOk
+		::aProcLog[nPosProc][1] := "BR_VERDE"
+		::aProcLog[nPosProc][3] := "Pedido de Venda gerado: " + cPVAux
+	else
+		::aProcLog[nPosProc][1] := "BR_VERMELHO"
+		::aProcLog[nPosProc][3] := cMsgRet
+	endif
+
+	cFilAnt := cBkpFil
+	oGridLog:GoTo(nPosProc)
+	oGridLog:oBrowse:Refresh()
+
+Return lOk
+
+//-----------------------------------------------------------------
+// Verifica se o item do pedido da FV ja foi transferido para a filial informada
+//-----------------------------------------------------------------
+METHOD VldItemTrf(cChavItem, cFilPv) CLASS FatTriang
+
+	Local lRet := .T.
+	Local cQry  := ""
+
+	cQry := " SELECT COUNT(*) QTDPED "
+	cQry += " FROM " + RetSqlName("SC6") + " SC6"
+	cQry += " WHERE C6_FILIAL = '"+xFilial("SC6",cFilPV)+"'"
+	cQry += "   AND SC6.D_E_L_E_T_ <> '*' "
+	cQry += "   AND (C6_XTFIORI||C6_XTPVORI||C6_XTITORI) = '"+cChavItem+"' "
+
+	If Select("QAUX") > 0
+		QAUX->(dbCloseArea())
+	EndIf
+
+	cQry := ChangeQuery(cQry)
+
+	dbUseArea(.T.,"TOPCONN", TCGenQry(,,cQry), "QAUX", .F., .T.)
+
+	if QAUX->(!Eof()) .AND. QAUX->QTDPED > 0
+		lRet := .F. //item ja transferido para esta filial
+	endif
+
+	QAUX->(dbCloseArea())
+
+Return lRet
+
+//-----------------------------------------------------------------
+//Metodo para distribuir os lotes no pedido
+//-----------------------------------------------------------------
+METHOD DistribuiLotes(cProcess, aSF1) CLASS FatTriang
+
+	Local lOk := .T.
+	Local aSaldos := {}
+	Local nX := 0, nY := 0, nZ := 0, nPosX := 0
+	Local nPosProc := aScan(::aProcLog, {|x| x[4] == cProcess})
+	Local cBkpFil := cFilAnt
+	Local cEndTrf //lCtrEnd,
+	Local lLoteOk := .F.
+	Local nPosProd := aScan(oGridItens:aHeader,{|x| AllTrim(x[2])=="C6_PRODUTO"})
+	Local nPosFilFV := aScan(oGridItens:aHeader,{|x| AllTrim(x[2])=="C6_XTFIORI"})
+	Local nPosPvFV := aScan(oGridItens:aHeader,{|x| AllTrim(x[2])=="C6_XTPVORI"})
+	Local nPosItFV := aScan(oGridItens:aHeader,{|x| AllTrim(x[2])=="C6_XTITORI"})
+	Local nPosLote := aScan(oGridItens:aHeader,{|x| AllTrim(x[2])=="C6_LOTECTL"})
+	Local aCarga := {}
+	//Local aPvLiber := {}
+
+	BeginTran()
+
+	//mudo a filial
+	cFilAnt := ::cFilVen
+	cEndTrf := SuperGetMv("FT_ENDTRF",,"") //Define endereço de estoque a ser considerado no doc de entrada, no processo de transferência. Preencher por filial.
+
+	//percorrendo as notas de entrada
+	SD1->(DbSetOrder(1)) //D1_FILIAL+D1_DOC+D1_SERIE+D1_FORNECE+D1_LOJA+D1_COD+D1_ITEM
+	for nX := 1 to len(aSF1)
+
+		aCarga := {} //pra cada nota vejo a carga
+
+		//montando array de saldo por lote
+		SD1->(DbSeek(xFilial("SF1")+aSF1[nX][1]+aSF1[nX][2]+aSF1[nX][3]+aSF1[nX][4] ))
+		While SD1->(!Eof()) .AND. SD1->D1_FILIAL+SD1->D1_DOC+SD1->D1_SERIE+SD1->D1_FORNECE+SD1->D1_LOJA == xFilial("SF1")+aSF1[nX][1]+aSF1[nX][2]+aSF1[nX][3]+aSF1[nX][4]
+
+			if (nPosX := aScan(aSaldos, {|x| x[1]==SD1->D1_XTFIORI+SD1->D1_XTPVORI+SD1->D1_XTITORI }) ) == 0
+				aadd(aSaldos, {SD1->D1_XTFIORI+SD1->D1_XTPVORI+SD1->D1_XTITORI, Nil, Nil, Nil, Nil })
+				nPosX := len(aSaldos)
+			endif
+
+			if Rastro(SD1->D1_COD) .OR. Localiza(SD1->D1_COD)
+				if aSaldos[nPosX][2] == Nil
+					aSaldos[nPosX][2] := {}
+				endif
+
+				aadd(aSaldos[nPosX][2], {{;
+				SD1->D1_LOTECTL,; //Lote
+				SD1->D1_NUMLOTE,; //Sub Lote
+				iif(Localiza(SD1->D1_COD),cEndTrf,""),; //Endereço
+				"",; //Num.Serie
+				SD1->D1_QUANT,; //Quantidade
+				SD1->D1_QTSEGUM,; //Qtd Seg.UM
+				SD1->D1_DTVALID,; //Validade lote
+				"","","",SD1->D1_LOCAL,0 ;
+				}})
+
+			endif
+
+			SD1->(DbSkip())
+		Enddo
+
+		//processando alteraçao lote
+		//MaLibDoFat(nRegSC6,nQtdaLib,lCredito,lEstoque,lAvCred,lAvEst,lLibPar,lTrfLocal,aEmpenho,bBlock,aEmpPronto,lTrocaLot,lGeraDCF,nVlrCred,nQtdalib2)
+		For nY := 1 to len(aSaldos)
+			SC6->(DbSetOrder(1))
+			if SC6->(DbSeek(aSaldos[nY][1]))
+				//posiciono no pedido
+				SC5->(DbSetOrder(1))
+				SC5->(DbSeek(SC6->C6_FILIAL+SC6->C6_NUM ))
+
+				aSaldos[nY][3] := SC5->C5_LIBEROK
+				aSaldos[nY][4] := SC5->C5_BLQ
+				aSaldos[nY][5] := SC6->C6_BLOQUEI
+
+				//estornando SC9 dos itens, percorro as SC9
+				SC9->(DbSetOrder(1))
+				if SC9->(DbSeek(aSaldos[nY][1])) //posiciono no item
+					While SC9->(!Eof()) .AND. SC9->(C9_FILIAL+C9_PEDIDO+C9_ITEM) == aSaldos[nY][1]
+						if empty(SC9->C9_NFISCAL)
+							if aScan(aCarga, {|x| x[1] == aSaldos[nY][1]}) == 0
+								AAdd(aCarga,{aSaldos[nY][1], SC9->C9_CARGA, SC9->C9_SEQCAR, SC9->C9_SEQENT, SC9->C9_ENDPAD })
+							endif
+							Reclock("SC9", .F.)
+							SC9->C9_CARGA := ""
+							SC9->C9_SEQCAR := ""
+							SC9->C9_SEQENT := ""
+							SC9->C9_ENDPAD := ""
+							SC9->(MsUnlock())
+
+							SC9->(a460Estorna()) //estorna SC9
+						endif
+						SC9->(DbSkip())
+					enddo
+				endif
+
+				RecLock("SC5",.F.)
+				SC5->C5_BLQ := aSaldos[nY][4]
+
+				//faço liberação
+				if aSaldos[nY][2] == Nil //sem lote e endereço
+					RecLock("SC6", .F.)
+					SC6->C6_BLOQUEI := aSaldos[nY][5]
+					SC6->C6_QTDLIB := SC6->C6_QTDVEN - SC6->C6_QTDENT
+					MaLibDoFat(SC6->(RecNo()),SC6->C6_QTDLIB,.T.,.T.,.F.,.F.,.F.,.F.)
+					SC6->(MsUnlock())
+				else //quando tem lote e/ou endereço
+					RecLock("SC6", .F.)
+					SC6->C6_BLOQUEI := aSaldos[nY][5]
+					For nZ := 1 to len(aSaldos[nY][2])
+						MaLibDoFat(SC6->(RecNo()),aSaldos[nY][2][nZ][1][5],.T.,.T.,.F.,.F.,.F.,.F.,/*aEmpenho*/,/*bBlock*/, aSaldos[nY][2][nZ])
+					next nZ
+					SC6->(MsUnlock())
+				endif
+
+				SC5->C5_LIBEROK := aSaldos[nY][3]
+				SC5->(MsUnlock())
+			endif
+		next nY
+
+		//regravo informaçoes da carga
+		SC9->(DbSetOrder(1))
+		For nY := 1 to len(aCarga)
+			if SC9->(DbSeek(aCarga[nY][1]))
+				While SC9->(!Eof()) .AND. SC9->(C9_FILIAL+C9_PEDIDO+C9_ITEM) == aCarga[nY][1]
+					if empty(SC9->C9_NFISCAL)
+						Reclock("SC9", .F.)
+						SC9->C9_CARGA := aCarga[nY][2]
+						SC9->C9_SEQCAR := aCarga[nY][3]
+						SC9->C9_SEQENT := aCarga[nY][4]
+						SC9->C9_ENDPAD := aCarga[nY][5]
+						SC9->(MsUnlock())
+					endif
+					SC9->(DbSkip())
+				Enddo
+			endif
+		next nY
+
+	next nX
+
+	//verificando se todos os lotes foram distribuidos corretamente
+	SC9->(DbSetOrder(1))
+	For nX := 1 to len(::aItNfFE)
+		lLoteOk := .F.
+		SC9->(DbSeek( ::aItNfFE[nX][nPosFilFV] + ::aItNfFE[nX][nPosPvFV] + ::aItNfFE[nX][nPosItFV] ))
+		While SC9->(!Eof()) .AND. SC9->C9_FILIAL+SC9->C9_PEDIDO+SC9->C9_ITEM == ::aItNfFE[nX][nPosFilFV]+::aItNfFE[nX][nPosPvFV]+::aItNfFE[nX][nPosItFV]
+			if empty(SC9->C9_NFISCAL) //se gerou nota, considera que ja distribuiu
+				if ::aItNfFE[nX][nPosLote] == SC9->C9_LOTECTL //procuro lote
+					lLoteOk := .T.
+					EXIT
+				endif
+			endif
+			SC9->(DbSkip())
+		enddo
+		if !lLoteOk
+			lOk := .F. //alguma falha
+			cMsgRet := "Falha ao distribuir lote do produto "+alltrim(::aItNfFE[nX][nPosProd])+"."
+			DisarmTransaction()
+			EXIT
+		endif
+	next nX
+
+	if lOk
+		EndTran()
+	endif
+
+	if lOk
+		::aProcLog[nPosProc][1] := "BR_VERDE"
+		::aProcLog[nPosProc][3] := "Lotes distribuidos e saldo empenhado!"
+	else
+		::aProcLog[nPosProc][1] := "BR_VERMELHO"
+		::aProcLog[nPosProc][3] := cMsgRet
+	endif
+
+	cFilAnt := cBkpFil
+	oGridLog:GoTo(nPosProc)
+	oGridLog:oBrowse:Refresh()
+
+Return lOk
+
+//********************************** Metodos AUXILIARES GERAIS **********************************\\
+
+//-----------------------------------------------------------------
+// Metodo para obter sequencial da triangulação
+//-----------------------------------------------------------------
+METHOD GetIdTriang() CLASS FatTriang
+
+	Local cMyIDTri	:= ""
+	Local cCampo	:= "C5_XIDTRI"
+	Local _cAlias	:= "SC5"
+	Local nTamCod	:= TamSx3(cCampo)[1]
+
+	if empty(::cIdTriang)
+
+		cQry := "SELECT MAX("+cCampo+") PROX "
+		cQry += " FROM " + RetSqlName(_cAlias)
+
+		If Select("QAUX") > 0
+			QAUX->(dbCloseArea())
+		EndIf
+
+		cQry := ChangeQuery(cQry)
+		dbUseArea(.T.,"TOPCONN", TCGenQry(,,cQry), "QAUX", .F., .T.)
+
+		If Empty(QAUX->PROX)
+			cMyIDTri := strzero( 1, nTamCod )
+		Else
+			cMyIDTri := PADL(soma1(QAUX->PROX),nTamCod,"0")
+
+			//FreeUsedCode()
+			While !MayIUseCode( "TRIANG" + cMyIDTri )
+				cMyIDTri := soma1(cMyIDTri)
+			EndDo
+
+		EndIf
+
+		If Select("QAUX") > 0
+			QAUX->(dbCloseArea())
+		EndIf
+
+		::cIdTriang := cMyIDTri
+	endif
+
+Return ::cIdTriang
+
+//-----------------------------------------------------------------
+//Metodo para gravar um pedido de venda
+//cFilPV: Filial onde será incluido o pedido
+//aItens: array de itens dos pedidos, com recno do item origem
+//		  na penultima posição de cada linha
+//Cliente ja deve estar posicionado
+//-----------------------------------------------------------------
+METHOD GerarPvEst(aItens, cCli, cLoj, cCondPg, cC6Oper, cTipPrc, cTabPrc, nIndPrc, lLibEst, lEmpDif, cTranspDAK ) CLASS FatTriang
+
+	Local nX := 0, nCount := 0
+	Local lRet := .T.
+	Local cBkpFil := cFilAnt
+	Local aCabAuto := {}
+	Local aIteAuto := {}
+	Local aAux := {}
+	Local nMax := SuperGetMV("FT_MAXITNF",, 400)
+	Local nPosRecno := len(aItens[1])-1
+	Local cItem := replicate("0", tamSX3("C6_ITEM")[1])
+	Local nPrcUnit := 0
+	Local c_Tes := ''
+	Private lTrasp := .F. //Caique
+	Private lMsErroAuto := .F.
+	Default lEmpDif := .F.
+
+	cFilAnt := ::cFilEst //MUDOU FILIAL
+
+	if !empty(cCondPg) .AND. empty(Posicione("SE4",1,xFilial("SE4")+cCondPg,"E4_CODIGO"))
+		::cMsgErro := "Condição de Pagamento não encontrada na filial "+cFilAnt+"."
+		::ShowError()
+		Return .F.
+	endif
+
+	if cTipPrc == "1" .and. !empty(cTabPrc) .AND. empty(Posicione("DA0",1,xFilial("DA0")+cTabPrc,"DA0_CODTAB"))
+		::cMsgErro := "Tabela de preço não encontrada na filial "+cFilAnt+"."
+		::ShowError()
+		Return .F.
+
+	elseif cTipPrc == "1" .and. empty(Posicione("SA1",1,xFilial("SA1")+cCli+cLoj,"A1_TABELA"))//Validar se a tabela esta vinculada ao cliente, solicitado pelo Sr.Godinho, 14/02/2018, as 17:25.  Tarcísio Silva
+		::cMsgErro := "Tabela não vinculada ao cliente!"
+		::ShowError()
+		Return(.F.)
+	
+	endif	
+	
+	//Função para Incluir Trasportadora  Caso não escolha Transportadora do Pedido de Venda
+	//if Empty(cTranspDAK)
+		cTranspDAK := SelTransp(cTranspDAK)	
+		//msginfo("Nova Transportadora : ",cTranspDAK)	
+	//endif	
+
+	aAdd(aCabAuto, {"C5_TIPO"   , "N"           , nil}) // TIPO DO PEDIDO
+	aAdd(aCabAuto, {"C5_CLIENTE", cCli          , nil}) // CÓDIGO DO CLIENTE
+	aAdd(aCabAuto, {"C5_LOJACLI", cLoj          , nil}) // LOJA DO CLIENTE
+	aAdd(aCabAuto, {"C5_EMISSAO", dDataBase     , nil}) // DATA DE EMISSÃO
+	aAdd(aCabAuto, {"C5_CONDPAG", cCondPg    	, nil}) // CONDIÇÃO
+	aAdd(aCabAuto, {"C5_TRANSP", cTranspDAK   	, nil}) // TRANSPORTADORA da DAK	
+
+	for nX := 1 to len(aItens)
+		SC6->(DbGoTo(aItens[nX][nPosRecno])) //Posiciona no item de origem
+		nCount++
+
+		aAux := {}
+		cItem := soma1(cItem)
+
+		//se tipo preço é % sobre preço origem, pego aliquota do cadastro SB1
+		if cTipPrc=="4"
+			nIndPrc := Posicione("Z06",1,xFilial("Z06")+SC6->C6_PRODUTO,"Z06_INDICE")
+		endif
+		nPrcUnit := ::GetPrcUnit(cTipPrc, cTabPrc, SC6->C6_PRODUTO, SC6->C6_PRCVEN, nIndPrc )
+
+		c_Tes := U_MaTesInt(2,cC6Oper,cCli,cLoj,"C",SC6->C6_PRODUTO,"C6_TES")
+
+		c_TpCrg := DAK->DAK_XTIPO
+
+		If c_TpCrg = 'E'
+			c_Tes := Posicione("SF4",1, xFilial("SF4") + c_Tes, "F4_XTESEST")
+		ElseIf c_TpCrg = 'F'
+			c_Tes := Posicione("SF4",1, xFilial("SF4") + c_Tes, "F4_XTESFIN")
+		EndIf
+
+		aAdd(aAux, {"C6_ITEM"   , cItem                       			, nil}) //  ITEM DO PEDIDO
+		aAdd(aAux, {"C6_PRODUTO", SC6->C6_PRODUTO             			, nil}) //  CÓDIGO DO PRODUTO
+		aAdd(aAux, {"C6_QTDVEN" , SC6->C6_QTDVEN              			, nil}) //  QUANTIDADE VENDIDA
+		//aAdd(aAux, {"C6_PRCVEN" , NoRound(nPrcUnit,2)		  			, nil}) //  PREÇO DE VENDA //O ExecAuto ja faz a validação do preço automaticamente, solicitado pelo Sr.Godinho, 14/02/2018, as 17:25. Tarcísio Silva
+		//aAdd(aAux, {"C6_VALOR"  , NoRound(SC6->C6_QTDVEN * NoRound(nPrcUnit,2),2)	, nil}) //  VALOR TOTAL //O ExecAuto ja faz a validação do preço automaticamente, solicitado pelo Sr.Godinho, 14/02/2018, as 17:25.  Tarcísio Silva
+
+		//Se Empresa for diferente segue essa regra. 
+		if lEmpDif
+			
+			aAdd(aAux, {"C6_PRCVEN" , NoRound(nPrcUnit,2)		  			, nil}) //  PREÇO DE VENDA 
+			aAdd(aAux, {"C6_VALOR"  , NoRound(SC6->C6_QTDVEN * NoRound(nPrcUnit,2),2)	, nil}) //  VALOR TOTAL 
+		
+		endif
+
+		If c_TpCrg <> ' '
+			aAdd(aAux, {"C6_TES"   , c_Tes                     			, nil}) //  TES
+		Else
+			aAdd(aAux, {"C6_OPER"   , cC6Oper                     			, nil}) //  TIPO OPERAÇÂO TRANSFERENCIA
+		Endif
+
+		aAdd(aAux, {"C6_XTFIORI", SC6->C6_FILIAL              			, nil}) //  FILLIAL PEDIDO DE ORIGEM
+		aAdd(aAux, {"C6_XTPVORI", SC6->C6_NUM                 			, nil}) //  NUMERO PEDIDO DE ORIGEM
+		aAdd(aAux, {"C6_XTITORI", SC6->C6_ITEM                			, nil}) //  ITEM PEDIDO DE ORIGEM
+		if lLibEst
+			aadd(aAux, {"C6_QTDLIB", SC6->C6_QTDVEN						, nil}) //  LIBERAÇAO ESTOQUE AUTOMATICA
+		endif
+
+		aAdd(aIteAuto, aClone(aAux) )
+
+		if nCount >= nMax .OR. nX == len(aItens)
+
+			aAdd(aCabAuto, {"C5_XIDTRI", ::GetIdTriang() , nil}) // ID TRIANGULAÇÂO
+
+			MSExecAuto({|x,y,z| Mata410(x,y,z)}, aCabAuto, aIteAuto, 3)
+
+			If lMsErroAuto
+				if !::VerifIncPV(::cFilEst)
+					lRet := .F.
+					::cMsgErro := "Falha na inclusão do pedido de vendas!"
+					::ShowError(.F., .T.)
+					EXIT
+				endif
+			endif
+
+			aadd(::aRecPvFE, SC5->(Recno()))
+			aadd(::aNumPvFE, SC5->C5_NUM )
+
+			nCount := 0
+			aIteAuto := {}
+			cItem := replicate("0", tamSX3("C6_ITEM")[1])
+		endif
+
+	next nX
+
+	cFilAnt := cBkpFil
+
+Return lRet
+
+//-----------------------------------------------------------------------------
+//Metodo para posicionar no cliente da filial
+//-----------------------------------------------------------------------------
+METHOD PosCliFil(cFilGet, cCli, cLoj) CLASS FatTriang
+
+	Local lRet := .F.
+	Local cArea := getNextAlias()
+
+	BEGINSQL ALIAS cArea
+	SELECT A1_COD, A1_LOJA
+	FROM %table:SA1% SA1
+	WHERE SA1.%notdel%
+	AND A1_FILTRF = %exp:cFilGet%
+	ENDSQL
+
+	IF (cArea)->(!EOF())
+		lRet := .T.
+		cCli := (cArea)->A1_COD
+		cLoj := (cArea)->A1_LOJA
+	ENDIF
+
+	(cArea)->( dbCloseArea() )
+
+Return lRet
+
+//-----------------------------------------------------------------------------
+//Metodo para posicionar no fornecedor da filial
+//-----------------------------------------------------------------------------
+METHOD PosForFil(cFilGet, cForn, cLoj) CLASS FatTriang
+
+	Local lRet := .F.
+	Local cArea := getNextAlias()
+
+	BEGINSQL ALIAS cArea
+	SELECT A2_COD, A2_LOJA
+	FROM %table:SA2% SA2
+	WHERE SA2.%notdel%
+	AND A2_FILTRF = %exp:cFilGet%
+	ENDSQL
+
+	IF (cArea)->(!EOF())
+		lRet := .T.
+		cForn := (cArea)->A2_COD
+		cLoj := (cArea)->A2_LOJA
+	ENDIF
+
+	(cArea)->( dbCloseArea() )
+
+Return lRet
+
+
+//-----------------------------------------------------------------------------
+//Metodo para obter o preço unitario do pedido
+//-----------------------------------------------------------------------------
+METHOD GetPrcUnit(cTipPrc, cTabPrc, cProdut, nPrcVend, nIndPrc ) CLASS FatTriang
+
+	Local aSaldos := {}
+	Local nRet := 0
+	Local dDataCusto
+
+	//por padrão, mantem preço do pedido original
+	nRet := nPrcVend
+
+	if cTipPrc == "1" //Tabela de Preço
+
+		DA1->(DbSetOrder(1))
+		if DA1->(DbSeek(xFilial("DA1")+cTabPrc+cProdut))
+			nRet := DA1->DA1_PRCVEN
+		endif
+
+	elseif cTipPrc == "2" .OR. cTipPrc == "3" //Custo SB2 ou Custo SB9
+
+		dDataCusto := iif(cTipPrc == "3", SuperGetMv("MV_ULMES",,dDataBase) ,dDataBase)
+		SB1->(DbSetOrder(1))
+		if SB1->(DbSeek(xFilial("SB1")+cProdut))
+
+			aSaldos := CalcEst(SB1->B1_COD, SB1->B1_LOCPAD, dDataCusto) //retorno:{nQtd, nValor}
+			if aSaldos[1] < 0.01
+				aSaldos[2]:=0
+			endif
+
+			nRet:= aSaldos[2]/aSaldos[1]
+		endif
+
+		//segue com preço de venda nesses casos
+		if nRet < 0.01 .OR. nRet > nPrcVend
+			nRet := nPrcVend
+		endif
+
+		if nIndPrc > 0
+			nRet := Round(nRet * nIndPrc / 100, 2)
+		endif
+
+	elseif cTipPrc == "4" //% Preço Venda (indice produto)
+
+		if nIndPrc > 0 //aplicando indice
+			nRet := Round(nPrcVend * nIndPrc / 100, 2)
+		endif
+
+	endif
+
+Return nRet
+
+//-----------------------------------------------------------------------------
+//Metodo para obter o Recno do Pedido de Transferencia gerado pela solicitação
+//-----------------------------------------------------------------------------
+METHOD GetRecnoPvFE() CLASS FatTriang
+Return ::aRecPvFE
+
+//-----------------------------------------------------------------------------
+//Metodo para obter os numeros dos Pedido de Transferencia gerado pela solicitação
+//-----------------------------------------------------------------------------
+METHOD GetNumPvFE() CLASS FatTriang
+Return ::aNumPvFE
+
+//-----------------------------------------------------------------
+//Metodo para criar perguntas da chave
+//-----------------------------------------------------------------
+METHOD CriaSX1(cPerg) CLASS FatTriang
+
+	//Local nIndexId := 0
+
+	if cPerg == "TBCFTRI1"
+
+		U_xPutSx1(cPerg,"01","Carga ?"	  ,"","","mv_ch1","C",6,0,0,"G","U_TBCFTRI1('DAK')","DAK","","","mv_par01","","","","","","","","","","","","","","","","",{"Informe o numero da carga que tenha ","pedidos configurado para tirar estoque ","de outra filial."},{"",""},{"",""})
+		U_xPutSx1(cPerg,"02","Pedido ?"	  ,"","","mv_ch2","C",6,0,0,"G","U_TBCFTRI1('SC5')","SC5","","","mv_par02","","","","","","","","","","","","","","","","",{"Informe o numero do pedito que está ","configurado para tirar estoque de outra ","filial."},{"",""},{"",""})
+
+	elseif cPerg == "TBCFTRI2"
+
+		U_xPutSx1(cPerg,"01","Id Triangulação ?","","","mv_ch1","C",10,0,0,"G","U_TBCFTRI1('IDT')","IDTRI","","","mv_par01","","","","","","","","","","","","","","","","",{"Informe o Id da Triangulação gerado ","pela rotina de Solicitar Transferência. ","Esse Id pode ser encontrado na Carga ou ","Pedido."},{"",""},{"",""})
+
+	endif
+
+Return
+
+//----------------------------------------------------------------
+// Verifica se mesmo com erro no execauto, o pedido foi incluido.
+//----------------------------------------------------------------
+METHOD VerifIncPV(cFilPV) CLASS FatTriang
+
+	Local lRet := .F.
+	Local cQry  := ""
+
+	cQry := " SELECT COUNT(*) QTDPED "
+	cQry += " FROM " + RetSqlName("SC5") + " SC5"
+	cQry += " WHERE C5_FILIAL = '"+xFilial("SC5",cFilPV)+"'"
+	cQry += "   AND SC5.D_E_L_E_T_ <> '*' "
+	cQry += "   AND C5_XIDTRI = '"+::GetIdTriang()+"' "
+
+	If Select("QAUX") > 0
+		QAUX->(dbCloseArea())
+	EndIf
+
+	cQry := ChangeQuery(cQry)
+
+	dbUseArea(.T.,"TOPCONN", TCGenQry(,,cQry), "QAUX", .F., .T.)
+
+	if QAUX->(!Eof()) .AND. QAUX->QTDPED > 0
+		lRet := .T. //tem pedido
+	endif
+
+	QAUX->(dbCloseArea())
+
+Return lRet
+
+//-------------------------------------------------------------
+// Valida se consegui liberar os estoques.
+//-------------------------------------------------------------
+METHOD ValidBlqEst(aPedVen, cFilPv) CLASS FatTriang
+
+	Local lRet := .T.
+	Local nX
+	Local cQry  := ""
+
+	cQry := " SELECT C9_PEDIDO "
+	cQry += " FROM " + RetSqlName("SC9") + " SC9 "
+	cQry += " WHERE SC9.D_E_L_E_T_ <> '*' "
+	//cQry += "   AND C9_FILIAL = "+xFilial("SC9",cFilPv)+""
+	cQry += "  AND C9_FILIAL = '" + xFilial("SC9",cFilPV)+ "'" 
+	
+	cQry += "   AND C9_PEDIDO IN ("
+	for nX := 1 to len(aPedVen)
+		if nX > 1
+			cQry += ","
+		endif
+		cQry += "'"+aPedVen[nX]+"'"
+	next nX
+	cQry += " 	) "
+	cQry += "   AND C9_BLEST <> '  '" //com bloqueio de estoque
+
+	If Select("QAUX") > 0
+		QAUX->(dbCloseArea())
+	EndIf
+
+	cQry := ChangeQuery(cQry)
+	dbUseArea(.T.,"TOPCONN", TCGenQry(,,cQry), "QAUX", .F., .T.)
+
+	If QAUX->(!Eof()) .AND. !empty(QAUX->C9_PEDIDO)
+		lRet := .F.
+	endif
+
+	QAUX->(dbCloseArea())
+
+Return lRet
+
+//-----------------------------------------------------------------
+//Validação de perguntas
+//-----------------------------------------------------------------
+User Function TBCFTRI1(_cAlias)
+
+	Local lRet := .T.
+	Local nIndexId := 1
+
+	if _cAlias == "DAK"
+		lRet := empty(MV_PAR01).OR.ExistCpo('DAK',MV_PAR01)
+		if !empty(MV_PAR01)
+			MV_PAR02 := Space(len(MV_PAR02))
+		endif
+	elseif _cAlias == "SC5"
+		lRet := empty(MV_PAR02).OR.ExistCpo('SC5',MV_PAR02)
+		if !empty(MV_PAR02)
+			MV_PAR01 := Space(len(MV_PAR01))
+		endif
+	elseif _cAlias == "IDT"
+		SC5->(dbOrderNickName("IDTRIANG"))
+		nIndexId := SC5->(IndexOrd())
+		lRet := empty(MV_PAR02).OR. ExistCpo('SC5',MV_PAR01,nIndexId)
+	endif
+
+Return lRet
+
+//---------------------------------------------------------------
+// muda nome do botão da enchoicebar
+//---------------------------------------------------------------
+Static Function AltBtnEnch(oObjDlg, cOldCap, cNewCap)
+	Local nX := 0
+	if oObjDlg:aControls <> Nil
+		for nX := 1 to len(oObjDlg:aControls)
+			if valtype(oObjDlg:aControls[nX])=="O"
+				if "TBROWSEBUTTON" == Alltrim(Upper(oObjDlg:aControls[nX]:ClassName()))
+					if oObjDlg:aControls[nX]:cCaption == OemToAnsi( cOldCap )
+						oObjDlg:aControls[nX]:cCaption := OemToAnsi( cNewCap )
+						oObjDlg:aControls[nX]:Refresh()
+						exit
+					endif
+				endif
+			endif
+		next nX
+	endif
+return
+
+//-------------------------------------------------------------
+// Liberação de estoque automatica (chama rotina da MATA455)
+// Emulo mesmo nome de função pq fonte padrao olha IsInCallStack("MATA455")
+//-------------------------------------------------------------
+Static Function MATA455
+
+	Local aArea := GetArea()
+	Local cPerg    := "LIBAT2"
+	Local cRotina 	:= FunName()
+
+	SetFunName("MATA455")
+
+	Pergunte( cPerg, .F. )
+	MV_PAR01 := SC5->C5_NUM
+	MV_PAR02 := SC5->C5_NUM
+	MV_PAR03 := SC5->C5_CLIENTE
+	MV_PAR04 := SC5->C5_CLIENTE
+	MV_PAR05 := SC5->C5_EMISSAO
+	MV_PAR06 := SC5->C5_EMISSAO + 365
+	MV_PAR07 := 1
+
+	DbSelectArea("SC9")
+	Ma450Processa("SC9",.F., .T., .F., Nil, MV_PAR07==2)
+
+	SetFunName(cRotina)
+	RestArea(aArea)
+
+Return
+
+
+//---------------------------------------
+// tela de seleçao Transportadora
+//---------------------------------------
+Static Function SelTransp(cTranspDAK)
+
+	Private cTransp := cTranspDAK
+	Private cNtrans := Posicione("SA4",1,xFilial("SA4")+cTransp,"A4_NREDUZ")
+	Private cNovaTransp := Posicione("SA4",1,xFilial("SA4")+cTransp,"A4_NREDUZ")
+	Private oDlgTRSP
+
+	//STYLE DS_MODALFRAME Remove o botão "x" NÃO DEIXA FECHAR A ROTINA 
+	DEFINE MSDIALOG oDlgTRSP TITLE "Transportadora" FROM 0,0 TO 180, 600 COLORS 0, 16777215 PIXEL STYLE DS_MODALFRAME
+	
+	oDlgTRSP:lEscClose := .F.
+	TGroup():New(10,05,80,297,'Informe o Codigo da Transportadora de Transferência!',oDlgTRSP,,,.T.)
+
+	TSay():New( 32, 10,{|| "Código" }, oDlgTRSP,,,,,,.T.,CLR_BLACK,,50,9 )
+	TGet():New( 30, 50, {|u| iif( PCount()==0,cTransp,cTransp:= u) },oDlgTRSP,45,12,,{|| VldNomTr() },,,,.F.,,.T.,,.F.,{|| .T.},.F.,.F.,/*bChange*/,.F.,.F.,"SA4","A4_COD",,,,.T.,.F.)
+	TGet():New( 30, 100, {|u| iif( PCount()==0,cNtrans,cNtrans:= u) },oDlgTRSP,160,12,,/*bValid*/,,,,.F.,,.T.,,.F.,{|| .F.},.F.,.F.,/*bChange*/,.F.,.F.,,"cNtrans",,,,.T.,.F.)
+         
+	TButton():New( 55, 240, "Confirmar", oDlgTRSP,{|| iif(VldNomTr(),oDlgTRSP:End(), MsgInfo("Informe a Transportadora de Transferência","Atenção")) }, 50,16,,,.F.,.T.,.F.,,.F.,,,.F. )
+	
+	oDlgTRSP:lCentered := .T.
+	oDlgTRSP:Activate()
+
+	cNovaTransp := cTransp
+	
+	//msginfo("Nova Transportadora DIGITADO: ",cNovaTransp)
+	
+Return cNovaTransp
+
+//Valida campo motivo de devoluçao
+Static Function VldNomTr()
+
+Local aAreaSA4  := GetArea()
+
+	cNtrans := Posicione("SA4",1,xFilial("SA4")+cTransp,"A4_NREDUZ")
+	oDlgTRSP:Refresh()
+
+RestArea( aAreaSA4 )
+
+Return !empty(cNtrans)
+
+
+Static Function PVFin(cPvSGAC)
+
+	Local cQuery 	as character
+	Local cNumPed	as character
+
+	cQuery := "SELECT C5_FILIAL,C5_NUM"
+	cQuery += " FROM " + RetSqlName("SC5") + " sc5"
+	cQuery += " WHERE c5_filial = '" + FWxFilial("SC5") + "'"
+	cQuery += " AND C5_XPVSGAC = '" + AllTrim(cPvSGAC) + "'"
+	cQuery += " AND D_E_L_E_T_ = ' '"
+
+	cNumPed := MpSysExecScalar(cQuery, "C5_NUM")
+
+Return cNumPed
+
+
+//-------------------------------------------------------------
+// Tipo da Carga
+//-------------------------------------------------------------
+METHOD GetTipoCarga() CLASS FatTriang
+
+	Local c_Ret := ''
+	Local cQry  := ""
+
+	cQry := "SELECT DAK_XTIPO "
+	cQry += "FROM " + RetSqlName("DAK") + " DAK "
+	cQry += "WHERE DAK.D_E_L_E_T_ = ' ' "
+	cQry += "AND DAK_XIDTRI = '"+ ::GetIdTriang() +"' "
+
+	PlSQuery(cQry,"_DAKTP")
+
+	If _DAKTP->(!Eof())
+		c_Ret := _DAKTP->DAK_XTIPO
+	endif
+
+	_DAKTP->(dbCloseArea())
+
+Return c_Ret

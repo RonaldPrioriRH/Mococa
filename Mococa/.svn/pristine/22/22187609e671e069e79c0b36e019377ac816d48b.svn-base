@@ -1,0 +1,40 @@
+#include "protheus.ch"
+#include 'fileio.ch'
+/*/
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+±±ÉÍÍÍÍÍÍÍÍÍÍÑÍÍÍÍÍÍÍÍÍÍËÍÍÍÍÍÍÍÑÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍËÍÍÍÍÍÍÑÍÍÍÍÍÍÍÍÍÍÍÍÍ»±±
+±±ºPrograma  ³ AfterLogin     º Autor ³ TBC-GO       º Data ³  04/01/17   º±±
+±±ÌÍÍÍÍÍÍÍÍÍÍØÍÍÍÍÍÍÍÍÍÍÊÍÍÍÍÍÍÍÏÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÊÍÍÍÍÍÍÏÍÍÍÍÍÍÍÍÍÍÍÍÍ¹±±
+±±ºDescricao ³ Ponto de Entrada após realizar login.                      º±±
+±±º          ³                                                            º±±
+±±ÌÍÍÍÍÍÍÍÍÍÍØÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ¹±±
+±±ºUso       ³ TBC-GO                                                     º±±
+±±ÈÍÍÍÍÍÍÍÍÍÍÏÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ¼±±
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
+/*/
+
+User Function AfterLogin()
+Local cId	:= ParamIXB[1]
+//Local cNome := ParamIXB[2]
+Local _ambiente 	:= upper(getenvserver())
+Local cMensag1 := " "
+Local cMensag2 := " "
+Local cAmbPad  := "PADRAO"
+if sx6->(dBseek(Space(Len(xFilial("SX6")))+'PADRAO' ))
+  cAmbPad:=alltrim(UPPER(SX6->x6_descric))
+endif  
+If Alltrim(cModulo) <> "CFG" 
+	If sx6->(dBseek(Space(Len(xFilial("SX6")))+_ambiente )) 
+	    if !empty(alltrim(SX6->x6_descric))
+	      if !cId$alltrim(SX6->x6_descric)
+		    cMensag1 := "Ambiente "+_ambiente+", bloqueado para uso"
+		    cMensag2 := "Favor usar o ambiente >> "+cAmbPad+" <<"
+		    final(cMensag1, cMensag2 )
+		  endif
+		endif    
+	Endif
+Endif
+
+Return 

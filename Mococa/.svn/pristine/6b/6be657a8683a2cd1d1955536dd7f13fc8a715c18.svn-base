@@ -1,0 +1,494 @@
+#INCLUDE 'Protheus.ch'
+#INCLUDE "topconn.ch"
+
+/*
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+ฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑ
+ฑฑษออออออออออัออออออออออหอออออออัออออออออออออออออออออหออออออัอออออออออออออปฑฑ
+ฑฑบPrograma  ณRFATA015  บAutor  ณTarcisio Silva MirandaบDataณ  07/03/2018 บฑฑ
+ฑฑฬออออออออออุออออออออออสอออออออฯออออออออออออออออออออสออออออฯอออออออออออออนฑฑ
+ฑฑบDesc.     ณ Alimenta a entrada do estoque no ato da saํda .			  บฑฑ
+ฑฑฬออออออออออุออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออนฑฑ
+ฑฑบUso       ณ Chamado pelo ponto de entrada M460FIM().   				  บฑฑ
+ฑฑศออออออออออฯออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผฑฑ
+ฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑ
+฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿
+*/
+
+User Function RFATA015()
+
+	Local aArea 	:= GetArea()
+	Local aAreaSD2	:= SD2->(GetArea())
+	Local aAreaSF2 	:= SF2->(GetArea())
+	Local aAreaSD1	:= SD1->(GetArea())
+	Local aAreaSF1 	:= SF1->(GetArea())
+	Local lRfata015 := GetMv("MV_XRFT15",,.T.) //Parametro responsavel por habilitar o funcionamento da rotina .
+
+	Private lMsErroAuto := .F.
+
+	if lRfata015 //Verifica se o parametro esta habilitado. 
+
+		if u_funExec() //so sera executado se o pedido for incluso manualamente.
+
+			Processa({|| funTransNf()},"Transmitindo Nota fiscal de Saํda...")
+
+		endif
+
+	endif
+
+	RestArea(aAreaSD1)
+	RestArea(aAreaSF1)
+	RestArea(aAreaSD2)
+	RestArea(aAreaSF2)
+	RestArea(aArea)
+
+Return(!lMsErroAuto)
+
+/*
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+ฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑ
+ฑฑษออออออออออัออออออออออหอออออออัออออออออออออออออออออหออออออัอออออออออออออปฑฑ
+ฑฑบPrograma  ณEntraNota บAutor  ณTarcisio Silva MirandaบDataณ  07/03/2018 บฑฑ
+ฑฑฬออออออออออุออออออออออสอออออออฯออออออออออออออออออออสออออออฯอออออออออออออนฑฑ
+ฑฑบDesc.     ณGera a Nota Fiscal ou pre nota dependendo do campo F4_XTESTRFฑฑ
+ฑฑฬออออออออออุออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออนฑฑ
+ฑฑบUso       ณ Chamado pelo ponto de entrada M460FIM().   				  บฑฑ
+ฑฑศออออออออออฯออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผฑฑ
+ฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑ
+฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿
+*/
+
+Static Function EntraNota(_cChvNfe)
+
+	Local aCabec 	:= {}
+	Local aAux 		:= {}
+	Local nRecSD2 	:= 0
+	Local aNovoIt 	:= {}
+	//Local cTesTransf:= GetMv("MV_XTESTRF",,"60")//Responsavel pela Trnsferencia.
+	Local cBkpFilAnt:= cFilAnt
+	Local cFilSF2	:= SF2->F2_FILIAL
+	Local cNumNFs 	:= SF2->F2_DOC
+	Local cSerNfs 	:= SF2->F2_SERIE
+	Local cCodCliNfs:= SF2->F2_CLIENTE
+	Local cLjCliNfs	:= SF2->F2_LOJA
+	Local lPreNf 	:= .F. 
+	Local lNf 		:= .F.
+	Local cLocTrf	:= SuperGetMv("FT_LOCTRF",,"") //Define local de estoque a ser considerado no doc de entrada, no processo de transfer๊ncia. Preencher por filial.
+	Local cCgcCli	:= SUBSTR(_cChvNfe,7,14)
+	//Local cProduto  := GetMv("MV_XNOPROD", ,"001")
+	Local cCgcCli2  := Posicione("SA1",1,xFilial("SA1")+SF2->F2_CLIENTE+SF2->F2_LOJA,"A1_CGC")
+	Local cFilials 	:= Posicione("SA2",3,xFilial("SA2")+cCgcCli2,"A2_FILTRF")
+
+	Default _cChvNfe := ""
+ 
+	SA2->(DbSelectArea("SA2"))
+	SA2->(DbGotop())
+	SA2->(DbSetOrder(3)) //F1_FILIAL+F1_CHVNFE
+	if SA2->(DbSeek(xFilial("SA2")+cCgcCli))
+		cCodFor  	:= SA2->A2_COD
+		cLjFor 		:= SA2->A2_LOJA
+	else
+	    msginfo("O C.N.P.J. "+cCgcCli+" nใo foi encontrado no cadastro de Fornecedor.") 
+	endif
+
+	SF1->(DbSelectArea("SF1"))
+	SF1->(DbGotop())
+	SF1->(DbSetOrder(8)) //F1_FILIAL+F1_CHVNFE
+	if !SF1->(DbSeek(cFilials+_cChvNfe))
+
+		cFilAnt := cFilials
+    
+        //MSGSTOP("CFILIALS => "+cFilAnt)
+
+		aAdd(aCabec,{"F1_TIPO"   	,"N"					, Nil})
+		aadd(aCabec,{"F1_FORMUL" 	,"N" 					, Nil})
+		aAdd(aCabec,{"F1_DOC"    	,StrZero(Val(cNumNFs),9), Nil})
+		aAdd(aCabec,{"F1_SERIE"  	,cSerNfs				, Nil})
+		aAdd(aCabec,{"F1_EMISSAO"	,date()					, Nil})
+		aAdd(aCabec,{"F1_FORNECE"	,cCodFor				, Nil})
+		aAdd(aCabec,{"F1_LOJA"   	,cLjFor					, Nil})
+		aAdd(aCabec,{"F1_ESPECIE"	,"SPED"					, Nil})
+		aAdd(aCabec,{"F1_COND"		,SF2->F2_COND			, Nil})
+		//aAdd(aCabec,{"F1_CHVNFE" 	,_cChvNfe				, nil})
+		aAdd(aCabec,{"F1_CHVNFE" 	,SF2->F2_CHVNFE			, nil})// Ajustado o campo acima para pegar a chave da nota de saํda para fazer a entrada	
+
+		SD2->(DbselectArea("SD2"))
+		SD2->(DbGotop())
+		SD2->(DbSetOrder(3))
+
+		if SD2->(DbSeek(SF2->F2_FILIAL+SF2->F2_DOC+SF2->F2_SERIE+SF2->F2_CLIENTE+SF2->F2_LOJA))
+
+			While SD2->(!EOF()) .AND. cFilSF2$SD2->D2_FILIAL .AND. cNumNFs$SD2->D2_DOC .AND. cSerNfs$SD2->D2_SERIE .AND. cCodCliNfs$SD2->D2_CLIENTE .AND. cLjCliNfs$SD2->D2_LOJA
+
+				nRecSD2 := SD2->(Recno())
+
+				SD2->(DbGoTo(nRecSD2))
+				//Zero o Array para corrigir problemas do ExecAuto da Pr้-Nota, gerando itens com quantidade duplicadas 
+				aAux := {}
+
+				aAdd(aAux, {"D1_ITEM"   , StrZero(Val(SD2->D2_ITEM),4)  , nil})
+				aAdd(aAux, {"D1_COD"    , SD2->D2_COD    				, nil})
+				aAdd(aAux, {"D1_UM"    	, SD2->D2_UM     				, nil})
+				aAdd(aAux, {"D1_QUANT"  , SD2->D2_QUANT  				, nil})
+                
+        // alterado a tratativa de busca da TES
+
+				SF4->(DbselectArea("SF4"))
+				SF4->( dbSetOrder(1))
+				SF4->( dbSeek(SD2->D2_FILIAL + SD2->D2_TES) )
+				if !empty(SF4->F4_XTESTRF)
+					aAdd(aAux, {"D1_TES"    , SF4->F4_XTESTRF , nil}) //ExecAuto Nใo funcionou passando C6_OPER.
+				else
+				  //  msginfo("A TES "+SD2->D2_TES+" utilizada na NF "+SD2->D2_DOC+" nใo estแ configurada para esse processo. Campo F4_XTESTRF.") 
+				endif
+
+				aAdd(aAux, {"D1_VUNIT"  , SD2->D2_PRCVEN , nil})
+				aAdd(aAux, {"D1_TOTAL"  , SD2->D2_TOTAL  , nil})
+
+				if empty(cLocTrf)
+
+					aAdd(aAux, {"D1_LOCAL" , SD2->D2_LOCAL, nil})
+
+				else
+
+					aAdd(aAux, {"D1_LOCAL" , cLocTrf	  , nil})
+
+				endif
+
+				aAdd(aAux, {"D1_LOTECTL", SD2->D2_LOTECTL, nil})
+				aAdd(aAux ,{"D1_DTVALID", SD2->D2_DTVALID, nil})
+				aAdd(aAux ,{"D1_XTFIORI", SD2->D2_XTFIORI, nil}) //Alterado 19/01/2019 para gravar corretamente a filial origem na D1
+			    aAdd(aAux ,{"D1_XTPVORI", SD2->D2_XTPVORI, nil})
+				aAdd(aAux ,{"D1_XTITORI", SD2->D2_XTITORI, nil})
+				aAdd(aNovoIt, aClone(aAux))
+				SD2->(DbSkip())
+			EndDo
+
+			MSExecAuto({|x, y, z| MATA103(x, y, z)}, aCabec, aNovoIt, 3) //doc classificado
+
+			iif(lMsErroAuto,lNf := .F.,lNf := .T.)
+
+			if lMsErroAuto     
+//				MostraErro()
+
+				lMsErroAuto := .F.
+				SF1->(DbSelectArea("SF1"))
+				SF1->(DbGotop())
+				SF1->(DbSetOrder(1)) //F1_FILIAL+F1_DOC+F1_SERIE+F1_FORNECE+F1_LOJA+F1_TIPO
+				if !SF1->(DbSeek(cFilials+SF2->F2_DOC+SF2->F2_SERIE+cCodFor+cLjFor))
+					MSExecAuto({|x, y, z| MATA140(x, y, z)}, aCabec, aNovoIt, 3) //pr้-nota
+				endif
+				iif(lMsErroAuto,lPreNf := .F.,lPreNf := .T.)
+
+			endif
+
+			if lMsErroAuto .AND. lNf == .F. .AND. lPreNf == .F.
+
+				MostraErro()
+
+			else
+
+				if lPreNf
+
+					Aviso("Informa็ใo","Pr้ Nota Fiscal inclusa com sucesso!",{"Ok"})
+
+				elseif lNf
+
+					Aviso("Informa็ใo","Nota Fiscal inclusa com sucesso!",{"Ok"})
+
+				endif
+
+			endif
+
+		EndIf
+
+		cFilAnt := cBkpFilAnt
+
+        //MSGSTOP("CEMPANT => "+cEmpAnt)
+        //MSGSTOP("CFILANT => "+cFilAnt)
+
+		SM0->(DbSelectArea("SM0"))
+		SM0->(DbGotop())
+		SM0->(DbSetOrder(1)) //M0_CODIGO+M0_CODFIL
+		if !SM0->(DbSeek(cEmpant+CfilAnt))
+			msginfo(" Empresa / Filial nใo encontrada ")
+  		endif
+
+
+	endif
+
+Return(!lMsErroAuto)
+
+/*
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+ฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑ
+ฑฑษออออออออออัออออออออออหอออออออัออออออออออออออออออออหออออออัอออออออออออออปฑฑ
+ฑฑบPrograma  ณfunExecบAutor  ณTarcisio Silva MirandaบDataณ  08/03/2018 บฑฑ
+ฑฑฬออออออออออุออออออออออสอออออออฯออออออออออออออออออออสออออออฯอออออออออออออนฑฑ
+ฑฑบDesc.     ณFun็ใo que valida se a rotina vai ser executada ou nใo.	   ฑฑ
+ฑฑฬออออออออออุออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออนฑฑ
+ฑฑบUso       ณ Chamado pelo ponto de entrada M460FIM().   				  บฑฑ
+ฑฑศออออออออออฯออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผฑฑ
+ฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑ
+฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿
+*/
+
+User Function funExec()
+
+	Local cQry := ""
+	Local lRet := .F.
+
+	cQry := " SELECT C5_XPVSGAC,C5_NUM FROM " + RetSqlName("SC5") + "  WHERE D_E_L_E_T_ <> '*'  						" 
+	cQry += " AND C5_FILIAL = '"+SF2->F2_FILIAL+"' AND C5_NOTA = '"+SF2->F2_DOC+"' AND C5_SERIE = '"+SF2->F2_SERIE+"' 	"  
+
+	cQry := ChangeQuery(cQry)
+
+	if Select("TRB") > 0
+		TRB->(DbCloseArea())
+	endif
+
+	TcQuery cQry New Alias "TRB"
+
+	if empty(TRB->C5_XPVSGAC) .AND. empty(SF2->F2_XIDTRI)
+
+		lRet := .T.
+
+	endif
+
+Return(lRet)
+
+/*
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+ฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑ
+ฑฑษออออออออออัออออออออออหอออออออัออออออออออออออออออออหออออออัอออออออออออออปฑฑ
+ฑฑบPrograma  ณfunTransNf บAutor ณTarcisio Silva MirandaบDataณ 10/03/2018 บฑฑ
+ฑฑฬออออออออออุออออออออออสอออออออฯออออออออออออออออออออสออออออฯอออออออออออออนฑฑ
+ฑฑบDesc.     ณ Transmite nota fiscal de saํda Automaticamente . 		  นฑฑ
+ฑฑบ			   Nota fiscal autorizada -> F2_FIMP == “S”					  นฑฑ
+ฑฑบ			   Nota fiscal transmitida -> F2_FIMP == “T”				  นฑฑ
+ฑฑบ			   Nota fiscal uso denegado -> F2_FIMP == “D”				  นฑฑ
+ฑฑบ			   Nota fiscal nใo autorizada -> F2_FIMP == “N”	   			   ฑฑ
+ฑฑฬออออออออออุออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออนฑฑ
+ฑฑบUso       ณ Chamado pelo ponto de entrada M460FIM().   				  บฑฑ
+ฑฑศออออออออออฯออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผฑฑ
+ฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑ
+฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿
+*/
+
+Static Function funTransNf()
+
+	Local aChvStts 	:= {}
+	Local _cEmpresa := cEmpAnt					//cEmpresa, 
+	Local _cFilial 	:= SF2->F2_FILIAL 			//cFilial,
+	Local _Espera 	:= "0"						//cEspera, 
+	Local _TpTransm := GetMv("MV_XTRANSM",,"2")	//cAmbiente (1=producao,2=Homologacao) Muito cuidado.
+	Local _cSerie 	:= SF2->F2_SERIE			//cSerie
+	Local _cDocDe 	:= SF2->F2_DOC				//cDoc.Inicial
+	Local _cDocAte	:= SF2->F2_DOC				//cDoc.Final 
+	Private _cChvNfe:= SF2->F2_CHVNFE			//Chv.Nota Fiscal
+
+	//Mococa 
+	//Fonte fun็ใo de transmissใo da NF descontinuada na realease 12.1.27
+	u_AutoNfeEnv(_cEmpresa,_cFilial,_Espera,_TpTransm,_cSerie,_cDocDe,_cDocAte) //Transmite nota fiscal.
+	
+	Aviso("Informa็ใo","Nota fiscal de saํda Transmitida com sucesso!",{"Ok"})
+	
+	Sleep(8000) //espera 8 segundos
+	
+	Processa({|| funAbreStt()},"Abrindo tela de apresenta็ใo de status...")//Apresenta a tela de Monitor.	
+		
+	Sleep(8000) //espera 8 segundos
+
+	aChvStts := funGetChv() //Coletar os dados da nota fiscal como Chave e Status da transmissใo.
+
+	if (!aChvStts[2]$"N" .AND. !aChvStts[2]$"D") .AND. (aChvStts[2]$"S" .OR. aChvStts[2]$"T")
+
+		Processa({|| funImpDanf()},"Imprimindo danfe...")	
+
+	endif
+	//Atual if aChvStts[2]$"S" 
+	
+	if aChvStts[2]$"S" .And. SF4->F4_TRANFIL == "1" .And. !(AllTrim(_cFilial) $ "0106/0107")   //Remove gera็ใo de Pre-Nota para as Tes que nใo sใo de Transfer๊ncia e nใo sejam das filiais 0106 e 0107
+
+		Processa({|| EntraNota(aChvStts[1])},"Gerando Nf de Entrada...")
+
+	//else
+	
+		//MsgAlert("Erro ao emitir nota fiscal de entrada!","Aten็ใo!")
+
+	endif
+
+
+Return()
+
+/*
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+ฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑ
+ฑฑษออออออออออัออออออออออหอออออออัออออออออออออออออออออหออออออัอออออออออออออปฑฑ
+ฑฑบPrograma  ณ VldProd บAutor ณTarcisio Silva MirandaบDataณ 10/03/2018    บฑฑ
+ฑฑฬออออออออออุออออออออออสอออออออฯออออออออออออออออออออสออออออฯอออออออออออออนฑฑ
+ฑฑบDesc.     ณ Fun็ใo que valida o Codigo do produto . 		  			   ฑฑ
+ฑฑฬออออออออออุออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออนฑฑ
+ฑฑบUso       ณ Gera nota fiscal de entrada ou pre nota.	   				  บฑฑ
+ฑฑศออออออออออฯออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผฑฑ
+ฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑ
+฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿
+*/
+
+Static Function VldProd(_cFilial,_cDoc,_cSerie,_cCliente,_cLoja,_cProduto)
+
+	Local aAreaSF2 		:= SF2->(GetArea())
+	Local aAreaSD2 		:= SD2->(GetArea())
+	Local lRet			:= .T.
+	Default _cFilial	:= ""
+	Default _cDoc 		:= ""
+	Default _cSerie 	:= ""
+	Default _cCliente	:= ""
+	Default _cLoja		:= "" 
+	Default _cProduto 	:= ""
+
+	While !SD2->(Eof()) .AND. SF2->F2_FILIAL$_cFilial .AND. SF2->F2_DOC$_cDoc .AND. SF2->F2_SERIE$_cSerie .AND. SF2->F2_CLIENTE$_cCliente .AND. SF2->F2_LOJA$_cLoja
+
+		if SD2->D2_COD$_cProduto
+
+			lRet := .F.
+
+		endif
+
+		SD2->(DbSkip())
+
+	enddo
+
+	RestArea(aAreaSF2)
+	RestArea(aAreaSD2)
+
+Return(lRet)
+
+/*
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+ฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑ
+ฑฑษออออออออออัออออออออออหอออออออัออออออออออออออออออออหออออออัอออออออออออออปฑฑ
+ฑฑบPrograma  ณ funImpDanf บAutor ณTarcisio Silva MirandaบDataณ 10/03/2018บฑฑ
+ฑฑฬออออออออออุออออออออออสอออออออฯออออออออออออออออออออสออออออฯอออออออออออออนฑฑ
+ฑฑบDesc.     ณ Fun็ใo que imprime o danfe . 		  			   		   ฑฑ
+ฑฑฬออออออออออุออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออนฑฑ
+ฑฑบUso       ณ Gera nota fiscal de entrada ou pre nota.	   				  บฑฑ
+ฑฑศออออออออออฯออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผฑฑ
+ฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑ
+฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿
+*/
+
+Static Function funImpDanf() 
+
+	Local cBkpFil := cFilAnt
+	Private aFilBrw := {"SF2",".T."}
+
+/*** Ash BRASIL 2022/07/27 alterando para substituir a fun็ใo u_zAtuPerg
+		Caique - Removi o UPDATE na MP_SYSTEM_PROFILE e troquei a fun็ใo u_zAtuPerg por SetMVValue()  ***/
+		/*
+		Begin Transaction      
+
+    		//Monta o Update
+    		cQry := "UPDATE MP_SYSTEM_PROFILE SET D_E_L_E_T_ = '*', R_E_C_D_E_L_ = R_E_C_N_O_"  + CRLF
+    		cQry += "WHERE P_NAME = '"+RetCodUsr()+"' "                                         + CRLF
+			cQry += "AND P_PROG = 'NFSIGW' "                                                    + CRLF
+    		cQry += "AND D_E_L_E_T_ <> '*' "                                                    + CRLF
+ 
+
+    		MemoWrite("C:\TEMP\MP_SYSTEM_PROFILE.txt",cQry)
+
+        	//Tenta executar o update
+        	nErro := TcSqlExec(cQry)
+
+        		If nErro != 0
+        
+      	    		MsgStop("Erro na execu็ใo da query: "+TcSqlError(), "Aten็ใo")
+       	    		DisarmTransaction()
+			
+				EndIf
+
+		End Transaction	
+		*/
+
+	Pergunte("NFSIGW",.F.)
+	/*
+	u_zAtuPerg("NFSIGW", "MV_PAR01", SF2->F2_DOC) //doc de
+	u_zAtuPerg("NFSIGW", "MV_PAR02", SF2->F2_DOC) //doc at้
+	u_zAtuPerg("NFSIGW", "MV_PAR03", SF2->F2_SERIE) //serie
+	u_zAtuPerg("NFSIGW", "MV_PAR07", Stod("20010101")) //data de
+	u_zAtuPerg("NFSIGW", "MV_PAR08", Stod("20490101")) //data ate
+	*/
+	SetMVValue("NFSIGW", "MV_PAR01", SF2->F2_DOC) //doc de
+	SetMVValue("NFSIGW", "MV_PAR02", SF2->F2_DOC) //doc at้
+	SetMVValue("NFSIGW", "MV_PAR03", SF2->F2_SERIE) //serie
+	SetMVValue("NFSIGW", "MV_PAR07", Stod("20010101")) //data de
+	SetMVValue("NFSIGW", "MV_PAR08", Stod("20490101")) //data ate
+
+	SpedDanfe()
+
+	cFilAnt := cBkpFil 
+
+Return()
+
+/*
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+ฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑ
+ฑฑษออออออออออัออออออออออหอออออออัออออออออออออออออออออหออออออัอออออออออออออปฑฑ
+ฑฑบPrograma  ณ funGetChv บAutor ณTarcisio Silva MirandaบDataณ 12/03/2018บ  ฑฑ
+ฑฑฬออออออออออุออออออออออสอออออออฯออออออออออออออออออออสออออออฯอออออออออออออนฑฑ
+ฑฑบDesc.     ณ Pega a chave da nota e o status, ja que esta transacionado. ฑฑ
+ฑฑฬออออออออออุออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออนฑฑ
+ฑฑบUso       ณ Gera nota fiscal de entrada ou pre nota.	   				  บฑฑ
+ฑฑศออออออออออฯออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผฑฑ
+ฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑ
+฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿
+*/
+
+Static Function funGetChv()
+
+	Local cChvNfe 	:= ""
+	Local cFIimp 	:= ""
+	Local _cQry2	:= ""
+	
+	_cQry2 := " SELECT F2_FIMP,F2_CHVNFE,F2_DOC FROM " + RetSqlName("SF2") + " WHERE F2_DOC = '"+SF2->F2_DOC+"' " 
+	_cQry2 += " AND D_E_L_E_T_ <> '*' AND F2_SERIE = '"+SF2->F2_SERIE+"' AND F2_CLIENTE = '"+SF2->F2_CLIENTE+"' "
+	_cQry2 += " AND F2_LOJA = '"+SF2->F2_LOJA+"' 																"
+
+	_cQry2 := ChangeQuery(_cQry2)
+
+	if Select("TRB") > 0
+		TRB->(DbCloseArea())
+	endif
+
+	TcQuery _cQry2 New Alias "TRB"
+	
+	while empty(TRB->F2_CHVNFE)
+	
+		funGetChv()
+	
+	enddo
+
+	cChvNfe := TRB->F2_CHVNFE
+	cFIimp	:= TRB->F2_FIMP
+
+Return({cChvNfe,cFIimp})
+
+/*
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+ฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑ
+ฑฑษออออออออออัออออออออออหอออออออัออออออออออออออออออออหออออออัอออออออออออออปฑฑ
+ฑฑบPrograma  ณ funAbreStt บAutor ณTarcisio Silva MirandaบDataณ12/03/2018บ ฑฑ
+ฑฑฬออออออออออุออออออออออสอออออออฯออออออออออออออออออออสออออออฯอออออออออออออนฑฑ
+ฑฑบDesc.     ณ Carrega o campo de chave. 								   ฑฑ
+ฑฑฬออออออออออุออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออนฑฑ
+ฑฑบUso       ณ Gera nota fiscal de entrada ou pre nota.	   				  บฑฑ
+ฑฑศออออออออออฯออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผฑฑ
+ฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑ
+฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿
+*/
+
+Static Function funAbreStt()
+
+	SpedNFe6Mnt(SF2->F2_SERIE,SF2->F2_DOC,SF2->F2_DOC,,,,,,.T./*lExibTela*/)
+	
+Return()

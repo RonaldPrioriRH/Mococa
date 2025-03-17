@@ -1,0 +1,58 @@
+#Include 'Protheus.ch'
+
+/*/{Protheus.doc} ROMSE014
+PE OM200MNU 
+Este ponto de entrada pode ser utilizado para inserir novas opções no array aRotina.
+@author TOTVS
+@since 29/03/2017
+@version P12
+@param nulo            
+@return nulo
+/*/
+
+User Function ROMSE014()
+
+	Local lHabFatAnt := GetMv("MV_XFATANT",,.F.)//Habilita Faturamento antecipado. 
+
+	aadd(aRotina, {	"Calc. Frete (GFE) *" ,'U_GFE_DAI()' , 0 ,4 ,0 ,.F. })
+
+	if lHabFatAnt
+
+		aadd(aRotina, {	"A. Fat. *" ,'U_ROMSE016()' , 0 ,4 ,0 ,.F. })
+
+	endif
+
+	aadd(aRotina, {	"Dt Embarque *" ,'U_DTEMBRQ()' , 0 ,4 ,0 ,.F. })
+	aadd(aRotina, {	"Sol.Transfer. (Ft.Triang)" ,'U_ROMSE14B()' , 0, 4, 0, .F. })
+	aadd(aRotina, {	"NF Transferencia (Ft.Triang)" ,'U_ROMSE14A()' , 0, 4, 0, .F. })
+	aadd(aRotina, {'Imprimir PickList','U_ROMSE14C()', 0, 2, 0, .F.})
+
+Return
+
+User Function ROMSE14A
+
+	if empty(DAK->DAK_XIDTRI)
+		MsgInfo("Carga não está em processo de Faturamento Triangular.")
+		Return
+	endif
+
+	U_ROMSA003(DAK->DAK_XIDTRI)
+
+Return
+
+User Function ROMSE14B
+
+	if !empty(DAK->DAK_XIDTRI)
+		MsgInfo("Carga já está em processo de Faturamento Triangular.")
+		Return
+	endif
+
+	U_ROMSA002("",DAK->DAK_COD,.F./*lAuto*/)
+
+Return
+
+User Function ROMSE14C
+
+	U_ROMSR001(,DAK->DAK_COD)
+
+Return()

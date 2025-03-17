@@ -1,0 +1,221 @@
+#include "tlpp-core.th"
+#include "tlpp-rest.th"
+#include "protheus.ch"
+#include "topconn.ch"
+#include "tbiconn.ch" // prepare env
+
+#DEFINE ERRORCODE_DEF	400     //Codigo de retorno quando der erro na solicitacao.
+#DEFINE ERRORSRV_DEF	500     //Codigo de erro no processamento.
+
+@get("mococa/clientes")
+user function getClientes()
+  local cCnpjEmp := ""
+  local cCnpjCli := ""
+
+  local jBody := JsonObject():new()
+
+  jBody:fromJson( oRest:GetBodyRequest() )
+
+  if ( jBody <> Nil )
+    cCnpjEmp := jBody:GetJsonText("empresa")
+    cCnpjCli := jBody:GetJsonText("cnpj")
+  endif
+
+  fGetCli( cCnpjEmp, cCnpjCli )
+return
+
+Static Function fGetCli(cEmp, cCli)
+    local oJData        := nil
+
+    Private cMsg        := ""
+    Private lIniEnv     := .F.
+
+    Private bError      := { |e| oError := e, Break(e) }
+	Private bErrorBlock := ErrorBlock( bError )
+	Private oError
+
+    Default cEmp        := ""
+    Default cFil        := ""
+
+    cMsg := ""
+
+    begin sequence
+        if Empty(cEmp)
+            cMsg := "CNPJ - da empresa nao foi enviado necessario para devolucao dos clientes."
+            ConOut(cMsg)
+            break
+        endif
+
+        if !fVldChave(cEmp)
+            ConOut(cMsg)
+            break
+		endif
+        
+    	if !fGetDados(cCli, @oJData)
+            ConOut(cMsg)
+            break
+        endif
+        
+        oRest:setCloseAfterSend(.T.)
+
+        //Comprime em string para envio
+        //Envia a Resposta em Json
+        oRest:setResponse( fCompress(oJData) )
+
+        RESET ENVIRONMENT
+    recover
+		ErrorBlock(bErrorBlock)
+        oRest:setStatusCode( ERRORSRV_DEF )
+
+        if oError == nil
+            oRest:setFault( EncodeUTF8('{"status": "'+cValToChar(ERRORSRV_DEF)+'", "error": "'+cMsg+'"}' ))
+        else            
+            oRest:setFault( EncodeUTF8('{"status": "'+cValToChar(ERRORSRV_DEF)+'", "error": "'+oError:Description+'"}' ))
+        endif
+
+        if lIniEnv
+            RESET ENVIRONMENT
+        endif
+    end sequence
+return
+
+/*
+Responsavel por validar os conteudos do cnpj da empresa de consulta
+*/
+static function fVldChave(cCnpj)
+    local lRet := .F.
+    
+    Local aSM0 := FWLoadSM0()
+    Local nSM0 := 0
+
+    default cCnpj = ""
+
+    fSetError(EncodeUTF8("Erro na validacao dos dados recebidos"))
+
+    if ( cCnpj == Nil .or. empty(cCnpj) )
+        cMsg  := 'Os valores do cnpj nao podem ser vazios ou nulos'
+        Return lRet
+    endif
+
+    if len(cCnpj) <> 14
+        cMsg  := 'O tamanho do CNPJ informado nao e valido'
+        Return lRet
+    endif
+
+    nSM0 := ascan(aSM0,{|X| Alltrim(X[18]) == cCnpj})
+
+    if nSM0 > 0
+        cEmp := aSM0[nSM0][1]
+        cFil := aSM0[nSM0][2]
+    else
+        cMsg  := 'A chave do CNPJ informado nao encontrado no cadastro de empresa'
+        Return lRet
+    endif
+
+    fResetError()
+        
+    fSetError(EncodeUTF8("Erro ao preparar o ambiente"))
+
+    RPCSetType(3)
+    PREPARE ENVIRONMENT EMPRESA cEmp FILIAL cFil TABLES "SA1" MODULO "FAT"
+    lIniEnv := .T.
+    fResetError()
+        
+    lRet := .T.
+return lRet
+
+/*
+Prepara a msg de erro dada no estouro
+*/
+static function fSetError(cTitle)
+	bError  := { |e| oError := e , oError:Description := cTitle+" ==>> "+oError:Description+" <<==", Break(e)}
+	bErrorBlock    := ErrorBlock( bError )
+return(.T.)
+
+/*
+Limpa as msg anteriores
+*/
+static Function fResetError(cTitle)
+	bError  := { |e| oError := e , Break(e) }
+	bErrorBlock    := ErrorBlock( bError )
+return(.T.)
+
+/*
+Responsavel por comprimir o objeto json
+*/
+static function fCompress(oObj)
+return EncodeUTF8(oObj:toJSON())
+
+/*
+Responsavel montar o json dos Centros de Custos
+ - Monta consulta
+ - Monta JSon
+ - retorna resultado.
+*/
+static function fGetDados(cCli, oJReturn)
+    local lRet := .F.
+    local cQry := ""
+
+    local oJData
+    local aData := {}
+
+    default cCli := ""
+
+    fSetError(EncodeUTF8("Erro na consulta do banco"))
+
+    cQry += "SELECT"+CRLF 
+    cQry += "   *"+CRLF
+    cQry += "FROM"+CRLF
+    cQry +=     RetSqlName("SA1")+ " SA1"+CRLF
+    cQry += "WHERE"+CRLF
+    cQry += "   SA1.D_E_L_E_T_ = ' '"+CRLF
+    cQry += "   AND A1_FILIAL = '"+XFILIAL("SA1")+"'"+CRLF
+    if !empty(cCli)
+        cQry += "   AND A1_CGC = '"+cCli+"'"+CRLF
+    endif
+    
+    MemoWrite("c:\temp\rest_clientes", cQry)
+
+    if select("QRY") > 0
+        QRY->(dbclosearea())
+    endif
+
+    DBUseArea( .T., "TOPCONN", TcGenQry( , ,cQry), "QRY", .T., .T. )
+
+    fResetError()
+
+    fSetError(EncodeUTF8("Erro na consulta do banco, nao foi encontrado resultado para a chave."))
+
+    if QRY->(EOF())
+        RETURN lRet
+    endif    
+
+    while !QRY->(EOF())
+        oJData := JsonObject():new()
+        
+        oJData['codigo'] := alltrim(QRY->A1_COD)
+        oJData['loja']   := alltrim(QRY->A1_LOJA)
+        oJData['nome']   := alltrim(QRY->A1_NOME)
+
+        AADD( aData, oJData )
+        QRY->(DBSkip())
+    end
+
+    QRY->(dbclosearea())
+    
+    fResetError()
+
+    fSetError(EncodeUTF8("Erro na montagem da estrutura de retorno"))
+    
+    oJReturn := JsonObject():new()
+
+    oJReturn['empresa'] := alltrim(SM0->M0_CGC)
+
+    if len(aData) > 0
+        oJReturn['clientes'] := aData
+    endIf
+
+    fResetError()   
+
+    lRet := .T.
+return lRet
